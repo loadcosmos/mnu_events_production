@@ -1,44 +1,68 @@
-# Base stage
+# ===========================================
+# MNU Events Backend - Production Dockerfile
+# ===========================================
+
+# Base stage - установка зависимостей для сборки
 FROM node:20-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache openssl libc6-compat
+
+# Build stage - сборка приложения
+FROM base AS build
+
+# Копируем файлы для npm install
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Development stage
-FROM base AS development
+# Устанавливаем ВСЕ зависимости (включая devDependencies для сборки)
 RUN npm ci
-COPY . .
-RUN npx prisma generate
-CMD ["npm", "run", "start:dev"]
 
-# Build stage
-FROM base AS build
-RUN npm ci
+# Генерируем Prisma Client (используем установленную версию, не npx!)
+RUN ./node_modules/.bin/prisma generate
+
+# Копируем исходный код
 COPY . .
-RUN npx prisma generate
+
+# Собираем NestJS приложение
 RUN npm run build
-RUN npm prune --production
 
-# Production stage
+# ===========================================
+# Production stage - минимальный образ
+# ===========================================
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Install openssl and libc6-compat before npm packages
+# Устанавливаем только необходимые системные пакеты
 RUN apk add --no-cache openssl libc6-compat
 
-# Copy necessary files
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+# Копируем package.json для production dependencies
+COPY package*.json ./
+
+# Устанавливаем ТОЛЬКО production зависимости
+RUN npm ci --only=production --ignore-scripts
+
+# Копируем Prisma schema и сгенерированный client из build stage
 COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 
-# Install production dependencies and Prisma
-RUN npm install --production --ignore-scripts
-RUN npx prisma generate
+# Копируем собранное приложение
+COPY --from=build /app/dist ./dist
 
-# Expose port
+# Создаём непривилегированного пользователя
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs && \
+    chown -R nestjs:nodejs /app
+
+USER nestjs
+
+# Railway автоматически использует PORT из переменных окружения
 EXPOSE 3001
 
-# Run migrations and start server
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3001}/api/health || exit 1
+
+# Запуск: миграции + сервер
+# Используем @prisma/client CLI через npx с точной версией
+CMD ["sh", "-c", "npx prisma@5.7.1 migrate deploy && node dist/main"]
