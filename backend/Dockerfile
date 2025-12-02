@@ -49,10 +49,6 @@ COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 # Копируем собранное приложение
 COPY --from=build /app/dist ./dist
 
-# Копируем migration script с retry logic
-COPY scripts/migrate-with-retry.sh ./scripts/
-RUN chmod +x ./scripts/migrate-with-retry.sh
-
 # Создаём непривилегированного пользователя
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs && \
