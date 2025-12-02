@@ -34,13 +34,32 @@ async function bootstrap() {
       ? corsOrigin.split(',').map(o => o.trim())
       : Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
     
+    // Helper function to check if origin matches (supports wildcards)
+    const isOriginAllowed = (origin: string): boolean => {
+      return allowedOrigins.some(allowedOrigin => {
+        // Exact match
+        if (allowedOrigin === origin) return true;
+        
+        // Wildcard match (e.g., https://*.vercel.app)
+        if (allowedOrigin.includes('*')) {
+          const pattern = allowedOrigin
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Escape special chars
+            .replace(/\*/g, '.*'); // Replace * with .*
+          const regex = new RegExp(`^${pattern}$`);
+          return regex.test(origin);
+        }
+        
+        return false;
+      });
+    };
+    
     app.enableCors({
       origin: (origin, callback) => {
         // Allow requests with no origin (e.g., mobile apps, Postman)
         if (!origin) return callback(null, true);
         
-        // Check if origin is in allowed list
-        if (allowedOrigins.includes(origin)) {
+        // Check if origin is allowed (supports wildcards)
+        if (isOriginAllowed(origin)) {
           callback(null, true);
         } else {
           logger.warn(`Blocked CORS request from origin: ${origin}`, 'CORS');
