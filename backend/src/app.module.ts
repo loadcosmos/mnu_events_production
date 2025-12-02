@@ -46,6 +46,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
           password: configService.get('redis.password'),
           db: configService.get('redis.db'),
           ttl: 3600, // Default TTL: 1 hour
+          tls: configService.get('redis.tls'), // Enable TLS for Upstash/production
         }),
       }),
     }),
