@@ -42,15 +42,31 @@ PAYMENT_SECRET=1a17c6d2b17c5ca6cfe51430d0fe07de8f9000b9b7c954ea8dbb257f9e75909a
    - Найдите `loadcosmos/mnu_events_production`
    - Если не видите - нажмите "Configure GitHub App" и дайте доступ к репозиторию
 
-3. **Railway автоматически:**
-   - Обнаружит, что это монорепозиторий (backend + frontend)
-   - Попросит указать директорию для деплоя
+3. **⚠️ КРИТИЧНО! Railway может попытаться деплоить frontend:**
+   - Если Railway показывает "Detected Vite" или "Static Site" - это НЕПРАВИЛЬНО!
+   - Нам нужно деплоить **backend** (NestJS), а не frontend!
 
-4. **Настройте деплой:**
-   - **Root Directory:** `backend`
-   - **Build Command:** `npm install && npx prisma generate && npm run build`
-   - **Start Command:** `npm run start:prod`
-   - Нажмите "Deploy"
+4. **Настройте деплой BACKEND:**
+
+   **Сразу после создания проекта:**
+   - Нажмите на сервис (service card)
+   - Перейдите в **Settings**
+   - Найдите **Root Directory**
+   - Установите: `backend` ← **ЭТО ОБЯЗАТЕЛЬНО!**
+
+   **Build Command** (если спросит):
+   ```
+   npm install && npx prisma generate && npm run build
+   ```
+
+   **Start Command**:
+   ```
+   npm run start:prod
+   ```
+
+   **После изменения Root Directory:**
+   - Нажмите "Redeploy" или "Deploy again"
+   - Railway теперь обнаружит NestJS в `backend/` папке
 
 ### Шаг 3: Добавить PostgreSQL базу данных
 
@@ -373,6 +389,20 @@ Password: Password123!
    npx prisma migrate deploy
    npx prisma db seed
    ```
+
+### Railway деплоит frontend вместо backend
+
+**Симптомы:**
+- Build logs показывают "Detected Vite" или "Static Site"
+- Ошибка: "Rollup failed to resolve import 'qrcode'"
+- Build пытается собрать frontend (npm run build → vite build)
+
+**Решение:**
+1. Railway → ваш проект → Backend service
+2. Settings → **Root Directory**
+3. Установите: `backend`
+4. Нажмите "Redeploy"
+5. Проверьте логи - должно быть "Detected Node" и "NestJS"
 
 ---
 
