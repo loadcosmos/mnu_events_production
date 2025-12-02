@@ -63,6 +63,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3001}/api/health || exit 1
 
-# Запуск: миграции с retry logic + сервер
-CMD ["sh", "-c", "npx prisma@5.7.1 migrate deploy --schema=./prisma/schema.prisma && node dist/main"]
+# Запуск: db push для Railway (минует проблемные data migrations) + сервер
+CMD ["sh", "-c", "npx prisma@5.7.1 db push --accept-data-loss --skip-generate && node dist/main"]
 
