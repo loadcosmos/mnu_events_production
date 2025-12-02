@@ -49,6 +49,10 @@ COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 # Копируем собранное приложение
 COPY --from=build /app/dist ./dist
 
+# Копируем migration script с retry logic
+COPY scripts/migrate-with-retry.sh ./scripts/
+RUN chmod +x ./scripts/migrate-with-retry.sh
+
 # Создаём непривилегированного пользователя
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs && \
@@ -63,6 +67,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3001}/api/health || exit 1
 
-# Запуск: миграции + сервер
-# Используем @prisma/client CLI через npx с точной версией
-CMD ["sh", "-c", "npx prisma@5.7.1 migrate deploy && node dist/main"]
+# Запуск: миграции с retry logic + сервер
+CMD ["sh", "-c", "npx prisma@5.7.1 migrate deploy --schema=./prisma/schema.prisma && node dist/main"]
+
