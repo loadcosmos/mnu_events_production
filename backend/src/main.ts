@@ -22,9 +22,42 @@ async function bootstrap() {
     // Cookie Parser (required for httpOnly JWT cookies)
     app.use(cookieParser());
 
+    // Environment check
+    const isDevelopment = configService.get('nodeEnv') === 'development';
+
+    // CORS Configuration (MUST be before Helmet to prevent header conflicts)
+    const corsOrigin = configService.get('cors.origin');
+    logger.log(`CORS Origin: ${corsOrigin}`, 'Bootstrap');
+    
+    // Parse CORS origins (support comma-separated string or array)
+    const allowedOrigins = typeof corsOrigin === 'string' 
+      ? corsOrigin.split(',').map(o => o.trim())
+      : Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
+    
+    app.enableCors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (e.g., mobile apps, Postman)
+        if (!origin) return callback(null, true);
+        
+        // Check if origin is in allowed list
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          logger.warn(`Blocked CORS request from origin: ${origin}`, 'CORS');
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-Requested-With'],
+      exposedHeaders: ['set-cookie'],
+      maxAge: 3600, // Cache preflight requests for 1 hour
+    });
+
+    logger.log('CORS configured successfully', 'Bootstrap');
+
     // Security Headers - Helmet middleware
     // Защищает приложение от известных веб-уязвимостей через установку HTTP заголовков
-    const isDevelopment = configService.get('nodeEnv') === 'development';
 
     app.use(helmet({
       // Content Security Policy - защита от XSS и injection атак
@@ -140,35 +173,6 @@ async function bootstrap() {
     expressApp.csrfTokenGenerator = generateCsrfToken;
 
     logger.log('CSRF protection configured', 'Bootstrap');
-
-    // CORS
-    const corsOrigin = configService.get('cors.origin');
-    logger.log(`CORS Origin: ${corsOrigin}`, 'Bootstrap');
-    
-    // Parse CORS origins (support comma-separated string or array)
-    const allowedOrigins = typeof corsOrigin === 'string' 
-      ? corsOrigin.split(',').map(o => o.trim())
-      : Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
-    
-    app.enableCors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (e.g., mobile apps, Postman)
-        if (!origin) return callback(null, true);
-        
-        // Check if origin is in allowed list
-        if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          logger.warn(`Blocked CORS request from origin: ${origin}`, 'CORS');
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'X-Requested-With'],
-      exposedHeaders: ['set-cookie'],
-      maxAge: 3600, // Cache preflight requests for 1 hour
-    });
 
     // Validation pipe
     app.useGlobalPipes(
