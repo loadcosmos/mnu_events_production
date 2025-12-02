@@ -1,0 +1,621 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '../components/ui/button';
+import eventsService from '../services/eventsService';
+import registrationsService from '../services/registrationsService';
+import EventModal from '../components/EventModal';
+import { formatDate } from '../utils/dateFormatters';
+import { COLORS } from '../utils/constants';
+
+export default function HomePage() {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+
+  // Redirect organizers and admins to their pages
+  useEffect(() => {
+    if (isAuthenticated() && user) {
+      if (user.role === 'ORGANIZER') {
+        navigate('/organizer', { replace: true });
+      } else if (user.role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const [trendingEvents, setTrendingEvents] = useState([]);
+  const [myUpcomingEvents, setMyUpcomingEvents] = useState([]);
+  const [recommendedEvents, setRecommendedEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [modalEventId, setModalEventId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openEventModal = (eventId) => {
+    setModalEventId(eventId);
+    setIsModalOpen(true);
+  };
+
+  const closeEventModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setModalEventId(null), 300);
+  };
+
+  // Load events on mount
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  // Auto-advance slides every 5 seconds
+  useEffect(() => {
+    if (trendingEvents.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % trendingEvents.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [trendingEvents.length]);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Load events for next 3 months
+      const today = new Date();
+      const threeMonthsLater = new Date();
+      threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+
+      const response = await eventsService.getAll({
+        page: 1,
+        limit: 100,
+        startDateFrom: today.toISOString().split('T')[0],
+        startDateTo: threeMonthsLater.toISOString().split('T')[0],
+      });
+
+      // Handle different API response formats
+      let eventsData = [];
+      if (response && typeof response === 'object') {
+        if (Array.isArray(response)) {
+          eventsData = response;
+        } else if (Array.isArray(response.data)) {
+          eventsData = response.data;
+        } else if (response.events && Array.isArray(response.events)) {
+          eventsData = response.events;
+        }
+      }
+
+      // Trending Events - Sort by registration count (most popular first)
+      const trendingByPopularity = [...eventsData].sort(
+        (a, b) => {
+          const aCount = a._count?.registrations || 0;
+          const bCount = b._count?.registrations || 0;
+          // If registration counts are equal, sort by date
+          if (bCount === aCount) {
+            return new Date(a.startDate) - new Date(b.startDate);
+          }
+          return bCount - aCount;
+        }
+      );
+
+      // Trending This Week - Top 6 most popular events
+      setTrendingEvents(trendingByPopularity.slice(0, 6));
+
+      // If authenticated, load user's registered events and recommendations
+      if (isAuthenticated() && user) {
+        try {
+          const registrationsResponse = await registrationsService.getMyRegistrations();
+          const registrations = registrationsResponse.data || registrationsResponse || [];
+
+          // Extract upcoming events from registrations
+          const upcomingRegistered = registrations
+            .filter(reg => {
+              const eventDate = new Date(reg.event?.startDate);
+              return eventDate >= today && reg.status === 'REGISTERED';
+            })
+            .map(reg => reg.event)
+            .filter(event => event) // Remove null/undefined
+            .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+            .slice(0, 6);
+
+          setMyUpcomingEvents(upcomingRegistered);
+
+          // If user has no upcoming registrations, show recommendations based on clubs
+          if (upcomingRegistered.length === 0) {
+            // Get events from clubs the user is a member of
+            // For now, show events sorted by date as recommendations
+            // TODO: In the future, fetch user's club memberships and filter events by those clubs
+            const recommendedByDate = [...eventsData]
+              .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+              .slice(0, 6);
+
+            setRecommendedEvents(recommendedByDate);
+          } else {
+            setRecommendedEvents([]);
+          }
+        } catch (err) {
+          console.error('[HomePage] Failed to load registrations:', err);
+          // Don't show error, just don't show the section
+        }
+      }
+    } catch (err) {
+      console.error('[HomePage] Load events failed:', err);
+      const errorMessage =
+        err.response?.data?.message
+          ? Array.isArray(err.response.data.message)
+            ? err.response.data.message.join(', ')
+            : err.response.data.message
+          : err.message || 'Failed to load events';
+      setError(errorMessage);
+      setTrendingEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+      {/* Hero Section - Event Slider */}
+      <section className="relative h-screen -mt-20 pt-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 dark:from-[#0a0a0a] dark:via-[#1a1a1a] dark:to-[#0a0a0a] transition-colors duration-300">
+        {loading ? (
+          // Loading state
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-gray-900 dark:text-white">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#d62e1f] mb-4"></div>
+              <p className="text-xl">Loading events...</p>
+            </div>
+          </div>
+        ) : trendingEvents.length === 0 ? (
+          // Fallback when no events
+          <>
+            <div className="absolute inset-0 bg-[url('/images/backg.jpg')] bg-cover bg-center opacity-20 dark:opacity-20" />
+            <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
+              <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
+                Discover <span className="text-[#d62e1f]">Events</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-600 dark:text-[#a0a0a0] mb-8 max-w-2xl text-center">
+                Join the best university events at MNU
+              </p>
+              <div className="hidden md:flex flex-col sm:flex-row gap-4">
+                <Button
+                  size="lg"
+                  className="bg-[#d62e1f] hover:bg-[#b91c1c] text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg"
+                  asChild
+                >
+                  <Link to="/events">Explore Events</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-gray-300 dark:border-[#2a2a2a] bg-transparent text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg px-8 transition-colors"
+                  asChild
+                >
+                  <Link to="/clubs">View Clubs</Link>
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          // Event Slider
+          <>
+            {trendingEvents.map((event, index) => {
+              const isActive = index === currentSlide;
+              const imageUrl = event.imageUrl || '/images/backg.jpg';
+
+              return (
+                <div
+                  key={event.id}
+                  className={`absolute inset-0 transition-opacity duration-1000 ${
+                    isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
+                >
+                  {/* Background Image with Overlay */}
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${imageUrl})` }}
+                  >
+                    <div className="absolute inset-0 bg-black/70" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
+                    <div className="max-w-4xl text-center space-y-6">
+                      <span className="inline-block bg-[#d62e1f] text-white px-4 py-2 rounded-full text-sm font-bold uppercase">
+                        {event.category}
+                      </span>
+                      <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
+                        {event.title}
+                      </h1>
+                      <p className="text-lg md:text-xl text-[#a0a0a0] max-w-2xl mx-auto line-clamp-2">
+                        {event.description || 'Join us for an amazing event!'}
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-6 text-sm md:text-base text-white">
+                        <div className="flex items-center gap-2">
+                          <i className="fa-regular fa-calendar text-xl" />
+                          <span>{formatDate(event.startDate)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <i className="fa-solid fa-location-dot text-xl" />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
+                      <div className="hidden md:flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                        <button
+                          type="button"
+                          onClick={() => openEventModal(event.id)}
+                          className="px-8 py-4 bg-[#d62e1f] hover:bg-[#b91c1c] text-white rounded-lg font-bold text-base transition-colors"
+                        >
+                          Learn More
+                        </button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="border-2 border-white/20 bg-white/10 text-white hover:bg-white/20 rounded-lg px-8"
+                          asChild
+                        >
+                          <Link to="/events">View All Events</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slide Indicators */}
+                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+                    {trendingEvents.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentSlide(idx)}
+                        className={`h-3 rounded-full transition-all ${
+                          idx === currentSlide
+                            ? 'bg-[#d62e1f] w-8'
+                            : 'bg-white/50 hover:bg-white/75 w-3'
+                        }`}
+                        aria-label={`Go to slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={() =>
+                      setCurrentSlide(
+                        (prev) => (prev - 1 + trendingEvents.length) % trendingEvents.length
+                      )
+                    }
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm"
+                    aria-label="Previous slide"
+                  >
+                    <i className="fa-solid fa-chevron-left text-xl" />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentSlide((prev) => (prev + 1) % trendingEvents.length)
+                    }
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm"
+                    aria-label="Next slide"
+                  >
+                    <i className="fa-solid fa-chevron-right text-xl" />
+                  </button>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </section>
+
+      {/* My Upcoming Events - Horizontal Scroll (Only for authenticated users) */}
+      {isAuthenticated() && myUpcomingEvents.length > 0 && (
+        <section className="py-16 px-4 bg-[#0a0a0a]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                  My <span className="text-[#d62e1f]">Upcoming Events</span>
+                </h2>
+                <p className="text-[#a0a0a0]">Events you're registered for</p>
+              </div>
+              <Link
+                to="/registrations"
+                className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:text-[#ff4433] transition-colors"
+              >
+                View All
+                <i className="fa-solid fa-arrow-right" />
+              </Link>
+            </div>
+
+            {/* Horizontal Scroll Container */}
+            <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+              <div className="flex gap-6 min-w-max">
+                {myUpcomingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="w-80 bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl"
+                    onClick={() => openEventModal(event.id)}
+                  >
+                    {/* Enhanced Image with Gradient */}
+                    <div className="relative">
+                      <img
+                        src={event.imageUrl || '/images/event-placeholder.jpg'}
+                        alt={event.title}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/images/event-placeholder.jpg';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    {/* Enhanced Content */}
+                    <div className="p-5 md:p-6 space-y-3">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="inline-block bg-[#d62e1f] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md">
+                          {event.category}
+                        </span>
+                        <div className="flex items-center gap-2 text-[#a0a0a0]">
+                          <i className="fa-regular fa-calendar text-sm" />
+                          <span className="text-sm font-medium">{formatDate(event.startDate)}</span>
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold text-white line-clamp-2 group-hover:text-[#d62e1f] transition-colors leading-tight">
+                        {event.title}
+                      </h3>
+                      <div className="flex items-center gap-2 text-[#a0a0a0] pt-2 border-t border-[#2a2a2a]">
+                        <i className="fa-solid fa-location-dot text-base text-[#d62e1f]" />
+                        <span className="text-sm font-medium line-clamp-1">{event.location}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile View All Link */}
+            <div className="md:hidden mt-6 text-center">
+              <Link
+                to="/registrations"
+                className="inline-flex items-center gap-2 text-[#d62e1f] font-semibold px-6 py-3 rounded-lg border-2 border-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-all"
+              >
+                View All My Events
+                <i className="fa-solid fa-arrow-right" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recommended For You - Horizontal Scroll (Only for authenticated users with no registrations) */}
+      {isAuthenticated() && myUpcomingEvents.length === 0 && recommendedEvents.length > 0 && (
+        <section className="py-16 px-4 bg-[#0a0a0a]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                  Recommended <span className="text-[#d62e1f]">For You</span>
+                </h2>
+                <p className="text-[#a0a0a0]">Events you might enjoy based on your interests</p>
+              </div>
+              <Link
+                to="/events"
+                className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:text-[#ff4433] transition-colors"
+              >
+                View All
+                <i className="fa-solid fa-arrow-right" />
+              </Link>
+            </div>
+
+            {/* Horizontal Scroll Container */}
+            <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+              <div className="flex gap-6 min-w-max">
+                {recommendedEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="w-80 bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl"
+                    onClick={() => openEventModal(event.id)}
+                  >
+                    {/* Enhanced Image with Gradient */}
+                    <div className="relative">
+                      <img
+                        src={event.imageUrl || '/images/event-placeholder.jpg'}
+                        alt={event.title}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/images/event-placeholder.jpg';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    {/* Enhanced Content */}
+                    <div className="p-4 md:p-5 lg:p-6 space-y-3 overflow-hidden">
+                      {/* Category */}
+                      <div>
+                        <span className="inline-block bg-[#d62e1f] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md">
+                          {event.category}
+                        </span>
+                      </div>
+
+                      {/* Date/Time - Red and Bold */}
+                      <div className="flex items-center gap-2">
+                        <i className="fa-regular fa-calendar text-sm text-[#d62e1f]" />
+                        <span className="text-sm md:text-base font-bold text-[#d62e1f]">{formatDate(event.startDate)}</span>
+                      </div>
+
+                      {/* Title - Large and Bold */}
+                      <h3 className="text-xl md:text-2xl font-bold text-white line-clamp-2 group-hover:text-[#d62e1f] transition-colors leading-tight">
+                        {event.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-[#a0a0a0] text-sm line-clamp-2 leading-relaxed">
+                        {event.description}
+                      </p>
+
+                      {/* Meta Info - Vertical Layout */}
+                      <div className="space-y-2 pt-2 border-t border-[#2a2a2a]">
+                        <div className="flex items-center gap-2 text-[#a0a0a0]">
+                          <i className="fa-solid fa-location-dot text-base text-[#d62e1f] flex-shrink-0" />
+                          <span className="text-sm font-medium line-clamp-1">{event.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[#a0a0a0]">
+                          <i className="fa-solid fa-users text-base text-[#d62e1f] flex-shrink-0" />
+                          <span className="text-sm font-semibold">
+                            {event._count?.registrations || 0} / {event.capacity}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile View All Link */}
+            <div className="md:hidden mt-6 text-center">
+              <Link
+                to="/events"
+                className="inline-flex items-center gap-2 text-[#d62e1f] font-semibold px-6 py-3 rounded-lg border-2 border-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-all"
+              >
+                View All Events
+                <i className="fa-solid fa-arrow-right" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Trending This Week - Horizontal Scroll */}
+      <section className="py-16 px-4 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                Trending <span className="text-[#d62e1f]">This Week</span>
+              </h2>
+              <p className="text-[#a0a0a0]">Most popular events by registrations</p>
+            </div>
+            <Link
+              to="/events"
+              className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:text-[#ff4433] transition-colors"
+            >
+              View All
+              <i className="fa-solid fa-arrow-right" />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#2a2a2a] border-t-[#d62e1f]"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20 bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a]">
+              <i className="fa-solid fa-exclamation-circle text-4xl text-[#d62e1f] mb-4"></i>
+              <p className="text-white font-semibold mb-2">Failed to load events</p>
+              <p className="text-sm text-[#a0a0a0]">{error}</p>
+            </div>
+          ) : trendingEvents.length === 0 ? (
+            <div className="text-center py-20 bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a]">
+              <i className="fa-regular fa-calendar-xmark text-4xl text-[#666666] mb-4"></i>
+              <p className="text-white font-semibold mb-2">No upcoming events</p>
+              <p className="text-sm text-[#a0a0a0]">Check back later for new events!</p>
+            </div>
+          ) : (
+            <>
+              {/* Horizontal Scroll Container */}
+              <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                <div className="flex gap-6 min-w-max">
+                  {trendingEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="w-80 bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl"
+                      onClick={() => openEventModal(event.id)}
+                    >
+                      {/* Enhanced Image with Gradient */}
+                      <div className="relative">
+                        <img
+                          src={event.imageUrl || '/images/event-placeholder.jpg'}
+                          alt={event.title}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = '/images/event-placeholder.jpg';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      {/* Enhanced Content */}
+                      <div className="p-4 md:p-5 lg:p-6 space-y-3 overflow-hidden">
+                        {/* Category */}
+                        <div>
+                          <span className="inline-block bg-[#d62e1f] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md">
+                            {event.category}
+                          </span>
+                        </div>
+
+                        {/* Date/Time - Red and Bold */}
+                        <div className="flex items-center gap-2">
+                          <i className="fa-regular fa-calendar text-sm text-[#d62e1f]" />
+                          <span className="text-sm md:text-base font-bold text-[#d62e1f]">{formatDate(event.startDate)}</span>
+                        </div>
+
+                        {/* Title - Large and Bold */}
+                        <h3 className="text-xl md:text-2xl font-bold text-white line-clamp-2 group-hover:text-[#d62e1f] transition-colors leading-tight">
+                          {event.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-[#a0a0a0] text-sm line-clamp-2 leading-relaxed">
+                          {event.description}
+                        </p>
+
+                        {/* Meta Info - Vertical Layout */}
+                        <div className="space-y-2 pt-2 border-t border-[#2a2a2a]">
+                          <div className="flex items-center gap-2 text-[#a0a0a0]">
+                            <i className="fa-solid fa-location-dot text-base text-[#d62e1f] flex-shrink-0" />
+                            <span className="text-sm font-medium line-clamp-1">{event.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[#a0a0a0]">
+                            <i className="fa-solid fa-users text-base text-[#d62e1f] flex-shrink-0" />
+                            <span className="text-sm font-semibold">
+                              {event._count?.registrations || 0} / {event.capacity}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile View All Link */}
+              <div className="md:hidden mt-6 text-center">
+                <Link
+                  to="/events"
+                  className="inline-flex items-center gap-2 text-[#d62e1f] font-semibold px-6 py-3 rounded-lg border-2 border-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-all"
+                >
+                  View All Events
+                  <i className="fa-solid fa-arrow-right" />
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Event Modal */}
+      <EventModal eventId={modalEventId} isOpen={isModalOpen} onClose={closeEventModal} />
+
+      {/* Custom Scrollbar Hide Style */}
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+    </div>
+  );
+}

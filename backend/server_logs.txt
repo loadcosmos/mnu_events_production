@@ -1,0 +1,3 @@
+
+ Error  EACCES: permission denied, rmdir '/home/loadcosmos/mnu_events/backend/dist/analytics'
+

@@ -1,0 +1,604 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  avatar    String?
+  faculty   String?
+  role      Role     @default(STUDENT)
+
+  // Email verification
+  emailVerified Boolean @default(false)
+  verificationCode String?
+  verificationCodeExpiry DateTime?
+  lastCodeSentAt DateTime?  // Для защиты от спама - 5 минут между отправками
+
+  // Gamification
+  points Int      @default(0)
+  level  UserLevel @default(NEWCOMER)
+
+  // Relations
+  createdEvents    Event[]        @relation("EventCreator")
+  registrations    Registration[]
+  clubMemberships  ClubMembership[]
+  organizedClubs   Club[]         @relation("ClubOrganizer")
+  tickets          Ticket[]
+  checkIns         CheckIn[]
+  services         Service[]
+  moderatedItems   ModerationQueue[]
+  subscriptions    Subscription[]
+  achievements     Achievement[]
+  advertisements   Advertisement[] @relation("AdvertiserAds")
+  externalPartner  ExternalPartner?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([verificationCode]) // For email verification lookups
+  @@index([role]) // For filtering by role
+  @@index([points]) // For leaderboard
+  @@index([level]) // For filtering by level
+  @@map("users")
+}
+
+enum Role {
+  STUDENT
+  ORGANIZER
+  MODERATOR
+  ADMIN
+  EXTERNAL_PARTNER
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  category    Category
+  csiTags     CsiCategory[]
+  location    String
+  startDate   DateTime
+  endDate     DateTime
+  capacity    Int
+  imageUrl    String?
+  status      EventStatus @default(UPCOMING)
+
+  // Payment fields
+  isPaid      Boolean  @default(false)
+  price       Decimal? @db.Decimal(10, 2)
+  platformFee Decimal? @db.Decimal(10, 2)
+
+  // External partner fields
+  isExternalEvent   Boolean @default(false)
+  externalPartnerId String?
+  externalPartner   ExternalPartner? @relation(fields: [externalPartnerId], references: [id], onDelete: SetNull)
+
+  // QR Check-in fields
+  checkInMode  CheckInMode @default(ORGANIZER_SCANS)
+  eventQRCode  String?  @db.Text  // For STUDENTS_SCAN mode
+  qrCodeExpiry DateTime?
+
+  // Creator relation
+  creatorId   String
+  creator     User     @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Relations
+  registrations Registration[]
+  tickets       Ticket[]
+  checkIns      CheckIn[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([creatorId])
+  @@index([category])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate]) // For filtering past events
+  @@index([category, status]) // Composite index for common filter combinations
+  @@index([isPaid]) // For filtering paid events
+  @@index([externalPartnerId]) // For filtering partner events
+  @@index([isExternalEvent]) // For separating external vs internal events
+  @@map("events")
+}
+
+enum Category {
+  ACADEMIC
+  SPORTS
+  CULTURAL
+  TECH
+  SOCIAL
+  CAREER
+  OTHER
+}
+
+enum CsiCategory {
+  CREATIVITY
+  SERVICE
+  INTELLIGENCE
+}
+
+enum EventStatus {
+  PENDING_MODERATION  // Waiting for moderator approval
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Registration {
+  id         String   @id @default(uuid())
+  userId     String
+  eventId    String
+  status     RegistrationStatus @default(REGISTERED)
+  checkedIn  Boolean  @default(false)
+  checkedInAt DateTime?
+  qrCode     String?  @db.Text // QR code for check-in (for free events)
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@index([status]) // For statistics queries
+  @@index([checkedIn]) // For check-in statistics
+  @@index([eventId, status]) // Composite index for event registration queries
+  @@map("registrations")
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  WAITLIST
+  CANCELLED
+}
+
+model Club {
+  id            String   @id @default(uuid())
+  name          String
+  description   String   @db.Text
+  category      ClubCategory
+  csiCategories String[] @default([])
+  imageUrl      String?
+
+  // Organizer relation
+  organizerId String
+  organizer   User     @relation("ClubOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+
+  // Members
+  members     ClubMembership[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([organizerId])
+  @@index([category])
+  @@map("clubs")
+}
+
+enum ClubCategory {
+  ACADEMIC
+  ARTS
+  SERVICE
+  TECH
+  SPORTS
+  CULTURAL
+  OTHER
+}
+
+model ClubMembership {
+  id        String   @id @default(uuid())
+  userId    String
+  clubId    String
+  role      ClubMemberRole @default(MEMBER)
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  
+  joinedAt  DateTime @default(now())
+
+  @@unique([userId, clubId])
+  @@index([userId])
+  @@index([clubId])
+  @@index([role]) // For filtering by member role
+  @@map("club_memberships")
+}
+
+enum ClubMemberRole {
+  MEMBER
+  ADMIN
+}
+
+// ============================================
+// MONETIZATION & MARKETPLACE MODELS
+// ============================================
+
+model Ticket {
+  id            String        @id @default(uuid())
+  eventId       String
+  userId        String
+  price         Decimal       @db.Decimal(10, 2)
+  platformFee   Decimal       @db.Decimal(10, 2)
+
+  // Commission tracking (for external partners)
+  commissionRate   Decimal? @db.Decimal(5, 4) // e.g., 0.10 = 10%
+  commissionAmount Decimal? @db.Decimal(10, 2) // Calculated commission
+  partnerAmount    Decimal? @db.Decimal(10, 2) // Amount partner receives
+  ticketCode       String?  @unique // TICKET-XXXXX for Kaspi comment
+
+  // Commission payment by partner
+  commissionPaidByPartner Boolean @default(false)
+  commissionPaidAt        DateTime?
+
+  status        TicketStatus  @default(PENDING)
+  paymentMethod String?       // 'mock', 'kaspi', 'card'
+  transactionId String?       @unique
+  qrCode        String?       @db.Text // Base64 QR code
+  purchasedAt   DateTime      @default(now())
+  checkedInAt   DateTime?
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentVerification PaymentVerification?
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+  @@index([ticketCode])
+  @@index([commissionPaidByPartner])
+  @@map("tickets")
+}
+
+enum TicketStatus {
+  PENDING
+  PAID
+  REFUNDED
+  USED
+  EXPIRED
+}
+
+enum CheckInMode {
+  ORGANIZER_SCANS  // Платные события - организатор сканирует билеты
+  STUDENTS_SCAN    // Бесплатные лекции - студенты сканируют QR события
+}
+
+model CheckIn {
+  id          String      @id @default(uuid())
+  eventId     String
+  userId      String
+  scanMode    CheckInMode
+  checkedInAt DateTime    @default(now())
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([scanMode])
+  @@map("checkins")
+}
+
+model Service {
+  id          String          @id @default(uuid())
+  providerId  String
+  type        ServiceType
+  title       String
+  description String          @db.Text
+  category    ServiceCategory
+  price       Decimal         @db.Decimal(10, 2)
+  priceType   PriceType       @default(HOURLY)
+  imageUrl    String?
+  rating      Decimal?        @db.Decimal(3, 2)
+  reviewCount Int             @default(0)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relations
+  provider User @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([type])
+  @@index([category])
+  @@index([isActive])
+  @@index([rating])
+  @@map("services")
+}
+
+enum ServiceType {
+  GENERAL     // Общие услуги
+  TUTORING    // Репетиторство
+}
+
+enum ServiceCategory {
+  // For general services
+  DESIGN
+  PHOTO_VIDEO
+  IT
+  COPYWRITING
+  CONSULTING
+  OTHER
+
+  // For tutoring
+  MATH
+  ENGLISH
+  PROGRAMMING
+  PHYSICS
+  CHEMISTRY
+  BIOLOGY
+  ECONOMICS
+  LAW
+}
+
+enum PriceType {
+  HOURLY      // За час
+  FIXED       // Фиксированная цена
+  PER_SESSION // За занятие
+}
+
+model Advertisement {
+  id            String        @id @default(uuid())
+  title         String
+  imageUrl      String
+  linkUrl       String?
+  position      AdPosition
+  price         Decimal       @db.Decimal(10, 2) @default(10000.00)
+  duration      Int           @default(4) // weeks
+  paymentStatus PaymentStatus @default(PENDING)
+  isActive      Boolean       @default(false) // Active only after payment
+  startDate     DateTime
+  endDate       DateTime
+  impressions   Int           @default(0)
+  clicks        Int           @default(0)
+
+  // External partner fields
+  advertiserId      String? // User ID with EXTERNAL_PARTNER role
+  advertiser        User?   @relation("AdvertiserAds", fields: [advertiserId], references: [id], onDelete: SetNull)
+  commissionRate    Decimal? @db.Decimal(5, 4) // Commission rate if partner ad
+  commissionAmount  Decimal? @db.Decimal(10, 2) // Commission amount
+  commissionPaid    Boolean  @default(false)
+  commissionPaidAt  DateTime?
+
+  createdAt     DateTime      @default(now())
+
+  @@index([position])
+  @@index([isActive])
+  @@index([paymentStatus])
+  @@index([startDate, endDate])
+  @@index([advertiserId])
+  @@index([commissionPaid])
+  @@map("advertisements")
+}
+
+enum AdPosition {
+  TOP_BANNER       // 10,000 тг/неделя
+  HERO_SLIDE       // Legacy - keep for existing data
+  NATIVE_FEED      // 8,000 тг/неделя
+  STORY_BANNER     // 15,000 тг/неделя (new)
+  BOTTOM_BANNER    // Legacy - keep for existing data
+  SIDEBAR          // Desktop only
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  EXPIRED
+}
+
+model ModerationQueue {
+  id          String          @id @default(uuid())
+  itemType    ModerationType
+  itemId      String
+  status      ModerationStatus @default(PENDING)
+  moderatorId String?
+  moderator   User?           @relation(fields: [moderatorId], references: [id])
+  rejectionReason String?     @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([status])
+  @@index([itemType])
+  @@index([moderatorId])
+  @@map("moderation_queue")
+}
+
+enum ModerationType {
+  SERVICE
+  EVENT
+  ADVERTISEMENT
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ============================================
+// PRICING & SUBSCRIPTION MODELS
+// ============================================
+
+model EventPricing {
+  id           String   @id @default(uuid())
+  basePrice    Decimal  @db.Decimal(10, 2) @default(5000.00)
+  premiumPrice Decimal  @db.Decimal(10, 2) @default(10000.00)
+  packagePrice Decimal  @db.Decimal(10, 2) @default(20000.00) // 5 events
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("event_pricing")
+}
+
+model PaymentVerification {
+  id              String             @id @default(uuid())
+  ticketId        String             @unique
+  ticket          Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  receiptImageUrl String             // S3/Cloudinary URL
+  status          VerificationStatus @default(PENDING)
+  organizerNotes  String?            @db.Text
+  verifiedAt      DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([status])
+  @@index([ticketId])
+  @@map("payment_verifications")
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Subscription {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      SubscriptionType
+  price     Decimal          @db.Decimal(10, 2)
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([userId, isActive]) // Composite index for active subscription check
+  @@map("subscriptions")
+}
+
+enum SubscriptionType {
+  PREMIUM  // 500 тг/месяц - 10 service listings
+}
+
+model ExternalPartner {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Company information
+  companyName   String
+  bin           String   // БИН (Business Identification Number)
+  contactPerson String
+  phone         String
+  email         String
+  whatsapp      String
+
+  // Kaspi payment details (for receiving payments from students)
+  kaspiPhone String
+  kaspiName  String
+
+  // Subscription & limits
+  hasPremiumSubscription Boolean   @default(false)
+  subscriptionExpiresAt  DateTime?
+  paidEventSlots         Int       @default(0) // Number of additional paid event slots (3,000₸ each)
+
+  // Commission
+  commissionRate Decimal @db.Decimal(5, 4) @default(0.10) // 0.10 = 10% (can be overridden by admin)
+  commissionDebt Decimal @db.Decimal(10, 2) @default(0.00) // Accumulated unpaid commission
+
+  // Statistics
+  totalEventsCreated  Int     @default(0)
+  totalTicketsSold    Int     @default(0)
+  totalRevenue        Decimal @db.Decimal(10, 2) @default(0.00)
+  totalCommissionPaid Decimal @db.Decimal(10, 2) @default(0.00)
+
+  // Verification
+  isVerified Boolean   @default(true) // Set to true when admin creates partner
+  verifiedAt DateTime?
+
+  // Relations
+  events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isVerified])
+  @@index([hasPremiumSubscription])
+  @@map("external_partners")
+}
+
+model PlatformSettings {
+  id String @id @default(uuid())
+
+  // Commission rates (changeable by admin)
+  defaultCommissionRate Decimal @db.Decimal(5, 4) @default(0.10) // 10%
+  premiumCommissionRate Decimal @db.Decimal(5, 4) @default(0.07) // 7%
+
+  // Pricing
+  additionalEventPrice       Decimal @db.Decimal(10, 2) @default(3000.00)  // 3,000₸ per additional event
+  premiumSubscriptionPrice   Decimal @db.Decimal(10, 2) @default(15000.00) // 15,000₸/month
+
+  // Advertisement pricing (per week)
+  topBannerPricePerWeek   Decimal @db.Decimal(10, 2) @default(15000.00) // 15,000₸
+  nativeFeedPricePerWeek  Decimal @db.Decimal(10, 2) @default(8000.00)  // 8,000₸
+  sidebarPricePerWeek     Decimal @db.Decimal(10, 2) @default(5000.00)  // 5,000₸
+
+  // Platform Kaspi details (for receiving payments)
+  platformKaspiPhone String? // Kaspi number for platform payments
+  platformKaspiName  String? // Full name for Kaspi transfers
+
+  // Audit
+  updatedBy String? // Admin user ID who last updated settings
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("platform_settings")
+}
+
+// ============================================
+// GAMIFICATION MODELS
+// ============================================
+
+enum UserLevel {
+  NEWCOMER  // 0-100 points
+  ACTIVE    // 100-500 points
+  LEADER    // 500-1000 points
+  LEGEND    // 1000+ points
+}
+
+enum AchievementType {
+  ATTENDANCE     // First event, multiple events
+  CATEGORY       // 10 cultural, 10 sports, etc.
+  REGULARITY     // Weekly, monthly streaks
+  SOCIAL         // Club participation
+}
+
+model Achievement {
+  id          String          @id @default(uuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        AchievementType
+  name        String          // e.g., "First Event", "Cultural Expert"
+  description String          // e.g., "Attended first event"
+  points      Int             // Points earned for this achievement
+  earnedAt    DateTime        @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@map("achievements")
+}
