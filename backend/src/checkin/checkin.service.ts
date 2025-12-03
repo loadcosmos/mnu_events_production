@@ -371,19 +371,43 @@ export class CheckinService {
       this.logger.log('Location check:', dto.location);
     }
 
-    // 9. Create check-in record
-    const checkIn = await this.prisma.checkIn.create({
-      data: {
+    // 9. Find registration for this student (if exists)
+    const registration = await this.prisma.registration.findFirst({
+      where: {
         eventId: event.id,
         userId: userId,
-        scanMode: 'STUDENTS_SCAN',
+        status: 'REGISTERED',
       },
     });
 
+    // 10. Create check-in record AND update registration in transaction
+    const [checkIn] = await this.prisma.$transaction([
+      this.prisma.checkIn.create({
+        data: {
+          eventId: event.id,
+          userId: userId,
+          scanMode: 'STUDENTS_SCAN',
+        },
+      }),
+      // Update registration if it exists
+      ...(registration ? [
+        this.prisma.registration.update({
+          where: { id: registration.id },
+          data: {
+            checkedIn: true,
+            checkedInAt: new Date(),
+          },
+        })
+      ] : []),
+    ]);
+
     // Award points for check-in and get points earned
     let pointsEarned = 0;
+    let userStats = null;
     try {
       pointsEarned = await this.gamificationService.onEventCheckIn(userId, event.id);
+      // Get updated user stats for success page
+      userStats = await this.gamificationService.getUserStats(userId);
     } catch (err) {
       this.logger.error('Gamification error:', err);
     }
@@ -394,6 +418,8 @@ export class CheckinService {
       success: true,
       message: 'Check-in successful',
       pointsEarned,
+      totalPoints: userStats?.points || pointsEarned,
+      level: userStats?.level || 'NEWCOMER',
       checkIn: {
         id: checkIn.id,
         eventId: checkIn.eventId,

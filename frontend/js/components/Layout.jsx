@@ -46,7 +46,7 @@ export default function Layout({ children }) {
   useEffect(() => {
     if (isAuthenticated() && user) {
       // Разрешаем организаторам просматривать детали событий
-      const allowedPaths = ['/events/', '/clubs/', '/profile'];
+      const allowedPaths = ['/', '/events/', '/clubs/', '/profile'];
       const isAllowedPath = allowedPaths.some(path => location.pathname.startsWith(path));
 
       if (user.role === 'ORGANIZER' && !isAllowedPath && location.pathname !== '/organizer' && !location.pathname.startsWith('/organizer')) {

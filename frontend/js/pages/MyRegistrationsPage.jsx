@@ -503,9 +503,10 @@ export default function MyRegistrationsPage() {
                             </div>
                           )}
 
-                        {/* Info for STUDENTS_SCAN mode (internal free events) */}
+                        {/* Info for STUDENTS_SCAN mode (internal free events) - NOT checked in */}
                         {registration.status === 'REGISTERED' &&
-                          event.checkInMode === 'STUDENTS_SCAN' && (
+                          event.checkInMode === 'STUDENTS_SCAN' &&
+                          !isCheckedIn && (
                             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900/50">
                               <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
@@ -526,6 +527,21 @@ export default function MyRegistrationsPage() {
                                 <i className="fa-solid fa-camera" />
                                 Сканировать QR-код
                               </button>
+                            </div>
+                          )}
+
+                        {/* Info for STUDENTS_SCAN mode - ALREADY checked in */}
+                        {registration.status === 'REGISTERED' &&
+                          event.checkInMode === 'STUDENTS_SCAN' &&
+                          isCheckedIn && (
+                            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-900/50">
+                              <p className="text-sm font-medium text-green-900 dark:text-green-100 flex items-center">
+                                <i className="fa-solid fa-check-circle mr-2" />
+                                Вы уже зарегистрированы на этом мероприятии
+                              </p>
+                              <p className="text-xs text-green-800 dark:text-green-400 mt-1">
+                                Check-in выполнен {new Date(registration.checkedInAt).toLocaleString('ru-RU')}
+                              </p>
                             </div>
                           )}
 
