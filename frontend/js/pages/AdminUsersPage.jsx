@@ -95,6 +95,21 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleVerifyEmail = async (userId, userEmail) => {
+    if (!confirm(`Manually verify email for "${userEmail}"?`)) {
+      return;
+    }
+
+    try {
+      await usersService.verifyEmail(userId);
+      toast.success('Email verified successfully');
+      loadUsers();
+    } catch (err) {
+      console.error('[AdminUsers] Verify email failed:', err);
+      toast.error(err.message || 'Failed to verify email');
+    }
+  };
+
   const getRoleColor = (role) => {
     const colors = {
       STUDENT: 'bg-blue-100 text-blue-800',
@@ -232,6 +247,16 @@ export default function AdminUsersPage() {
                       </option>
                     ))}
                   </select>
+                  {!user.emailVerified && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleVerifyEmail(user.id, user.email)}
+                      className="rounded-xl bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Verify Email
+                    </Button>
+                  )}
                   <Button
                     variant="destructive"
                     size="sm"

@@ -90,6 +90,21 @@ const usersService = {
       throw error;
     }
   },
+
+  /**
+   * Верифицировать email пользователя вручную (только для админов)
+   * @param {string} id - ID пользователя
+   * @returns {Promise<Object>} - результат верификации
+   */
+  async verifyEmail(id) {
+    try {
+      const response = await api.patch(`/users/${id}/verify-email`);
+      return response;
+    } catch (error) {
+      console.error('[UsersService] Verify email failed:', error);
+      throw error;
+    }
+  },
 };
 
 export default usersService;
