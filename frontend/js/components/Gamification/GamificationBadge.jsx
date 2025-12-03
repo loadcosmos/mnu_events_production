@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import gamificationService from '../../services/gamificationService';
 
 /**
@@ -39,13 +38,6 @@ const GamificationBadge = ({ level, points, size = 'medium', showPoints = true }
             )}
         </div>
     );
-};
-
-GamificationBadge.propTypes = {
-    level: PropTypes.oneOf(['NEWCOMER', 'ACTIVE', 'LEADER', 'LEGEND']).isRequired,
-    points: PropTypes.number.isRequired,
-    size: PropTypes.oneOf(['small', 'medium', 'large']),
-    showPoints: PropTypes.bool,
 };
 
 export default GamificationBadge;
