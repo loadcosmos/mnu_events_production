@@ -100,6 +100,15 @@ export class UsersController {
     return this.usersService.verifyUserEmail(id);
   }
 
+  @Patch('verify-all/emails')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Verify ALL unverified user emails (Admin only)' })
+  @ApiResponse({ status: 200, description: 'All emails verified successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
+  verifyAllUnverifiedEmails() {
+    return this.usersService.verifyAllUnverifiedEmails();
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user (Admin or own account)' })
   @ApiResponse({ status: 200, description: 'User deleted' })

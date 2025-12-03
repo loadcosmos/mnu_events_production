@@ -216,6 +216,33 @@ export class UsersService {
     };
   }
 
+  async verifyAllUnverifiedEmails() {
+    const unverifiedCount = await this.prisma.user.count({
+      where: { emailVerified: false },
+    });
+
+    if (unverifiedCount === 0) {
+      return {
+        message: 'No unverified users found',
+        verifiedCount: 0,
+      };
+    }
+
+    const result = await this.prisma.user.updateMany({
+      where: { emailVerified: false },
+      data: {
+        emailVerified: true,
+        verificationCode: null,
+        verificationCodeExpiry: null,
+      },
+    });
+
+    return {
+      message: `Successfully verified ${result.count} user(s)`,
+      verifiedCount: result.count,
+    };
+  }
+
   async remove(id: string, currentUserId: string, currentUserRole: Role) {
     // Only admin can delete users, or users can delete themselves
     if (currentUserRole !== Role.ADMIN && id !== currentUserId) {
