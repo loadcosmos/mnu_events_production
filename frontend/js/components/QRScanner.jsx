@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { X, Camera } from 'lucide-react';
 
 /**
@@ -10,8 +10,7 @@ import { X, Camera } from 'lucide-react';
  * @param {Function} onClose - Callback to close the scanner
  */
 export default function QRScanner({ onScanSuccess, onClose }) {
-  const scannerRef = useRef(null);
-  const html5QrCodeScannerRef = useRef(null);
+  const html5QrCodeRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState(null);
   const [cameraStarted, setCameraStarted] = useState(false);
@@ -20,7 +19,7 @@ export default function QRScanner({ onScanSuccess, onClose }) {
     // Only initialize scanner when user explicitly starts camera
     if (!cameraStarted) return;
 
-    let scanner = null;
+    let html5QrCode = null;
 
     const initScanner = async () => {
       try {
@@ -35,32 +34,14 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           throw new Error('MEDIA_DEVICES_NOT_SUPPORTED');
         }
 
-        // Initialize html5-qrcode scanner directly
-        // Let it handle camera permission internally
-        scanner = new Html5QrcodeScanner(
-          'qr-reader',
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
-            showTorchButtonIfSupported: true,
-            rememberLastUsedCamera: true,
-            // Force camera constraints
-            videoConstraints: {
-              facingMode: 'environment' // prefer back camera on mobile
-            }
-          },
-          /* verbose= */ true // Enable verbose logging for debugging
-        );
-
-        html5QrCodeScannerRef.current = scanner;
+        // Create Html5Qrcode instance
+        html5QrCode = new Html5Qrcode('qr-reader');
+        html5QrCodeRef.current = html5QrCode;
 
         const onScanSuccessHandler = (decodedText, decodedResult) => {
           console.log('QR Code scanned:', decodedText);
-          if (html5QrCodeScannerRef.current) {
-            html5QrCodeScannerRef.current.clear().catch(console.error);
-          }
-          setIsScanning(false);
+          // Stop camera and close
+          stopCamera();
           onScanSuccess(decodedText, decodedResult);
         };
 
@@ -68,14 +49,27 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           // Ignore frequent scanning errors (camera still searching)
           if (errorMessage.includes('No MultiFormat Readers')) return;
           if (errorMessage.includes('QR code parse error')) return;
+          if (errorMessage.includes('NotFoundException')) return;
           console.debug('QR Scan error:', errorMessage);
         };
 
-        console.log('Rendering scanner...');
-        scanner.render(onScanSuccessHandler, onScanErrorHandler);
+        console.log('Starting camera...');
+
+        // Start camera with back camera preference on mobile
+        await html5QrCode.start(
+          { facingMode: 'environment' }, // Prefer back camera
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+          },
+          onScanSuccessHandler,
+          onScanErrorHandler
+        );
+
         setIsScanning(true);
         setError(null);
-        console.log('Scanner initialized successfully');
+        console.log('Camera started successfully');
       } catch (err) {
         console.error('Camera initialization failed:', err);
         console.error('Error details:', {
@@ -96,7 +90,7 @@ export default function QRScanner({ onScanSuccess, onClose }) {
 - Secure Context: ${window.isSecureContext}
 - URL: ${window.location.href}
 
-Для работы камеры необходим безопасный контекст (HTTPS или localhost).`;
+Для работы камеры необходим безопасный контекст(HTTPS или localhost).`;
         } else if (err.name === 'NotAllowedError') {
           errorMessage = 'Доступ к камере запрещен. Разрешите доступ в настройках браузера.';
         } else if (err.name === 'NotFoundError') {
@@ -105,24 +99,35 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           errorMessage = 'Камера используется другим приложением. Закройте другие приложения, использующие камеру.';
         } else if (err.name === 'SecurityError') {
           errorMessage = 'Ошибка безопасности: камера недоступна в небезопасном контексте.';
-          debugInfo = `\n\nДля доступа к камере сайт должен работать через HTTPS или localhost.\nТекущий URL: ${window.location.href}`;
+          debugInfo = `\n\nДля доступа к камере сайт должен работать через HTTPS или localhost.\nТекущий URL: ${window.location.href} `;
         }
 
         setError(errorMessage + debugInfo);
+        setCameraStarted(false); // Reset to show button again
       }
     };
 
     initScanner();
 
     return () => {
-      if (html5QrCodeScannerRef.current) {
-        html5QrCodeScannerRef.current.clear().catch((err) => {
-          console.error('Failed to clear scanner:', err);
-        });
-        html5QrCodeScannerRef.current = null;
-      }
+      stopCamera();
     };
   }, [cameraStarted, onScanSuccess]);
+
+  const stopCamera = async () => {
+    if (html5QrCodeRef.current) {
+      try {
+        const isScanning = html5QrCodeRef.current.getState() === 2; // SCANNING state
+        if (isScanning) {
+          await html5QrCodeRef.current.stop();
+        }
+        await html5QrCodeRef.current.clear();
+      } catch (err) {
+        console.error('Failed to stop camera:', err);
+      }
+      html5QrCodeRef.current = null;
+    }
+  };
 
   const handleStartCamera = () => {
     setError(null);
@@ -185,7 +190,6 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           {/* Camera View */}
           <div
             id="qr-reader"
-            ref={scannerRef}
             className="rounded-xl overflow-hidden shadow-xl border-4 border-gray-200 dark:border-[#2a2a2a] bg-black min-h-[300px]"
             style={{ display: cameraStarted ? 'block' : 'none' }}
           />
