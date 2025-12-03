@@ -301,12 +301,31 @@ export class CheckinService {
       throw new NotFoundException('Event not found');
     }
 
-    // 4. Verify QR code hasn't expired
+    // 4. Verify event time window (can check-in 30 minutes before start until end)
+    const now = new Date();
+    const eventStart = new Date(event.startDate);
+    const eventEnd = new Date(event.endDate);
+    const EARLY_CHECKIN_MINUTES = 30;
+
+    const earliestCheckIn = new Date(eventStart.getTime() - EARLY_CHECKIN_MINUTES * 60 * 1000);
+
+    if (now < earliestCheckIn) {
+      const minutesUntilStart = Math.ceil((earliestCheckIn.getTime() - now.getTime()) / (60 * 1000));
+      throw new BadRequestException(
+        `Check-in not available yet. You can check in ${minutesUntilStart} minutes before the event starts.`
+      );
+    }
+
+    if (now > eventEnd) {
+      throw new BadRequestException('Check-in is no longer available. Event has ended.');
+    }
+
+    // 5. Verify QR code hasn't expired
     if (event.qrCodeExpiry && new Date() > event.qrCodeExpiry) {
       throw new BadRequestException('QR code has expired');
     }
 
-    // 5. Check for duplicate check-in
+    // 6. Check for duplicate check-in
     const existingCheckIn = await this.prisma.checkIn.findUnique({
       where: {
         eventId_userId: {
@@ -320,7 +339,7 @@ export class CheckinService {
       throw new ConflictException('You have already checked in to this event');
     }
 
-    // 6. SECURITY FIX: Redis-based rate limiting (works across multiple instances)
+    // 7. SECURITY FIX: Redis-based rate limiting (works across multiple instances)
     // Max 1 scan per 5 seconds per user per event
     const rateLimitKey = `checkin:ratelimit:${userId}:${event.id}`;
     const RATE_LIMIT_WINDOW = 5; // 5 seconds
@@ -346,13 +365,13 @@ export class CheckinService {
       RATE_LIMIT_WINDOW * 1000, // TTL in milliseconds
     );
 
-    // 7. Geolocation validation removed (not in MVP scope)
+    // 8. Geolocation validation removed (not in MVP scope)
     // Location data is logged for future proximity check implementation
     if (dto.location) {
       this.logger.log('Location check:', dto.location);
     }
 
-    // 8. Create check-in record
+    // 9. Create check-in record
     const checkIn = await this.prisma.checkIn.create({
       data: {
         eventId: event.id,
