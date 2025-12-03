@@ -9,8 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtBlacklistService } from './jwt-blacklist.service';
+import { EmailService } from '../common/services/email.service';
 import * as bcrypt from 'bcryptjs';
-import * as nodemailer from 'nodemailer';
 import * as crypto from 'crypto'; // SECURITY FIX: Import full crypto module for timingSafeEqual
 import { Response, Request } from 'express';
 import { RegisterDto, VerifyEmailDto } from './dto/register.dto';
@@ -19,94 +19,15 @@ import { LoginDto } from './dto/login.dto';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private transporter: nodemailer.Transporter | null = null;
-  private isEmailConfigured: boolean = false;
 
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private jwtBlacklistService: JwtBlacklistService,
+    private emailService: EmailService,
   ) {
-    // Setup email transporter with validation (async, but don't block constructor)
-    this.initializeEmailTransporter().catch((error) => {
-      this.logger.error('Failed to initialize email transporter:', error);
-    });
-  }
-
-  private async initializeEmailTransporter() {
-    const smtpHost = this.configService.get('email.smtp.host');
-    const smtpPort = this.configService.get('email.smtp.port');
-    const smtpUser = this.configService.get('email.smtp.user');
-    const smtpPassword = this.configService.get('email.smtp.password');
-    const emailFrom = this.configService.get('email.from');
-
-    this.logger.log('Initializing email transporter...');
-    this.logger.log(`SMTP Host: ${smtpHost || 'NOT SET'}`);
-    this.logger.log(`SMTP Port: ${smtpPort || 'NOT SET'}`);
-    this.logger.log(`SMTP User: ${smtpUser ? `${smtpUser.substring(0, 3)}***` : 'NOT SET'}`);
-    this.logger.log(`SMTP Password: ${smtpPassword ? '***SET***' : 'NOT SET'}`);
-    this.logger.log(`Email From: ${emailFrom || 'NOT SET'}`);
-
-    // Check if SMTP is configured
-    if (!smtpHost || !smtpUser || !smtpPassword) {
-      this.logger.warn('❌ SMTP not configured. Email verification will not work.');
-      this.logger.warn('Required: SMTP_HOST, SMTP_USER, SMTP_PASSWORD');
-      this.isEmailConfigured = false;
-      this.transporter = null;
-      return;
-    }
-
-    try {
-      // Create transporter
-      this.transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort || 587,
-        secure: smtpPort === 465, // true for 465, false for other ports
-        auth: {
-          user: smtpUser,
-          pass: smtpPassword,
-        },
-        // Additional options for better compatibility
-        tls: {
-          // Only disable certificate validation in development
-          // WARNING: Never use rejectUnauthorized: false in production!
-          rejectUnauthorized: process.env.NODE_ENV !== 'development',
-        },
-      });
-
-      this.logger.log('Transporter created, verifying connection...');
-
-      // Verify connection (async, but we'll wait for it)
-      try {
-        await new Promise<void>((resolve, reject) => {
-          this.transporter!.verify((error, success) => {
-            if (error) {
-              this.logger.error('❌ SMTP connection verification failed:', error);
-              this.logger.error(`Error code: ${(error as any).code}`);
-              this.logger.error(`Error message: ${error.message}`);
-              this.logger.error('Email verification will not work until SMTP is properly configured.');
-              this.isEmailConfigured = false;
-              reject(error);
-            } else {
-              this.logger.log('✅ SMTP connection verified successfully');
-              this.logger.log(`Email will be sent from: ${emailFrom || smtpUser}`);
-              this.isEmailConfigured = true;
-              resolve();
-            }
-          });
-        });
-      } catch (verifyError) {
-        // Verification failed, but transporter is still created
-        // We'll try to send anyway and catch errors during sending
-        this.logger.warn('⚠️ SMTP verification failed, but transporter created. Will attempt to send emails.');
-        this.isEmailConfigured = false; // Set to false, but keep transporter for retry
-      }
-    } catch (error) {
-      this.logger.error('❌ Failed to create email transporter:', error);
-      this.isEmailConfigured = false;
-      this.transporter = null;
-    }
+    this.logger.log('AuthService initialized with EmailService');
   }
 
   async register(registerDto: RegisterDto) {
@@ -155,15 +76,14 @@ export class AuthService {
 
     // SECURITY FIX: Don't log email addresses (PII) - use user ID instead
     this.logger.log(`Attempting to send verification email for user: ${user.id}`);
-    this.logger.log(`Email configured: ${this.isEmailConfigured}`);
-    this.logger.log(`Transporter exists: ${!!this.transporter}`);
+    this.logger.log(`Email configured: ${this.emailService.isConfigured()}`);
 
-    if (!this.isEmailConfigured || !this.transporter) {
-      emailError = 'Email service is not configured. Please check SMTP settings.';
+    if (!this.emailService.isConfigured()) {
+      emailError = 'Email service is not configured. Please set RESEND_API_KEY.';
       this.logger.error(`❌ Cannot send email: ${emailError}`);
     } else {
       try {
-        await this.sendVerificationEmail(email, verificationCode);
+        await this.emailService.sendVerificationEmail(email, verificationCode);
         emailSent = true;
         this.logger.log(`✅ Verification email sent successfully for user: ${user.id}`);
       } catch (error) {
@@ -175,10 +95,6 @@ export class AuthService {
           this.logger.error('Error details:', {
             message: error.message,
             stack: error.stack,
-            code: (error as any).code,
-            responseCode: (error as any).responseCode,
-            command: (error as any).command,
-            response: (error as any).response,
           });
         }
       }
@@ -308,9 +224,9 @@ export class AuthService {
     }
 
     // Check if email is configured
-    if (!this.isEmailConfigured || !this.transporter) {
+    if (!this.emailService.isConfigured()) {
       throw new BadRequestException(
-        'Email service is not configured. Please contact administrator or check SMTP settings in .env file.'
+        'Email service is not configured. Please contact administrator.'
       );
     }
 
@@ -349,7 +265,7 @@ export class AuthService {
 
     // Send verification email
     try {
-      await this.sendVerificationEmail(email, verificationCode);
+      await this.emailService.sendVerificationEmail(email, verificationCode);
       // SECURITY FIX: Don't log email addresses (PII) - use user ID instead
       this.logger.log(`Verification code resent for user: ${user.id}`);
       return {
@@ -543,21 +459,18 @@ export class AuthService {
    * Returns information about email service configuration
    */
   getEmailServiceStatus() {
-    const smtpHost = this.configService.get('email.smtp.host');
-    const smtpPort = this.configService.get('email.smtp.port');
-    const smtpUser = this.configService.get('email.smtp.user');
-    const emailFrom = this.configService.get('email.from');
+    const resendApiKey = this.configService.get('RESEND_API_KEY');
+    const emailFrom = this.configService.get('email.from') || 'onboarding@resend.dev';
+    const configured = this.emailService.isConfigured();
 
     return {
-      configured: this.isEmailConfigured,
-      hasTransporter: !!this.transporter,
-      smtpHost: smtpHost || 'Not set',
-      smtpPort: smtpPort || 'Not set',
-      smtpUser: smtpUser ? `${smtpUser.substring(0, 3)}***` : 'Not set', // Partially hide email
-      emailFrom: emailFrom || smtpUser || 'Not set',
-      message: this.isEmailConfigured
-        ? 'Email service is configured and ready'
-        : 'Email service is not configured. Please check SMTP settings in .env file.',
+      configured,
+      provider: 'Resend',
+      apiKeySet: !!resendApiKey,
+      emailFrom,
+      message: configured
+        ? 'Email service is configured and ready (Resend)'
+        : 'Email service is not configured. Please set RESEND_API_KEY environment variable.',
     };
   }
 
@@ -579,119 +492,5 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
-  }
-
-  private async sendVerificationEmail(email: string, code: string): Promise<void> {
-    // Check if email is configured
-    if (!this.isEmailConfigured || !this.transporter) {
-      const error = new Error('Email service is not configured. Please check SMTP settings in .env file.');
-      this.logger.error('Cannot send email:', error.message);
-      throw error;
-    }
-
-    const emailFrom = this.configService.get('email.from') || this.configService.get('email.smtp.user');
-
-    if (!emailFrom) {
-      const error = new Error('EMAIL_FROM is not configured in .env file');
-      this.logger.error('Cannot send email:', error.message);
-      throw error;
-    }
-
-    const mailOptions = {
-      from: `"MNU Events" <${emailFrom}>`, // Format: "Name" <email>
-      to: email,
-      subject: 'MNU Events - Email Verification Code',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #d62e1f 0%, #b91c1c 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">MNU Events</h1>
-          </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
-            <h2 style="color: #1f2937; margin-top: 0;">Welcome to MNU Events!</h2>
-            <p style="color: #4b5563; font-size: 16px;">Thank you for registering. Please verify your email address by entering the code below:</p>
-            
-            <div style="background: #ffffff; border: 2px solid #d62e1f; border-radius: 8px; padding: 25px; text-align: center; margin: 30px 0;">
-              <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-              <h1 style="color: #d62e1f; font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
-                ${code}
-              </h1>
-            </div>
-            
-            <p style="color: #6b7280; font-size: 14px; margin: 20px 0;">
-              <strong>⏰ This code will expire in 24 hours.</strong>
-            </p>
-            
-            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
-              <p style="color: #92400e; font-size: 14px; margin: 0;">
-                <strong>⚠️ Security Notice:</strong> If you didn't request this code, please ignore this email or contact support.
-              </p>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-            
-            <p style="color: #6b7280; font-size: 14px; margin: 0;">
-              Best regards,<br>
-              <strong style="color: #d62e1f;">MNU Events Team</strong><br>
-              <span style="color: #9ca3af;">Maqsut Narikbayev University</span>
-            </p>
-          </div>
-        </body>
-        </html>
-      `,
-      // Plain text version for email clients that don't support HTML
-      text: `
-MNU Events - Email Verification
-
-Welcome to MNU Events!
-
-Your verification code is: ${code}
-
-This code will expire in 24 hours.
-
-If you didn't request this code, please ignore this email.
-
-Best regards,
-MNU Events Team
-Maqsut Narikbayev University
-      `,
-    };
-
-    try {
-      const info = await this.transporter.sendMail(mailOptions);
-      // SECURITY FIX: Don't log recipient email address (PII)
-      this.logger.log('Email sent successfully:', {
-        messageId: info.messageId,
-        from: emailFrom,
-      });
-    } catch (error) {
-      // Enhanced error logging
-      const errorDetails = {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        code: (error as any).code,
-        responseCode: (error as any).responseCode,
-        command: (error as any).command,
-        response: (error as any).response,
-        stack: error instanceof Error ? error.stack : undefined,
-      };
-
-      this.logger.error('Email sending failed:', errorDetails);
-      
-      // Provide more helpful error messages
-      if ((error as any).code === 'EAUTH') {
-        throw new Error('SMTP authentication failed. Please check SMTP_USER and SMTP_PASSWORD in .env file.');
-      } else if ((error as any).code === 'ECONNECTION') {
-        throw new Error(`Cannot connect to SMTP server ${this.configService.get('email.smtp.host')}. Please check SMTP_HOST and SMTP_PORT.`);
-      } else if ((error as any).code === 'ETIMEDOUT') {
-        throw new Error('SMTP connection timeout. Please check your network connection and SMTP settings.');
-      } else {
-        throw new Error(`Failed to send email: ${errorDetails.message}`);
-      }
-    }
   }
 }
