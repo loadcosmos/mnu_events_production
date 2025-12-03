@@ -82,22 +82,24 @@ export class AuthService {
       emailError = 'Email service is not configured. Please set RESEND_API_KEY.';
       this.logger.error(`❌ Cannot send email: ${emailError}`);
     } else {
-      try {
-        await this.emailService.sendVerificationEmail(email, verificationCode);
-        emailSent = true;
-        this.logger.log(`✅ Verification email sent successfully for user: ${user.id}`);
-      } catch (error) {
-        emailError = error instanceof Error ? error.message : 'Unknown error';
-        this.logger.error(`❌ Failed to send verification email for user: ${user.id}`, error);
+      // Send email in background - don't block registration
+      this.emailService.sendVerificationEmail(email, verificationCode)
+        .then(() => {
+          this.logger.log(`✅ Verification email sent successfully for user: ${user.id}`);
+        })
+        .catch((error) => {
+          this.logger.error(`❌ Failed to send verification email for user: ${user.id}`, error);
 
-        // Log detailed error information
-        if (error instanceof Error) {
-          this.logger.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-          });
-        }
-      }
+          // Log detailed error information
+          if (error instanceof Error) {
+            this.logger.error('Error details:', {
+              message: error.message,
+              stack: error.stack,
+            });
+          }
+        });
+      // Mark as sent optimistically - user can resend if not received
+      emailSent = true;
     }
 
     // Return response with email status
@@ -137,7 +139,7 @@ export class AuthService {
     // SECURITY FIX: Use constant-time comparison to prevent timing attacks
     // This prevents attackers from determining correct digits via timing analysis
     const isCodeValid = this.constantTimeCompare(user.verificationCode, code);
-    
+
     if (!isCodeValid) {
       throw new BadRequestException('Invalid verification code');
     }

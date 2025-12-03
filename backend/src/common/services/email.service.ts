@@ -47,6 +47,8 @@ export class EmailService {
         host: smtpHost,
         port: smtpPort,
         secure: smtpPort === 465, // true for 465, false for other ports
+        connectionTimeout: 10000, // 10 seconds
+        socketTimeout: 15000, // 15 seconds
         auth: {
           user: smtpUser,
           pass: smtpPassword,
