@@ -199,7 +199,7 @@ export class UsersService {
       data: {
         emailVerified: true,
         verificationCode: null,
-        verificationCodeExpires: null,
+        verificationCodeExpiry: null,
       },
       select: {
         id: true,
