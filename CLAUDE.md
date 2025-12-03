@@ -2,6 +2,14 @@
 
 Quick reference and guidance for Claude Code when working with MNU Events Platform.
 
+## ⚡ Response Style
+
+**IMPORTANT:** Keep responses SHORT and CONCISE by default.
+- Only provide detailed explanations when explicitly asked
+- Use brief confirmations and summaries
+- Show code/logs only when necessary
+- Long responses only on user request
+
 ## 🎯 Project Overview
 
 **MNU Events Platform** - University events management system
