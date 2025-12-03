@@ -10,6 +10,30 @@ Quick reference and guidance for Claude Code when working with MNU Events Platfo
 - Show code/logs only when necessary
 - Long responses only on user request
 
+## 🔌 MCP Tools Usage
+
+**CRITICAL: ALWAYS use MCP tools for Railway and Vercel operations!**
+
+Available MCP tools for deployment monitoring:
+- `mcp__railway-mcp-server__list-deployments` - Check Railway deployment status
+- `mcp__railway-mcp-server__get-logs` - Get Railway build/deploy logs
+- `mcp__vercel-mnu-events__list_deployments` - Check Vercel deployment status
+- `mcp__vercel-mnu-events__get_deployment_build_logs` - Get Vercel build logs
+
+**When to use:**
+- ✅ After every git push - check deployment status
+- ✅ When user reports "session expired" or auth issues
+- ✅ When debugging build failures
+- ✅ Before confirming "deployment complete"
+
+**Example workflow:**
+```
+1. git push
+2. mcp__railway-mcp-server__list-deployments → Check status
+3. If FAILED → mcp__railway-mcp-server__get-logs → Read error
+4. Fix error → git push → repeat
+```
+
 ## 📝 Documentation Rule
 
 **CRITICAL: Update `docs/` after EVERY significant action!**
