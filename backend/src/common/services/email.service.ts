@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
 
 export interface SendEmailOptions {
   to: string;
@@ -12,49 +11,41 @@ export interface SendEmailOptions {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private resend: Resend | null = null;
+  private apiKey: string | null = null;
+  private apiUrl: string = 'https://api.smtp2go.com/v3/email/send';
   private isEmailConfigured: boolean = false;
-  private emailFrom: string = 'onboarding@resend.dev';
+  private emailFrom: string = 'riverdaleaibar@gmail.com';
 
   constructor(private configService: ConfigService) {
     this.initializeEmailService();
   }
 
   private initializeEmailService() {
-    const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
-    const emailFrom = this.configService.get<string>('EMAIL_FROM') || this.configService.get<string>('email.from') || 'onboarding@resend.dev';
+    this.apiKey = this.configService.get<string>('SMTP2GO_API_KEY');
+    this.apiUrl = this.configService.get<string>('SMTP2GO_API_URL') || 'https://api.smtp2go.com/v3/email/send';
+    const emailFrom = this.configService.get<string>('EMAIL_FROM');
 
-    this.logger.log('Initializing Resend email service...');
-    this.logger.log(`Resend API Key: ${resendApiKey ? '***SET***' : 'NOT SET'}`);
-    this.logger.log(`Email From: ${emailFrom}`);
-
-    if (!resendApiKey) {
-      this.logger.warn('❌ RESEND_API_KEY not configured. Email sending will not work.');
-      this.logger.warn('Get your API key from: https://resend.com/api-keys');
-      this.isEmailConfigured = false;
-      this.resend = null;
+    if (emailFrom) {
       this.emailFrom = emailFrom;
+    }
+
+    this.logger.log('Initializing SMTP2GO email service...');
+    this.logger.log(`SMTP2GO API Key: ${this.apiKey ? '***SET***' : 'NOT SET'}`);
+    this.logger.log(`Email From: ${this.emailFrom}`);
+
+    if (!this.apiKey) {
+      this.logger.warn('❌ SMTP2GO_API_KEY not configured. Email sending will not work.');
+      this.isEmailConfigured = false;
       return;
     }
 
-    try {
-      this.resend = new Resend(resendApiKey);
-      this.emailFrom = emailFrom;
-      this.isEmailConfigured = true;
-      this.logger.log('✅ Resend email service initialized successfully');
-      this.logger.log(`📧 Emails will be sent from: ${emailFrom}`);
-      this.logger.log(`ℹ️ Using Resend test domain - emails can be sent to any address`);
-    } catch (error) {
-      this.logger.error('❌ Failed to initialize Resend:', error);
-      this.isEmailConfigured = false;
-      this.resend = null;
-      this.emailFrom = emailFrom;
-    }
+    this.isEmailConfigured = true;
+    this.logger.log('✅ SMTP2GO email service initialized successfully');
   }
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
-    if (!this.isEmailConfigured || !this.resend) {
-      const error = new Error('Email service is not configured. Please set RESEND_API_KEY in environment variables.');
+    if (!this.isEmailConfigured || !this.apiKey) {
+      const error = new Error('Email service is not configured. Please set SMTP2GO_API_KEY in environment variables.');
       this.logger.error('Cannot send email:', error.message);
       throw error;
     }
@@ -62,16 +53,29 @@ export class EmailService {
     const { to, subject, html, text } = options;
 
     try {
-      const result = await this.resend.emails.send({
-        from: this.emailFrom,
-        to: [to],
-        subject,
-        html,
-        text,
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          api_key: this.apiKey,
+          to: [to],
+          sender: this.emailFrom,
+          subject: subject,
+          html_body: html,
+          text_body: text,
+        }),
       });
 
-      this.logger.log('✅ Email sent successfully via Resend:', {
-        id: result.data?.id,
+      const data = await response.json();
+
+      if (!response.ok || (data.data && data.data.error_code)) {
+        throw new Error(`SMTP2GO API Error: ${JSON.stringify(data)}`);
+      }
+
+      this.logger.log('✅ Email sent successfully via SMTP2GO:', {
+        requestId: data.request_id,
         to,
         from: this.emailFrom,
       });
@@ -81,7 +85,7 @@ export class EmailService {
         name: error instanceof Error ? error.name : 'Error',
       };
 
-      this.logger.error('❌ Email sending failed via Resend:', errorDetails);
+      this.logger.error('❌ Email sending failed via SMTP2GO:', errorDetails);
       throw error;
     }
   }
