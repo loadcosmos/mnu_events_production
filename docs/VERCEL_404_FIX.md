@@ -46,57 +46,155 @@ git commit d6b32bd
 "fix: Use routes configuration for proper SPA routing on Vercel"
 ```
 
-## Текущий Статус (2025-12-03 00:45 UTC)
+## 🔄 ЦИКЛ ПРОБЛЕМ (2025-12-03)
 
-### ❌ Проблема #1: Build Error - prop-types не найден
+### Хронология (полная):
 
-**Ошибка:**
+**00:30 - Создал vercel.json с rewrites**
+- Коммит: `5e974108` "Add vercel.json for SPA routing"
+- Результат: ❌ BUILD ERROR (другая ошибка в коде)
+
+**00:40 - Упростил rewrites с regex**
+- Коммит: `99fa0edd` "Improve Vercel SPA routing"
+- Regex: `/((?!assets/.*)(?!.*\\.)*)`
+- Результат: ❌ 404 все еще есть
+
+**00:42 - Попробовал routes вместо rewrites**
+- Ошибка: "routes cannot be present with headers"
+- Результат: ❌ Vercel отклонил конфиг
+
+**00:43 - Вернулся на rewrites**
+- Коммит: `13f6e41f` "Remove routes, use rewrites"
+- Результат: ❌ 404 продолжается
+
+**00:44 - Создал _redirects файл**
+- Коммит: `a8d0f8a7` "Use _redirects for SPA"
+- Файл: `frontend/public/_redirects` с `/* /index.html 200`
+- Результат: ❌ 404 не исчез
+
+**00:45 - Упростил rewrites обратно**
+- Коммит: `8793c86` "Simplify rewrites"
+- Результат: ❌ 404 остался
+
+**00:46 - УДАЛИЛ vercel.json полностью**
+- Коммит: `cef9bd7` "Remove vercel.json, let Vercel auto-detect"
+- Логика: дать Vercel авто-определить Vite SPA
+- Результат: ❌ BUILD ERROR - prop-types не найден
+
+**00:48 - Добавил prop-types**
+- Коммит: `f95e1de` "Add prop-types dependency"
+- Результат: ❌ BUILD ERROR - Vercel все равно не видит пакет
+
+**01:02 - Обновил документацию**
+- Коммит: `78be924` "Update docs"
+- Результат: ✅ BUILD SUCCESS (dpl_25Zz8KtRibE2TFmGn7Pk4vei7UPq)
+- НО: ❌ 404 все еще есть (vercel.json удален!)
+
+**06:38 - УБРАЛ PropTypes из кода**
+- Коммит: `61997ae` "Remove PropTypes from GamificationBadge"
+- Результат: ✅ BUILD SUCCESS (dpl_3c8U1RHKPpaYjMAVDTWYHydDcU9H)
+- НО: ❌ 404 продолжается (vercel.json все еще удален!)
+
+**06:40 - СНОВА СОЗДАЛ vercel.json**
+- Коммит: `1add36a` "Add vercel.json with SPA rewrites"
+- ЦИКЛ ЗАМКНУЛСЯ - делаем то же самое в 3-й раз!
+
+---
+
+## 📋 АКТУАЛЬНАЯ ДОКУМЕНТАЦИЯ VERCEL (проверено через MCP)
+
+Источник: `https://vercel.com/docs/frameworks/frontend/vite`
+
+**Правильная конфигурация для Vite SPA:**
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
 ```
-[vite]: Rollup failed to resolve import "prop-types" from
-"/vercel/path0/frontend/js/components/Gamification/GamificationBadge.jsx"
+
+✅ Это ОФИЦИАЛЬНАЯ рекомендация Vercel для Vite SPA!
+
+---
+
+## 🔍 НАСТОЯЩАЯ ПРИЧИНА ПРОБЛЕМЫ
+
+### Структура проекта:
+```
+/
+├── backend/
+├── frontend/          ← Vite проект здесь
+│   ├── dist/         ← Build output (index.html)
+│   ├── package.json
+│   └── vite.config.js
+├── vercel.json       ← Файл в корне!
+└── package.json
 ```
 
-**Попытки решения:**
-1. ✅ Добавлен `prop-types` в `frontend/package.json` (коммит f95e1de)
-2. ❌ Vercel все равно не видит пакет при билде
-3. ❌ Деплойменты dpl_GaS1UHxPdVJ2ySjJ2EXaSVJNAQWV и dpl_5Z4JYDndxKDBkpBSyi1oEZNYJM9Q - статус ERROR
+### ❌ ПРОБЛЕМА:
+- `vercel.json` находится в **корне** проекта
+- Но `frontend/dist/index.html` находится в **frontend/** директории
+- Vercel ищет `/index.html` в корне, но файл в `frontend/dist/index.html`
 
-**Возможные причины:**
-- Vercel Root Directory настроен неправильно (должен быть `frontend/`)
-- Vercel Framework Preset не определен как Vite
-- Build Command использует не тот package.json
-
-**Проверено:**
-```bash
-git show HEAD:frontend/package.json | grep prop-types
-# Output: "prop-types": "^15.8.1" ✅ (пакет есть в коммите)
-```
-
-**Следующий шаг:** Проверить настройки проекта в Vercel Dashboard:
+### ✅ РЕШЕНИЕ:
+**Вариант 1:** Настроить Vercel Root Directory = `frontend`
+- Зайти в Vercel Dashboard
 - Project Settings → Build & Development Settings
-- Root Directory: должен быть `frontend`
-- Framework Preset: должен быть `Vite`
+- Root Directory: `frontend`
+- Framework Preset: `Vite`
 - Build Command: `npm run build`
 - Output Directory: `dist`
 
-### ⏸️ Проблема #2: SPA 404 (отложена до решения билда)
+**Вариант 2:** Переместить vercel.json в frontend/
+```bash
+mv vercel.json frontend/vercel.json
+```
 
-Последний успешный деплоймент (dpl_mMDawTfpXvW1RXKwvwAsvEzhxLKS):
-- ✅ Build: SUCCESS
-- ❌ Routing: 404 на всех маршрутах кроме `/`
+**Вариант 3:** Изменить destination в vercel.json:
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/dist/index.html"
+    }
+  ]
+}
+```
 
-## История всех попыток
+---
 
-### Билд проблемы:
-1. ❌ dpl_GaS1UHxPdVJ2ySjJ2EXaSVJNAQWV - prop-types не найден (без пакета)
-2. ❌ dpl_5Z4JYDndxKDBkpBSyi1oEZNYJM9Q - prop-types не найден (после добавления)
+## 📊 ПОЛНАЯ ИСТОРИЯ ДЕПЛОЙМЕНТОВ
 
-### SPA routing попытки:
-1. ❌ `rewrites` с паттерном `/(.*)`
-2. ❌ `rewrites` с regex `/((?!assets/.*)(?!.*\\.)*)`
-3. ❌ `routes` + `headers` (конфликт)
-4. ❌ `_redirects` файл
-5. ❌ Удаление `vercel.json` полностью
+### ✅ Успешные билды (но 404):
+1. `dpl_mMDawTfpXvW1RXKwvwAsvEzhxLKS` - cef9bd7 (vercel.json удален)
+2. `dpl_25Zz8KtRibE2TFmGn7Pk4vei7UPq` - 78be924 (только docs)
+3. `dpl_3c8U1RHKPpaYjMAVDTWYHydDcU9H` - 61997ae (убрал PropTypes)
+
+### ❌ Фейлы:
+1. `dpl_GaS1UHxPdVJ2ySjJ2EXaSVJNAQWV` - prop-types error
+2. `dpl_5Z4JYDndxKDBkpBSyi1oEZNYJM9Q` - prop-types error
+3. `dpl_F3ffDTvQef2h2mDM7C8V1yLrnuDa` - prop-types error
+
+---
+
+## ⚠️ ВЫВОД
+
+**МЫ ДЕЛАЕМ ОДНО И ТО ЖЕ ПО КРУГУ!**
+
+1. ✅ Конфигурация vercel.json **ПРАВИЛЬНАЯ** (согласно официальной документации)
+2. ❌ Проблема в том, что Vercel **НЕ ЗНАЕТ** где искать `frontend/dist/index.html`
+3. 🔧 **НЕОБХОДИМО:** Настроить Root Directory в Vercel Dashboard = `frontend`
+
+**Следующий шаг:**
+- НЕ создавать/удалять vercel.json больше
+- Зайти в Vercel Dashboard и настроить Root Directory
+- Или попросить пользователя это сделать
 
 ## Альтернатива (если routes не работает)
 
