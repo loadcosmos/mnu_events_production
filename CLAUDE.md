@@ -38,7 +38,7 @@ When you complete ANY of the following:
 
 **MNU Events Platform** - University events management system
 **Status:** 99% Complete | Grade: A | Production Ready: ✅ (Beta ready, testing phase)
-**Last Updated:** 2025-12-01
+**Last Updated:** 2025-12-03
 
 **Tech Stack:**
 - Backend: NestJS 10 + Prisma ORM + PostgreSQL
@@ -47,7 +47,18 @@ When you complete ANY of the following:
 - Design: Liquid glass (glassmorphism) + dark theme
 - **New:** Monetization, Gamification, Moderation, **External Partners** systems
 
-### 🆕 Recent Updates (2025-12-01)
+### 🆕 Recent Updates (2025-12-03)
+- ✅ **Points Display**: Backend now returns `pointsEarned` in check-in responses (10/15/20 XP)
+- ✅ **External Event Points**: Fixed gamification to properly award 15 XP for external events
+- ✅ **Event Time Validation**: Students can only check-in 30min before event start until event end
+- ✅ **Check-Ins Dashboard**: New EventCheckInsPage for organizers with real-time attendee list
+  - Shows name, email, faculty, check-in time, scan mode for each attendee
+  - Displays check-in stats: total, rate, registrations/tickets
+  - Refresh button for real-time updates
+  - CSV export functionality
+  - Accessible via "View Check-Ins" button on event details page
+
+### Previous Updates (2025-12-01)
 - ✅ **QR Check-In System**: 4 event types (Internal/External × Free/Paid) with automatic mode detection
 - ✅ **Check-in Mode Utilities**: `determineCheckInMode()` + `shouldGenerateRegistrationQR()` in `common/utils`
 - ✅ **QRScanner Component**: Camera-based scanning using html5-qrcode library with dark theme support
