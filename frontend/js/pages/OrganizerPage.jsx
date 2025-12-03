@@ -39,9 +39,12 @@ export default function OrganizerPage() {
       const events = response.data || response || [];
 
       // Вычисляем статистику по статусам модерации
-      const publishedEvents = events.filter(e => e.moderationStatus === 'APPROVED');
-      const pendingEvents = events.filter(e => e.moderationStatus === 'PENDING_MODERATION');
-      const rejectedEvents = events.filter(e => e.moderationStatus === 'REJECTED');
+      // Event.status values: PENDING_MODERATION, UPCOMING, ONGOING, COMPLETED, CANCELLED
+      const publishedEvents = events.filter(e =>
+        e.status !== 'PENDING_MODERATION' && e.status !== 'CANCELLED'
+      );
+      const pendingEvents = events.filter(e => e.status === 'PENDING_MODERATION');
+      const rejectedEvents = events.filter(e => e.status === 'CANCELLED');
       const totalRegistrations = events.reduce((sum, e) => sum + (e._count?.registrations || 0), 0);
 
       setStats({
@@ -108,27 +111,29 @@ export default function OrganizerPage() {
   const getFilteredEvents = () => {
     switch (activeTab) {
       case 'published':
-        return allEvents.filter(e => e.moderationStatus === 'APPROVED');
+        return allEvents.filter(e => e.status !== 'PENDING_MODERATION' && e.status !== 'CANCELLED');
       case 'pending':
-        return allEvents.filter(e => e.moderationStatus === 'PENDING_MODERATION');
+        return allEvents.filter(e => e.status === 'PENDING_MODERATION');
       case 'rejected':
-        return allEvents.filter(e => e.moderationStatus === 'REJECTED');
+        return allEvents.filter(e => e.status === 'CANCELLED');
       default:
         return allEvents;
     }
   };
 
   // Получить бейдж статуса модерации
-  const getModerationBadge = (moderationStatus) => {
-    switch (moderationStatus) {
-      case 'APPROVED':
-        return { variant: 'success', label: 'Published', className: 'bg-green-600 text-white' };
+  const getModerationBadge = (status) => {
+    switch (status) {
       case 'PENDING_MODERATION':
         return { variant: 'warning', label: 'Awaiting Approval', className: 'bg-orange-500 text-white' };
-      case 'REJECTED':
-        return { variant: 'destructive', label: 'Rejected', className: 'bg-red-600 text-white' };
+      case 'CANCELLED':
+        return { variant: 'destructive', label: 'Cancelled', className: 'bg-red-600 text-white' };
+      case 'UPCOMING':
+      case 'ONGOING':
+      case 'COMPLETED':
+        return { variant: 'success', label: 'Published', className: 'bg-green-600 text-white' };
       default:
-        return { variant: 'secondary', label: moderationStatus, className: 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white' };
+        return { variant: 'secondary', label: status, className: 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white' };
     }
   };
 
@@ -330,7 +335,7 @@ export default function OrganizerPage() {
                 {getFilteredEvents().map((event) => {
                   const registrations = event._count?.registrations || 0;
                   const capacity = event.capacity || 0;
-                  const moderationBadge = getModerationBadge(event.moderationStatus);
+                  const moderationBadge = getModerationBadge(event.status);
                   const timeStatusBadge = getTimeStatusBadge(event);
                   const percentage = capacity > 0 ? Math.min((registrations / capacity) * 100, 100) : 0;
 
