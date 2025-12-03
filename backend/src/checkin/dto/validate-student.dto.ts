@@ -24,6 +24,8 @@ export class ValidateStudentResponseDto {
   success: boolean;
   message: string;
   pointsEarned?: number;
+  totalPoints?: number;
+  level?: string;
   checkIn?: {
     id: string;
     eventId: string;
