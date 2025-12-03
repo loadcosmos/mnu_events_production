@@ -14,9 +14,12 @@ export default function QRScanner({ onScanSuccess, onClose }) {
   const html5QrCodeScannerRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState(null);
-  const [cameraPermission, setCameraPermission] = useState('requesting');
+  const [cameraStarted, setCameraStarted] = useState(false);
 
   useEffect(() => {
+    // Only initialize scanner when user explicitly starts camera
+    if (!cameraStarted) return;
+
     let scanner = null;
 
     const initScanner = async () => {
@@ -25,14 +28,12 @@ export default function QRScanner({ onScanSuccess, onClose }) {
         console.log('window.isSecureContext:', window.isSecureContext);
         console.log('navigator.mediaDevices:', navigator.mediaDevices);
         console.log('Location:', window.location.href);
-        
+
         // Check if mediaDevices API is available
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           console.error('MediaDevices API not available');
           throw new Error('MEDIA_DEVICES_NOT_SUPPORTED');
         }
-
-        setCameraPermission('granted');
 
         // Initialize html5-qrcode scanner directly
         // Let it handle camera permission internally
@@ -82,11 +83,10 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           message: err.message,
           stack: err.stack
         });
-        setCameraPermission('denied');
-        
+
         let errorMessage = 'Не удалось получить доступ к камере.';
         let debugInfo = '';
-        
+
         if (err.message === 'MEDIA_DEVICES_NOT_SUPPORTED') {
           errorMessage = 'API камеры недоступен.';
           debugInfo = `
@@ -107,7 +107,7 @@ export default function QRScanner({ onScanSuccess, onClose }) {
           errorMessage = 'Ошибка безопасности: камера недоступна в небезопасном контексте.';
           debugInfo = `\n\nДля доступа к камере сайт должен работать через HTTPS или localhost.\nТекущий URL: ${window.location.href}`;
         }
-        
+
         setError(errorMessage + debugInfo);
       }
     };
@@ -122,7 +122,12 @@ export default function QRScanner({ onScanSuccess, onClose }) {
         html5QrCodeScannerRef.current = null;
       }
     };
-  }, [onScanSuccess]);
+  }, [cameraStarted, onScanSuccess]);
+
+  const handleStartCamera = () => {
+    setError(null);
+    setCameraStarted(true);
+  };
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -153,18 +158,27 @@ export default function QRScanner({ onScanSuccess, onClose }) {
 
         {/* Scanner Area */}
         <div className="p-6 bg-gray-50 dark:bg-[#0a0a0a]">
-          {/* Loading State */}
-          {cameraPermission === 'requesting' && !error && (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-900 rounded-full animate-pulse"></div>
-                <div className="absolute inset-0 w-16 h-16 border-4 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin"></div>
+          {/* Start Camera Button - Before initialization */}
+          {!cameraStarted && !error && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-6">
+              <div className="w-64 h-64 bg-gray-100 dark:bg-[#1a1a1a] rounded-2xl flex items-center justify-center border-4 border-dashed border-gray-300 dark:border-[#3a3a3a]">
+                <Camera className="w-24 h-24 text-gray-400 dark:text-gray-600" />
               </div>
-              <p className="text-gray-600 dark:text-gray-400 font-medium">Инициализация камеры...</p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 text-center max-w-md">
-                Для работы камеры браузер требует безопасное соединение<br/>
-                (HTTPS или localhost)
-              </p>
+              <div className="text-center space-y-3">
+                <p className="text-gray-700 dark:text-gray-300 font-semibold text-lg">
+                  Готовы сканировать QR-код?
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Нажмите кнопку ниже для доступа к камере
+                </p>
+              </div>
+              <button
+                onClick={handleStartCamera}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 flex items-center gap-3"
+              >
+                <Camera className="w-6 h-6" />
+                Запустить камеру
+              </button>
             </div>
           )}
 
@@ -173,7 +187,7 @@ export default function QRScanner({ onScanSuccess, onClose }) {
             id="qr-reader"
             ref={scannerRef}
             className="rounded-xl overflow-hidden shadow-xl border-4 border-gray-200 dark:border-[#2a2a2a] bg-black min-h-[300px]"
-            style={{ display: cameraPermission === 'granted' ? 'block' : 'none' }}
+            style={{ display: cameraStarted ? 'block' : 'none' }}
           />
 
           {/* Error State */}
