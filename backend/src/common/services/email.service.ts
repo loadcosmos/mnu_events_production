@@ -53,7 +53,7 @@ export class EmailService {
         },
       });
 
-      this.emailFrom = emailFrom;
+      this.emailFrom = emailFrom || 'noreply@example.com';
       this.isEmailConfigured = true;
       this.logger.log('✅ SMTP email service initialized successfully');
       this.logger.log(`Emails will be sent from: ${emailFrom}`);
