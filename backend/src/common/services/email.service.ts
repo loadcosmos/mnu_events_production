@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 
 export interface SendEmailOptions {
   to: string;
@@ -12,7 +12,7 @@ export interface SendEmailOptions {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private resend: Resend | null = null;
+  private transporter: nodemailer.Transporter | null = null;
   private isEmailConfigured: boolean = false;
   private emailFrom: string;
 
@@ -21,39 +21,62 @@ export class EmailService {
   }
 
   private initializeEmailService() {
-    const resendApiKey = this.configService.get('RESEND_API_KEY');
-    const emailFrom = this.configService.get('email.from') || 'onboarding@resend.dev';
+    const smtpHost = this.configService.get<string>('SMTP_HOST');
+    const smtpPort = this.configService.get<number>('SMTP_PORT') || 587;
+    const smtpUser = this.configService.get<string>('SMTP_USER');
+    const smtpPassword = this.configService.get<string>('SMTP_PASSWORD');
+    const emailFrom = this.configService.get<string>('EMAIL_FROM') || smtpUser;
 
-    this.logger.log('Initializing Resend email service...');
-    this.logger.log(`Resend API Key: ${resendApiKey ? '***SET***' : 'NOT SET'}`);
+    this.logger.log('Initializing SMTP email service...');
+    this.logger.log(`SMTP Host: ${smtpHost || 'NOT SET'}`);
+    this.logger.log(`SMTP Port: ${smtpPort}`);
+    this.logger.log(`SMTP User: ${smtpUser ? '***SET***' : 'NOT SET'}`);
     this.logger.log(`Email From: ${emailFrom}`);
 
-    if (!resendApiKey) {
-      this.logger.warn('❌ RESEND_API_KEY not configured. Email sending will not work.');
-      this.logger.warn('Get your API key from: https://resend.com/api-keys');
+    if (!smtpHost || !smtpUser || !smtpPassword) {
+      this.logger.warn('❌ SMTP not configured. Email sending will not work.');
+      this.logger.warn('Set SMTP_HOST, SMTP_USER, SMTP_PASSWORD in environment variables.');
       this.isEmailConfigured = false;
-      this.resend = null;
-      this.emailFrom = emailFrom;
+      this.transporter = null;
+      this.emailFrom = emailFrom || 'noreply@example.com';
       return;
     }
 
     try {
-      this.resend = new Resend(resendApiKey);
+      this.transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // true for 465, false for other ports
+        auth: {
+          user: smtpUser,
+          pass: smtpPassword,
+        },
+      });
+
       this.emailFrom = emailFrom;
       this.isEmailConfigured = true;
-      this.logger.log('✅ Resend email service initialized successfully');
+      this.logger.log('✅ SMTP email service initialized successfully');
       this.logger.log(`Emails will be sent from: ${emailFrom}`);
+
+      // Verify connection
+      this.transporter.verify((error) => {
+        if (error) {
+          this.logger.error('❌ SMTP connection failed:', error.message);
+        } else {
+          this.logger.log('✅ SMTP connection verified successfully');
+        }
+      });
     } catch (error) {
-      this.logger.error('❌ Failed to initialize Resend:', error);
+      this.logger.error('❌ Failed to initialize SMTP:', error);
       this.isEmailConfigured = false;
-      this.resend = null;
-      this.emailFrom = emailFrom;
+      this.transporter = null;
+      this.emailFrom = emailFrom || 'noreply@example.com';
     }
   }
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
-    if (!this.isEmailConfigured || !this.resend) {
-      const error = new Error('Email service is not configured. Please set RESEND_API_KEY in environment variables.');
+    if (!this.isEmailConfigured || !this.transporter) {
+      const error = new Error('Email service is not configured. Please set SMTP_HOST, SMTP_USER, SMTP_PASSWORD.');
       this.logger.error('Cannot send email:', error.message);
       throw error;
     }
@@ -61,26 +84,26 @@ export class EmailService {
     const { to, subject, html, text } = options;
 
     try {
-      const result = await this.resend.emails.send({
-        from: `MNU Events <${this.emailFrom}>`,
-        to: [to],
+      const result = await this.transporter.sendMail({
+        from: this.emailFrom,
+        to,
         subject,
         html,
         text,
       });
 
-      this.logger.log('Email sent successfully via Resend:', {
-        id: result.data?.id,
+      this.logger.log('✅ Email sent successfully via SMTP:', {
+        messageId: result.messageId,
+        to,
         from: this.emailFrom,
       });
     } catch (error) {
       const errorDetails = {
         message: error instanceof Error ? error.message : 'Unknown error',
         name: error instanceof Error ? error.name : 'Error',
-        stack: error instanceof Error ? error.stack : undefined,
       };
 
-      this.logger.error('Email sending failed via Resend:', errorDetails);
+      this.logger.error('❌ Email sending failed via SMTP:', errorDetails);
       throw error;
     }
   }
@@ -98,31 +121,31 @@ export class EmailService {
           <h1 style="color: white; margin: 0; font-size: 28px;">MNU Events</h1>
         </div>
         <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
-          <h2 style="color: #1f2937; margin-top: 0;">Welcome to MNU Events!</h2>
-          <p style="color: #4b5563; font-size: 16px;">Thank you for registering. Please verify your email address by entering the code below:</p>
+          <h2 style="color: #1f2937; margin-top: 0;">Добро пожаловать в MNU Events!</h2>
+          <p style="color: #4b5563; font-size: 16px;">Спасибо за регистрацию. Пожалуйста, подтвердите вашу почту, введя код ниже:</p>
 
           <div style="background: #ffffff; border: 2px solid #d62e1f; border-radius: 8px; padding: 25px; text-align: center; margin: 30px 0;">
-            <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
+            <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Ваш код подтверждения</p>
             <h1 style="color: #d62e1f; font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
               ${code}
             </h1>
           </div>
 
           <p style="color: #6b7280; font-size: 14px; margin: 20px 0;">
-            <strong>⏰ This code will expire in 24 hours.</strong>
+            <strong>⏰ Код действителен 24 часа.</strong>
           </p>
 
           <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
             <p style="color: #92400e; font-size: 14px; margin: 0;">
-              <strong>⚠️ Security Notice:</strong> If you didn't request this code, please ignore this email or contact support.
+              <strong>⚠️ Безопасность:</strong> Если вы не запрашивали этот код, проигнорируйте это письмо.
             </p>
           </div>
 
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
           <p style="color: #6b7280; font-size: 14px; margin: 0;">
-            Best regards,<br>
-            <strong style="color: #d62e1f;">MNU Events Team</strong><br>
+            С уважением,<br>
+            <strong style="color: #d62e1f;">Команда MNU Events</strong><br>
             <span style="color: #9ca3af;">Maqsut Narikbayev University</span>
           </p>
         </div>
@@ -131,24 +154,24 @@ export class EmailService {
     `;
 
     const text = `
-MNU Events - Email Verification
+MNU Events - Подтверждение Email
 
-Welcome to MNU Events!
+Добро пожаловать в MNU Events!
 
-Your verification code is: ${code}
+Ваш код подтверждения: ${code}
 
-This code will expire in 24 hours.
+Код действителен 24 часа.
 
-If you didn't request this code, please ignore this email.
+Если вы не запрашивали этот код, проигнорируйте это письмо.
 
-Best regards,
-MNU Events Team
+С уважением,
+Команда MNU Events
 Maqsut Narikbayev University
     `;
 
     await this.sendEmail({
       to: email,
-      subject: 'MNU Events - Email Verification Code',
+      subject: 'MNU Events - Код подтверждения',
       html,
       text,
     });
