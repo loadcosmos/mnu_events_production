@@ -11,7 +11,7 @@ import { sanitizeSearchQuery } from '../common/utils';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAll(page: number = 1, limit: number = 10, search?: string) {
     const skip = (page - 1) * limit;
@@ -21,12 +21,12 @@ export class UsersService {
 
     const where = sanitizedSearch
       ? {
-          OR: [
-            { email: { contains: sanitizedSearch, mode: 'insensitive' as any } },
-            { firstName: { contains: sanitizedSearch, mode: 'insensitive' as any } },
-            { lastName: { contains: sanitizedSearch, mode: 'insensitive' as any } },
-          ],
-        }
+        OR: [
+          { email: { contains: sanitizedSearch, mode: 'insensitive' as any } },
+          { firstName: { contains: sanitizedSearch, mode: 'insensitive' as any } },
+          { lastName: { contains: sanitizedSearch, mode: 'insensitive' as any } },
+        ],
+      }
       : {};
 
     const [users, total] = await Promise.all([
@@ -262,5 +262,28 @@ export class UsersService {
     });
 
     return { message: 'User deleted successfully' };
+  }
+
+  async forceDeleteByEmail(email: string) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (users.length === 0) {
+      return { message: 'No user found with this email' };
+    }
+
+    for (const user of users) {
+      await this.prisma.user.delete({
+        where: { id: user.id },
+      });
+    }
+
+    return { message: `Deleted ${users.length} user(s) with email ${email}` };
   }
 }
