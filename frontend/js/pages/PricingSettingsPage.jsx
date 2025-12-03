@@ -70,14 +70,14 @@ const PricingSettingsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center">
         <div className="text-white text-xl">Загрузка...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -105,7 +105,7 @@ const PricingSettingsPage = () => {
                   onChange={handleChange}
                   min="0"
                   step="100"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
@@ -130,7 +130,7 @@ const PricingSettingsPage = () => {
                   onChange={handleChange}
                   min="0"
                   step="100"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
@@ -155,7 +155,7 @@ const PricingSettingsPage = () => {
                   onChange={handleChange}
                   min="0"
                   step="100"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
@@ -185,7 +185,7 @@ const PricingSettingsPage = () => {
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-[#b52618] hover:to-red-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? 'Сохранение...' : 'Сохранить изменения'}
             </button>

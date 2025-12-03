@@ -53,7 +53,7 @@ export default function ServiceDetailsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Загрузка...</p>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function ServiceDetailsPage() {
                     {service.title}
                   </h1>
                   <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <span className="px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                    <span className="px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                       {service.category}
                     </span>
                     <span>
@@ -153,7 +153,7 @@ export default function ServiceDetailsPage() {
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold">
                             {review.author.charAt(0)}
                           </div>
                           <div>
@@ -202,7 +202,7 @@ export default function ServiceDetailsPage() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg sticky top-24">
               <div className="mb-6">
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+                  <span className="text-4xl font-bold text-red-600 dark:text-red-400">
                     {service.price.toLocaleString()}₸
                   </span>
                   <span className="text-gray-500 dark:text-gray-500">
@@ -238,7 +238,7 @@ export default function ServiceDetailsPage() {
                     className="w-16 h-16 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xl font-bold">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white text-xl font-bold">
                     {service.provider.firstName.charAt(0)}
                     {service.provider.lastName.charAt(0)}
                   </div>

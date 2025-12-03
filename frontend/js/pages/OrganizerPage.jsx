@@ -144,7 +144,7 @@ export default function OrganizerPage() {
     const endDate = new Date(event.endDate);
 
     if (startDate > now) return { variant: 'default', label: 'Upcoming', className: 'bg-blue-600 text-white' };
-    if (startDate <= now && endDate >= now) return { variant: 'default', label: 'Ongoing', className: 'bg-purple-600 text-white' };
+    if (startDate <= now && endDate >= now) return { variant: 'default', label: 'Ongoing', className: 'bg-red-600 text-white' };
     if (endDate < now) return { variant: 'secondary', label: 'Completed', className: 'bg-gray-500 text-white' };
     return { variant: 'secondary', label: 'Unknown', className: 'bg-gray-400 text-white' };
   };
@@ -393,7 +393,7 @@ export default function OrganizerPage() {
                           {event.checkInMode === 'STUDENTS_SCAN' ? (
                             <Link
                               to={`/organizer/event-qr/${event.id}`}
-                              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl transition-all")}
+                              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all")}
                               title="Display QR for students to scan (free internal events)"
                             >
                               <i className="fa-solid fa-desktop mr-1" />
