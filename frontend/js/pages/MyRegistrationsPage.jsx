@@ -128,7 +128,7 @@ export default function MyRegistrationsPage() {
       });
 
       // Call validate-student API
-      const response = await checkinService.validateStudent({ eventQRCode: decodedText });
+      const response = await checkinService.validateStudent(decodedText);
 
       toast.dismiss(loadingToast);
 
@@ -317,11 +317,10 @@ export default function MyRegistrationsPage() {
                 <button
                   key={filter}
                   onClick={() => setSelectedFilter(filter)}
-                  className={`px-4 py-2 rounded-full font-semibold transition-colors ${
-                    selectedFilter === filter
-                      ? 'liquid-glass-red-button text-white'
-                      : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                  }`}
+                  className={`px-4 py-2 rounded-full font-semibold transition-colors ${selectedFilter === filter
+                    ? 'liquid-glass-red-button text-white'
+                    : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                    }`}
                 >
                   {filter}
                 </button>
@@ -477,58 +476,58 @@ export default function MyRegistrationsPage() {
 
                         {/* QR Code Display - Only for ORGANIZER_SCANS + FREE (external analytics) */}
                         {registration.qrCode &&
-                         registration.status === 'REGISTERED' &&
-                         event.checkInMode === 'ORGANIZER_SCANS' &&
-                         !event.isPaid && (
-                          <div className="mt-4 p-4 bg-gray-50 dark:bg-[#0a0a0a] rounded-lg border border-gray-200 dark:border-[#2a2a2a]">
-                            <div className="flex flex-col items-center gap-3">
-                              <p className="text-sm font-semibold text-gray-900 dark:text-white text-center">
-                                <i className="fa-solid fa-qrcode mr-2 text-blue-500" />
-                                Show this QR code at the event
-                              </p>
-                              <img
-                                src={registration.qrCode}
-                                alt="Registration QR Code"
-                                className="w-48 h-48 rounded-lg border-2 border-gray-300 dark:border-[#3a3a3a] bg-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Could add full-screen modal here if needed
-                                }}
-                              />
-                              <p className="text-xs text-gray-600 dark:text-[#a0a0a0] text-center">
-                                {event.isExternalEvent
-                                  ? 'Организатор отсканирует этот код для check-in'
-                                  : 'Organizers will scan this code for check-in'}
-                              </p>
+                          registration.status === 'REGISTERED' &&
+                          event.checkInMode === 'ORGANIZER_SCANS' &&
+                          !event.isPaid && (
+                            <div className="mt-4 p-4 bg-gray-50 dark:bg-[#0a0a0a] rounded-lg border border-gray-200 dark:border-[#2a2a2a]">
+                              <div className="flex flex-col items-center gap-3">
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white text-center">
+                                  <i className="fa-solid fa-qrcode mr-2 text-blue-500" />
+                                  Show this QR code at the event
+                                </p>
+                                <img
+                                  src={registration.qrCode}
+                                  alt="Registration QR Code"
+                                  className="w-48 h-48 rounded-lg border-2 border-gray-300 dark:border-[#3a3a3a] bg-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Could add full-screen modal here if needed
+                                  }}
+                                />
+                                <p className="text-xs text-gray-600 dark:text-[#a0a0a0] text-center">
+                                  {event.isExternalEvent
+                                    ? 'Организатор отсканирует этот код для check-in'
+                                    : 'Organizers will scan this code for check-in'}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
                         {/* Info for STUDENTS_SCAN mode (internal free events) */}
                         {registration.status === 'REGISTERED' &&
-                         event.checkInMode === 'STUDENTS_SCAN' && (
-                          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900/50">
-                            <div className="flex items-center justify-between mb-3">
-                              <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
-                                <i className="fa-solid fa-info-circle mr-2" />
-                                Check-in на мероприятии
+                          event.checkInMode === 'STUDENTS_SCAN' && (
+                            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900/50">
+                              <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
+                                  <i className="fa-solid fa-info-circle mr-2" />
+                                  Check-in на мероприятии
+                                </p>
+                              </div>
+                              <p className="text-xs text-blue-800 dark:text-blue-400 mb-3">
+                                Отсканируйте QR-код организатора на мероприятии для check-in
                               </p>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openQRScanner(event.id);
+                                }}
+                                className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                              >
+                                <i className="fa-solid fa-camera" />
+                                Сканировать QR-код
+                              </button>
                             </div>
-                            <p className="text-xs text-blue-800 dark:text-blue-400 mb-3">
-                              Отсканируйте QR-код организатора на мероприятии для check-in
-                            </p>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openQRScanner(event.id);
-                              }}
-                              className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-                            >
-                              <i className="fa-solid fa-camera" />
-                              Сканировать QR-код
-                            </button>
-                          </div>
-                        )}
+                          )}
 
                         {/* Cancel Button */}
                         {!isPast && registration.status !== 'CANCELLED' && (
@@ -576,11 +575,10 @@ export default function MyRegistrationsPage() {
               {filters.map((filter) => (
                 <label
                   key={filter}
-                  className={`flex items-center px-4 py-3 rounded-xl cursor-pointer transition-colors ${
-                    selectedFilter === filter
-                      ? 'liquid-glass-red-button text-white'
-                      : 'bg-[#2a2a2a] text-[#a0a0a0] hover:bg-[#3a3a3a] hover:text-white'
-                  }`}
+                  className={`flex items-center px-4 py-3 rounded-xl cursor-pointer transition-colors ${selectedFilter === filter
+                    ? 'liquid-glass-red-button text-white'
+                    : 'bg-[#2a2a2a] text-[#a0a0a0] hover:bg-[#3a3a3a] hover:text-white'
+                    }`}
                 >
                   <input
                     type="radio"
