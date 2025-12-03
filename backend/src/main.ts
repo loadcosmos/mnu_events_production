@@ -28,18 +28,18 @@ async function bootstrap() {
     // CORS Configuration (MUST be before Helmet to prevent header conflicts)
     const corsOrigin = configService.get('cors.origin');
     logger.log(`CORS Origin: ${corsOrigin}`, 'Bootstrap');
-    
+
     // Parse CORS origins (support comma-separated string or array)
-    const allowedOrigins = typeof corsOrigin === 'string' 
+    const allowedOrigins = typeof corsOrigin === 'string'
       ? corsOrigin.split(',').map(o => o.trim())
       : Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
-    
+
     // Helper function to check if origin matches (supports wildcards)
     const isOriginAllowed = (origin: string): boolean => {
       return allowedOrigins.some(allowedOrigin => {
         // Exact match
         if (allowedOrigin === origin) return true;
-        
+
         // Wildcard match (e.g., https://*.vercel.app)
         if (allowedOrigin.includes('*')) {
           const pattern = allowedOrigin
@@ -48,16 +48,16 @@ async function bootstrap() {
           const regex = new RegExp(`^${pattern}$`);
           return regex.test(origin);
         }
-        
+
         return false;
       });
     };
-    
+
     app.enableCors({
       origin: (origin, callback) => {
         // Allow requests with no origin (e.g., mobile apps, Postman)
         if (!origin) return callback(null, true);
-        
+
         // Check if origin is allowed (supports wildcards)
         if (isOriginAllowed(origin)) {
           callback(null, true);
@@ -161,7 +161,6 @@ async function bootstrap() {
         '/api/api-docs',         // Swagger docs
         '/api/docs',             // Swagger docs
         '/api/advertisements/impression', // Advertisement impression tracking (partial match)
-        '/api/migration/fix-checkin-modes', // One-time migration endpoint
       ];
 
       if (

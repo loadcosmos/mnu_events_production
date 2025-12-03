@@ -29,7 +29,6 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from './common/pipes/validation.pipe';
-import { MigrationController } from './migration.controller';
 
 @Module({
   imports: [
@@ -79,7 +78,6 @@ import { MigrationController } from './migration.controller';
     GamificationModule,
     HealthModule,
   ],
-  controllers: [MigrationController],
   providers: [
     {
       provide: APP_GUARD,
