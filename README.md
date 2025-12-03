@@ -190,6 +190,12 @@ npx prisma db seed
 - **[SETUP.md](SETUP.md)** - Детальная инструкция по установке
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Руководство по разработке и тестированию
 
+### Дополнительная документация
+
+- **[docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md](docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md)** - Обновления админ-панели и оптимизация email сервиса (2025-12-03)
+- **[docs/EMAIL_VERIFICATION_FIX.md](docs/EMAIL_VERIFICATION_FIX.md)** - Решение проблем с email верификацией
+- **[docs/QR_CHECKIN_SYSTEM.md](docs/QR_CHECKIN_SYSTEM.md)** - QR check-in система и типы регистрации
+
 ---
 
 **Последнее обновление:** 2025-12-01
