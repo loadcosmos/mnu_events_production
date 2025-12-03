@@ -90,6 +90,16 @@ export class UsersController {
     return this.usersService.updateRole(id, updateRoleDto);
   }
 
+  @Patch(':id/verify-email')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Manually verify user email (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Email verified successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  verifyUserEmail(@Param('id') id: string) {
+    return this.usersService.verifyUserEmail(id);
+  }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user (Admin or own account)' })
   @ApiResponse({ status: 200, description: 'User deleted' })

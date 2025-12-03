@@ -181,6 +181,41 @@ export class UsersService {
     return updatedUser;
   }
 
+  async verifyUserEmail(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        emailVerified: true,
+        verificationCode: null,
+        verificationCodeExpires: null,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        emailVerified: true,
+      },
+    });
+
+    return {
+      message: 'Email verified successfully by admin',
+      user: updatedUser,
+    };
+  }
+
   async remove(id: string, currentUserId: string, currentUserRole: Role) {
     // Only admin can delete users, or users can delete themselves
     if (currentUserRole !== Role.ADMIN && id !== currentUserId) {
