@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export interface SendEmailOptions {
   to: string;
@@ -12,73 +12,49 @@ export interface SendEmailOptions {
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private transporter: nodemailer.Transporter | null = null;
+  private resend: Resend | null = null;
   private isEmailConfigured: boolean = false;
-  private emailFrom: string = 'noreply@example.com';
+  private emailFrom: string = 'onboarding@resend.dev';
 
   constructor(private configService: ConfigService) {
     this.initializeEmailService();
   }
 
   private initializeEmailService() {
-    const smtpHost = this.configService.get<string>('SMTP_HOST');
-    const smtpPort = this.configService.get<number>('SMTP_PORT') || 587;
-    const smtpUser = this.configService.get<string>('SMTP_USER');
-    const smtpPassword = this.configService.get<string>('SMTP_PASSWORD');
-    const emailFrom = this.configService.get<string>('EMAIL_FROM') || smtpUser;
+    const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
+    const emailFrom = this.configService.get<string>('EMAIL_FROM') || this.configService.get<string>('email.from') || 'onboarding@resend.dev';
 
-    this.logger.log('Initializing SMTP email service...');
-    this.logger.log(`SMTP Host: ${smtpHost || 'NOT SET'}`);
-    this.logger.log(`SMTP Port: ${smtpPort}`);
-    this.logger.log(`SMTP User: ${smtpUser ? '***SET***' : 'NOT SET'}`);
+    this.logger.log('Initializing Resend email service...');
+    this.logger.log(`Resend API Key: ${resendApiKey ? '***SET***' : 'NOT SET'}`);
     this.logger.log(`Email From: ${emailFrom}`);
 
-    if (!smtpHost || !smtpUser || !smtpPassword) {
-      this.logger.warn('❌ SMTP not configured. Email sending will not work.');
-      this.logger.warn('Set SMTP_HOST, SMTP_USER, SMTP_PASSWORD in environment variables.');
+    if (!resendApiKey) {
+      this.logger.warn('❌ RESEND_API_KEY not configured. Email sending will not work.');
+      this.logger.warn('Get your API key from: https://resend.com/api-keys');
       this.isEmailConfigured = false;
-      this.transporter = null;
-      this.emailFrom = emailFrom || 'noreply@example.com';
+      this.resend = null;
+      this.emailFrom = emailFrom;
       return;
     }
 
     try {
-      this.transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465, // true for 465, false for other ports
-        connectionTimeout: 10000, // 10 seconds
-        socketTimeout: 15000, // 15 seconds
-        auth: {
-          user: smtpUser,
-          pass: smtpPassword,
-        },
-      });
-
-      this.emailFrom = emailFrom || 'noreply@example.com';
+      this.resend = new Resend(resendApiKey);
+      this.emailFrom = emailFrom;
       this.isEmailConfigured = true;
-      this.logger.log('✅ SMTP email service initialized successfully');
-      this.logger.log(`Emails will be sent from: ${emailFrom}`);
-
-      // Verify connection
-      this.transporter.verify((error) => {
-        if (error) {
-          this.logger.error('❌ SMTP connection failed:', error.message);
-        } else {
-          this.logger.log('✅ SMTP connection verified successfully');
-        }
-      });
+      this.logger.log('✅ Resend email service initialized successfully');
+      this.logger.log(`📧 Emails will be sent from: ${emailFrom}`);
+      this.logger.log(`ℹ️ Using Resend test domain - emails can be sent to any address`);
     } catch (error) {
-      this.logger.error('❌ Failed to initialize SMTP:', error);
+      this.logger.error('❌ Failed to initialize Resend:', error);
       this.isEmailConfigured = false;
-      this.transporter = null;
-      this.emailFrom = emailFrom || 'noreply@example.com';
+      this.resend = null;
+      this.emailFrom = emailFrom;
     }
   }
 
   async sendEmail(options: SendEmailOptions): Promise<void> {
-    if (!this.isEmailConfigured || !this.transporter) {
-      const error = new Error('Email service is not configured. Please set SMTP_HOST, SMTP_USER, SMTP_PASSWORD.');
+    if (!this.isEmailConfigured || !this.resend) {
+      const error = new Error('Email service is not configured. Please set RESEND_API_KEY in environment variables.');
       this.logger.error('Cannot send email:', error.message);
       throw error;
     }
@@ -86,16 +62,16 @@ export class EmailService {
     const { to, subject, html, text } = options;
 
     try {
-      const result = await this.transporter.sendMail({
+      const result = await this.resend.emails.send({
         from: this.emailFrom,
-        to,
+        to: [to],
         subject,
         html,
         text,
       });
 
-      this.logger.log('✅ Email sent successfully via SMTP:', {
-        messageId: result.messageId,
+      this.logger.log('✅ Email sent successfully via Resend:', {
+        id: result.data?.id,
         to,
         from: this.emailFrom,
       });
@@ -105,7 +81,7 @@ export class EmailService {
         name: error instanceof Error ? error.name : 'Error',
       };
 
-      this.logger.error('❌ Email sending failed via SMTP:', errorDetails);
+      this.logger.error('❌ Email sending failed via Resend:', errorDetails);
       throw error;
     }
   }
