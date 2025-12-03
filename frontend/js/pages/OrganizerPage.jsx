@@ -281,22 +281,28 @@ export default function OrganizerPage() {
                           >
                             View
                           </Link>
-                          <Link
-                            to={`/organizer/event-qr/${event.id}`}
-                            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl transition-all")}
-                            title="Display QR for students to scan (lectures/free events)"
-                          >
-                            <i className="fa-solid fa-desktop mr-1" />
-                            QR Display
-                          </Link>
-                          <Link
-                            to={`/organizer/scanner/${event.id}`}
-                            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-[#d62e1f] text-[#d62e1f] hover:bg-[#d62e1f] hover:text-white rounded-xl transition-all")}
-                            title="Scan student tickets (paid events)"
-                          >
-                            <i className="fa-solid fa-qrcode mr-1" />
-                            Scan Tickets
-                          </Link>
+
+                          {/* Conditional QR button based on checkInMode */}
+                          {event.checkInMode === 'STUDENTS_SCAN' ? (
+                            <Link
+                              to={`/organizer/event-qr/${event.id}`}
+                              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white rounded-xl transition-all")}
+                              title="Display QR for students to scan (free internal events)"
+                            >
+                              <i className="fa-solid fa-desktop mr-1" />
+                              QR Display
+                            </Link>
+                          ) : (
+                            <Link
+                              to={`/organizer/scanner/${event.id}`}
+                              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-[#d62e1f] text-[#d62e1f] hover:bg-[#d62e1f] hover:text-white rounded-xl transition-all")}
+                              title="Scan student tickets/QR codes (paid/external events)"
+                            >
+                              <i className="fa-solid fa-qrcode mr-1" />
+                              Scan QR
+                            </Link>
+                          )}
+
                           <Button
                             variant="outline"
                             size="sm"
