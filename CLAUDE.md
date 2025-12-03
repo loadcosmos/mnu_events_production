@@ -38,19 +38,27 @@ Available MCP tools for deployment monitoring:
 
 **CRITICAL: Update `docs/` after EVERY significant action!**
 
-When you complete ANY of the following:
+**MANDATORY: You MUST create/update docs EVERY TIME you:**
 - ✅ Fix a bug or error
 - ✅ Deploy changes to production (Railway/Vercel)
 - ✅ Run database seed or migrations
 - ✅ Solve a problem (especially after multiple attempts)
 - ✅ Configure new services or settings
+- ✅ Make architectural changes
+- ✅ Add new features or endpoints
 
 **YOU MUST:**
-1. Update relevant `docs/*.md` file with the solution
-2. Include: problem, solution, commands used, results
-3. Commit the documentation update
+1. **IMMEDIATELY** create/update relevant `docs/*.md` file
+2. Include: problem, root cause, solution, code changes, testing
+3. Commit docs WITH the code changes (same commit or separate)
+4. **NEVER skip this step** - it's not optional
 
 **Why?** When context resets, docs are the ONLY source of truth about what was done.
+
+**Doc naming convention:**
+- Bug fixes: `docs/[COMPONENT]_[ISSUE]_FIX.md`
+- Features: `docs/[FEATURE]_IMPLEMENTATION.md`
+- Config: `docs/[SERVICE]_SETUP.md`
 
 **Example files to update:**
 - `docs/VERCEL_404_FIX.md` - Deployment issues
