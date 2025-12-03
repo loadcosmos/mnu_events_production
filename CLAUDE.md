@@ -80,6 +80,17 @@ Available MCP tools for deployment monitoring:
 - **New:** Monetization, Gamification, Moderation, **External Partners** systems
 
 ### 🆕 Recent Updates (2025-12-03)
+
+**Organizer Dashboard Enhancement:**
+- ✅ **Tabs & Status Filtering**: Added tabs (All/Published/Pending/Rejected) to view all events
+- ✅ **Dual Status Badges**: Each event shows moderation status + time status
+  - Moderation: Published (green), Awaiting Approval (orange), Rejected (red)
+  - Time: Upcoming (blue), Ongoing (purple), Completed (gray)
+- ✅ **Status Breakdown**: KPI cards now show published/pending/rejected counts
+- ✅ **Visibility Fix**: Organizers can now see ALL their events including PENDING_MODERATION
+- ✅ **Color-Coded Tabs**: Each tab has color matching its status for easy navigation
+
+**Check-In System:**
 - ✅ **Points Display**: Backend now returns `pointsEarned` in check-in responses (10/15/20 XP)
 - ✅ **External Event Points**: Fixed gamification to properly award 15 XP for external events
 - ✅ **Event Time Validation**: Students can only check-in 30min before event start until event end
