@@ -343,13 +343,13 @@ export class CheckinService {
     // Max 1 scan per 5 seconds per user per event
     const rateLimitKey = `checkin:ratelimit:${userId}:${event.id}`;
     const RATE_LIMIT_WINDOW = 5; // 5 seconds
-    
+
     // Check if rate limit key exists in Redis
     const lastScanTime = await this.cacheManager.get<number>(rateLimitKey);
-    const now = Date.now();
+    const currentTimestamp = Date.now();
 
     if (lastScanTime) {
-      const timeElapsed = now - lastScanTime;
+      const timeElapsed = currentTimestamp - lastScanTime;
       if (timeElapsed < RATE_LIMIT_WINDOW * 1000) {
         const remainingSeconds = Math.ceil((RATE_LIMIT_WINDOW * 1000 - timeElapsed) / 1000);
         throw new BadRequestException(
@@ -361,7 +361,7 @@ export class CheckinService {
     // Set rate limit in Redis with TTL
     await this.cacheManager.set(
       rateLimitKey,
-      now,
+      currentTimestamp,
       RATE_LIMIT_WINDOW * 1000, // TTL in milliseconds
     );
 

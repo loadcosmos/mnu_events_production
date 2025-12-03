@@ -6,7 +6,7 @@ import checkinService from '../services/checkinService';
 import eventsService from '../services/eventsService';
 import { ArrowLeft, Users, Clock, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDate } from '@/utils';
+import { formatDate } from '../utils';
 
 export default function EventCheckInsPage() {
   const { id: eventId } = useParams();
