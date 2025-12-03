@@ -235,6 +235,46 @@ mv vercel.json frontend/vercel.json
 
 **Статус:** ✅ Логин теперь работает!
 
+---
+
+## 🍪 CROSS-ORIGIN COOKIES FIX (2025-12-03 07:13 UTC)
+
+**Проблема:** 401 Unauthorized в production после успешного seed
+- Фронтенд на Vercel: `https://mnu-events-production.vercel.app`
+- Бэкенд на Railway: `https://mnueventsproduction-production.up.railway.app`
+- JWT токены (httpOnly cookies) не отправляются браузером из-за `sameSite='strict'`
+
+**Причина:**
+- Cookie с `sameSite='strict'` блокирует отправку между разными доменами (Vercel ↔ Railway)
+- Браузер не отправляет JWT cookies → 401 Unauthorized на каждый запрос
+
+**Решение:**
+Изменить `sameSite` с `'strict'` на `'none'` для production (требует `secure=true`):
+
+1. **auth.service.ts** (строки 382, 391):
+   ```typescript
+   sameSite: isDevelopment ? 'lax' : 'none', // 'none' allows cross-origin cookies
+   ```
+
+2. **main.ts** (строка 131):
+   ```typescript
+   sameSite: isDevelopment ? 'lax' : 'none', // CSRF cookie
+   ```
+
+3. Убрали `__Host-` prefix из CSRF cookie (несовместим с cross-origin)
+
+**Коммит:**
+```bash
+git commit 11d8b8a
+"fix: Change cookie sameSite to 'none' for cross-origin auth"
+```
+
+**Деплой:** Railway deployment `5fef01a3-e9f5-43f3-8aad-e0929c19218f` (BUILDING)
+
+**Статус:** 🔄 Ожидаем завершения билда Railway
+
+---
+
 ## Альтернатива (если routes не работает)
 
 Создать файл `frontend/public/_redirects`:
