@@ -148,10 +148,22 @@ export default function CreateEventPage() {
 
       const response = await eventsService.create(eventData);
       const eventId = response.id || response.data?.id;
+      const eventStatus = response.status || response.data?.status;
 
-      toast.success('Event created successfully!', {
-        description: 'Your event has been created and is now visible to students.',
-      });
+      // Show different messages based on user role and event status
+      if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') {
+        toast.success('Event created successfully!', {
+          description: 'Your event is now visible to students.',
+        });
+      } else if (eventStatus === 'PENDING_MODERATION') {
+        toast.success('Event created!', {
+          description: 'Your event is awaiting moderator approval. You can view it in your dashboard.',
+        });
+      } else {
+        toast.success('Event created successfully!', {
+          description: 'Your event has been created and is now visible to students.',
+        });
+      }
 
       if (eventId) {
         navigate(`/events/${eventId}`);

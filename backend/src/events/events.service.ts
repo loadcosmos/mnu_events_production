@@ -367,7 +367,44 @@ export class EventsService {
   }
 
   async getMyEvents(userId: string, page?: number, limit?: number) {
-    return this.findAll(page, limit, { creatorId: userId });
+    // For organizers viewing their own events, we need to show ALL statuses
+    // including PENDING_MODERATION, so we pass an empty status filter
+    // This overrides the default filter that excludes PENDING_MODERATION
+    const { skip, take, page: validatedPage } = validatePagination({ page, limit });
+
+    const [events, total] = await Promise.all([
+      this.prisma.event.findMany({
+        where: { creatorId: userId },
+        skip,
+        take,
+        orderBy: { startDate: 'desc' },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          externalPartner: {
+            select: {
+              id: true,
+              companyName: true,
+            },
+          },
+          _count: {
+            select: {
+              registrations: true,
+              tickets: true,
+            },
+          },
+        },
+      }),
+      this.prisma.event.count({ where: { creatorId: userId } }),
+    ]);
+
+    return createPaginatedResponse(events, total, validatedPage, take);
   }
 
   async getEventStatistics(eventId: string, userId: string, userRole: Role) {
