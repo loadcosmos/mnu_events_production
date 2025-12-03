@@ -15,11 +15,13 @@ export default function OrganizerPage() {
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
     totalEvents: 0,
-    upcomingEvents: 0,
+    publishedEvents: 0,
+    pendingEvents: 0,
+    rejectedEvents: 0,
     totalRegistrations: 0,
-    activeClubs: 0, // Пока не реализовано на бэкенде
   });
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'published', 'pending', 'rejected'
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -32,27 +34,27 @@ export default function OrganizerPage() {
       setLoading(true);
       setError('');
 
-      // Загружаем события организатора
-      const response = await eventsService.getMyEvents({ page: 1, limit: 50 });
+      // Загружаем ВСЕ события организатора (включая PENDING_MODERATION)
+      const response = await eventsService.getMyEvents({ page: 1, limit: 100 });
       const events = response.data || response || [];
 
-      // Вычисляем статистику
-      const now = new Date();
-      const upcoming = events.filter(e => new Date(e.startDate) > now);
+      // Вычисляем статистику по статусам модерации
+      const publishedEvents = events.filter(e => e.moderationStatus === 'APPROVED');
+      const pendingEvents = events.filter(e => e.moderationStatus === 'PENDING_MODERATION');
+      const rejectedEvents = events.filter(e => e.moderationStatus === 'REJECTED');
       const totalRegistrations = events.reduce((sum, e) => sum + (e._count?.registrations || 0), 0);
 
       setStats({
         totalEvents: events.length,
-        upcomingEvents: upcoming.length,
+        publishedEvents: publishedEvents.length,
+        pendingEvents: pendingEvents.length,
+        rejectedEvents: rejectedEvents.length,
         totalRegistrations,
-        activeClubs: 0, // TODO: реализовать когда будет API для клубов
       });
 
-      // Сортируем по дате и берем ближайшие
-      setUpcomingEvents(
-        upcoming
-          .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-          .slice(0, 10)
+      // Сохраняем все события, отсортированные по дате
+      setAllEvents(
+        events.sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
       );
     } catch (err) {
       console.error('[OrganizerPage] Load dashboard data failed:', err);
@@ -102,15 +104,44 @@ export default function OrganizerPage() {
     }
   };
 
-  const getStatusBadge = (event) => {
+  // Фильтрация событий по активной вкладке
+  const getFilteredEvents = () => {
+    switch (activeTab) {
+      case 'published':
+        return allEvents.filter(e => e.moderationStatus === 'APPROVED');
+      case 'pending':
+        return allEvents.filter(e => e.moderationStatus === 'PENDING_MODERATION');
+      case 'rejected':
+        return allEvents.filter(e => e.moderationStatus === 'REJECTED');
+      default:
+        return allEvents;
+    }
+  };
+
+  // Получить бейдж статуса модерации
+  const getModerationBadge = (moderationStatus) => {
+    switch (moderationStatus) {
+      case 'APPROVED':
+        return { variant: 'success', label: 'Published', className: 'bg-green-600 text-white' };
+      case 'PENDING_MODERATION':
+        return { variant: 'warning', label: 'Awaiting Approval', className: 'bg-orange-500 text-white' };
+      case 'REJECTED':
+        return { variant: 'destructive', label: 'Rejected', className: 'bg-red-600 text-white' };
+      default:
+        return { variant: 'secondary', label: moderationStatus, className: 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white' };
+    }
+  };
+
+  // Получить бейдж временного статуса
+  const getTimeStatusBadge = (event) => {
     const now = new Date();
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
 
-    if (startDate > now) return { variant: 'default', label: 'Upcoming' };
-    if (startDate <= now && endDate >= now) return { variant: 'default', label: 'Ongoing' };
-    if (endDate < now) return { variant: 'secondary', label: 'Completed' };
-    return { variant: 'secondary', label: event.status };
+    if (startDate > now) return { variant: 'default', label: 'Upcoming', className: 'bg-blue-600 text-white' };
+    if (startDate <= now && endDate >= now) return { variant: 'default', label: 'Ongoing', className: 'bg-purple-600 text-white' };
+    if (endDate < now) return { variant: 'secondary', label: 'Completed', className: 'bg-gray-500 text-white' };
+    return { variant: 'secondary', label: 'Unknown', className: 'bg-gray-400 text-white' };
   };
 
   if (!isAuthenticated()) {
@@ -166,7 +197,7 @@ export default function OrganizerPage() {
         </div>
       )}
 
-      {/* KPI Cards - Red/White/Black */}
+      {/* KPI Cards - Status Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
@@ -176,8 +207,14 @@ export default function OrganizerPage() {
         </Card>
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Upcoming Events</CardDescription>
-            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.upcomingEvents}</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400">Published</CardDescription>
+            <CardTitle className="text-4xl font-bold text-green-600 dark:text-green-500">{stats.publishedEvents}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="liquid-glass-card rounded-2xl">
+          <CardHeader className="pb-2">
+            <CardDescription className="text-gray-600 dark:text-gray-400">Pending Moderation</CardDescription>
+            <CardTitle className="text-4xl font-bold text-orange-500">{stats.pendingEvents}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="liquid-glass-card rounded-2xl">
@@ -186,21 +223,15 @@ export default function OrganizerPage() {
             <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalRegistrations}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="liquid-glass-card rounded-2xl">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Active Clubs</CardDescription>
-            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.activeClubs}</CardTitle>
-          </CardHeader>
-        </Card>
       </div>
 
-      {/* Upcoming Events Table - Admin Style */}
+      {/* Events Table with Tabs */}
       <Card className="liquid-glass-card rounded-2xl">
         <CardHeader className="border-b border-gray-200 dark:border-[#2a2a2a]">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Upcoming Events</CardTitle>
-              <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">Manage your upcoming events</CardDescription>
+              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">My Events</CardTitle>
+              <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">Manage all your events</CardDescription>
             </div>
             <Button
               asChild
@@ -211,27 +242,96 @@ export default function OrganizerPage() {
               </Link>
             </Button>
           </div>
+
+          {/* Tabs for filtering */}
+          <div className="flex gap-2 mt-4">
+            <Button
+              variant={activeTab === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveTab('all')}
+              className={cn(
+                'rounded-xl transition-all',
+                activeTab === 'all'
+                  ? 'liquid-glass-red-button text-white'
+                  : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
+              )}
+            >
+              All Events
+              <Badge className="ml-2 bg-white/20 text-white">{stats.totalEvents}</Badge>
+            </Button>
+            <Button
+              variant={activeTab === 'published' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveTab('published')}
+              className={cn(
+                'rounded-xl transition-all',
+                activeTab === 'published'
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
+              )}
+            >
+              Published
+              <Badge className="ml-2 bg-white/20 text-white">{stats.publishedEvents}</Badge>
+            </Button>
+            <Button
+              variant={activeTab === 'pending' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveTab('pending')}
+              className={cn(
+                'rounded-xl transition-all',
+                activeTab === 'pending'
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
+              )}
+            >
+              Pending
+              <Badge className="ml-2 bg-white/20 text-white">{stats.pendingEvents}</Badge>
+            </Button>
+            {stats.rejectedEvents > 0 && (
+              <Button
+                variant={activeTab === 'rejected' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('rejected')}
+                className={cn(
+                  'rounded-xl transition-all',
+                  activeTab === 'rejected'
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
+                )}
+              >
+                Rejected
+                <Badge className="ml-2 bg-white/20 text-white">{stats.rejectedEvents}</Badge>
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="pt-6">
-          {upcomingEvents.length === 0 ? (
+          {getFilteredEvents().length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300 mb-2">No upcoming events</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Get started by creating your first event</p>
-              <Button
-                asChild
-                size="lg"
-                className="liquid-glass-red-button text-white rounded-2xl"
-              >
-                <Link to="/organizer/create-event">Create Your First Event</Link>
-              </Button>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300 mb-2">
+                {activeTab === 'pending' ? 'No pending events' : activeTab === 'published' ? 'No published events' : activeTab === 'rejected' ? 'No rejected events' : 'No events'}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                {activeTab === 'all' ? 'Get started by creating your first event' : 'Try switching to another tab'}
+              </p>
+              {activeTab === 'all' && (
+                <Button
+                  asChild
+                  size="lg"
+                  className="liquid-glass-red-button text-white rounded-2xl"
+                >
+                  <Link to="/organizer/create-event">Create Your First Event</Link>
+                </Button>
+              )}
             </div>
           ) : (
             <>
               <div className="space-y-3">
-                {upcomingEvents.map((event) => {
+                {getFilteredEvents().map((event) => {
                   const registrations = event._count?.registrations || 0;
                   const capacity = event.capacity || 0;
-                  const statusBadge = getStatusBadge(event);
+                  const moderationBadge = getModerationBadge(event.moderationStatus);
+                  const timeStatusBadge = getTimeStatusBadge(event);
                   const percentage = capacity > 0 ? Math.min((registrations / capacity) * 100, 100) : 0;
 
                   return (
@@ -241,15 +341,17 @@ export default function OrganizerPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
+                          <div className="flex items-center gap-3 mb-2 flex-wrap">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300">
                               {event.title}
                             </h3>
-                            <Badge
-                              variant={statusBadge.variant === 'default' ? 'default' : 'secondary'}
-                              className={statusBadge.variant === 'default' ? 'bg-red-600 text-white' : 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white'}
-                            >
-                              {statusBadge.label}
+                            {/* Moderation Status Badge */}
+                            <Badge className={moderationBadge.className}>
+                              {moderationBadge.label}
+                            </Badge>
+                            {/* Time Status Badge */}
+                            <Badge className={timeStatusBadge.className}>
+                              {timeStatusBadge.label}
                             </Badge>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
