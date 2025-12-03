@@ -16,6 +16,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
 const HomePage = lazy(() => import('./pages/HomePageNew.jsx'));
 const EventsPage = lazy(() => import('./pages/EventsPage.jsx'));
 const EventDetailsPage = lazy(() => import('./pages/EventDetailsPage.jsx'));
+const EventCheckInsPage = lazy(() => import('./pages/EventCheckInsPage.jsx'));
 const MyRegistrationsPage = lazy(() => import('./pages/MyRegistrationsPage.jsx'));
 const ClubsPage = lazy(() => import('./pages/ClubsPage.jsx'));
 const ClubDetailsPage = lazy(() => import('./pages/ClubDetailsPage.jsx'));
@@ -225,6 +226,7 @@ function OrganizerRoutes() {
       <Route path="/create-event" element={<CreateEventPage />} />
       <Route path="/events/:id" element={<EventDetailsPage />} />
       <Route path="/events/:id/edit" element={<EditEventPage />} />
+      <Route path="/events/:id/checkins" element={<EventCheckInsPage />} />
       <Route path="/scanner/:eventId" element={<OrganizerScannerPage />} />
       <Route path="/event-qr/:eventId" element={<EventQRDisplayPage />} />
       <Route path="/analytics" element={<OrganizerAnalyticsPage />} />

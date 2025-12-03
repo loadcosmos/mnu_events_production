@@ -598,6 +598,12 @@ export default function EventDetailsPage() {
                             Scan Tickets
                           </Button>
                         </Link>
+                        <Link to={`/organizer/events/${event.id}/checkins`}>
+                          <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
+                            <i className="fa-solid fa-users mr-1" />
+                            View Check-Ins
+                          </Button>
+                        </Link>
                         <Link to={`/organizer/events/${event.id}/edit`}>
                           <Button variant="outline" size="sm" className="border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white">
                             <i className="fa-solid fa-edit mr-1" />
