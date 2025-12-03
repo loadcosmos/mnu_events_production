@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength, Matches } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class RegisterDto {
   @ApiProperty({ example: 'student@kazguu.kz' })
   @IsEmail()
+  @Transform(({ value }) => value?.trim())
   @Matches(/@kazguu\.kz$/, { message: 'Email must be from @kazguu.kz domain' })
   email: string;
 
