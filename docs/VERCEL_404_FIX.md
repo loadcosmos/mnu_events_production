@@ -46,9 +46,57 @@ git commit d6b32bd
 "fix: Use routes configuration for proper SPA routing on Vercel"
 ```
 
-## Статус
+## Текущий Статус (2025-12-03 00:45 UTC)
 
-⏳ Ожидание автодеплоя Vercel (GitHub integration может задерживаться)
+### ❌ Проблема #1: Build Error - prop-types не найден
+
+**Ошибка:**
+```
+[vite]: Rollup failed to resolve import "prop-types" from
+"/vercel/path0/frontend/js/components/Gamification/GamificationBadge.jsx"
+```
+
+**Попытки решения:**
+1. ✅ Добавлен `prop-types` в `frontend/package.json` (коммит f95e1de)
+2. ❌ Vercel все равно не видит пакет при билде
+3. ❌ Деплойменты dpl_GaS1UHxPdVJ2ySjJ2EXaSVJNAQWV и dpl_5Z4JYDndxKDBkpBSyi1oEZNYJM9Q - статус ERROR
+
+**Возможные причины:**
+- Vercel Root Directory настроен неправильно (должен быть `frontend/`)
+- Vercel Framework Preset не определен как Vite
+- Build Command использует не тот package.json
+
+**Проверено:**
+```bash
+git show HEAD:frontend/package.json | grep prop-types
+# Output: "prop-types": "^15.8.1" ✅ (пакет есть в коммите)
+```
+
+**Следующий шаг:** Проверить настройки проекта в Vercel Dashboard:
+- Project Settings → Build & Development Settings
+- Root Directory: должен быть `frontend`
+- Framework Preset: должен быть `Vite`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+### ⏸️ Проблема #2: SPA 404 (отложена до решения билда)
+
+Последний успешный деплоймент (dpl_mMDawTfpXvW1RXKwvwAsvEzhxLKS):
+- ✅ Build: SUCCESS
+- ❌ Routing: 404 на всех маршрутах кроме `/`
+
+## История всех попыток
+
+### Билд проблемы:
+1. ❌ dpl_GaS1UHxPdVJ2ySjJ2EXaSVJNAQWV - prop-types не найден (без пакета)
+2. ❌ dpl_5Z4JYDndxKDBkpBSyi1oEZNYJM9Q - prop-types не найден (после добавления)
+
+### SPA routing попытки:
+1. ❌ `rewrites` с паттерном `/(.*)`
+2. ❌ `rewrites` с regex `/((?!assets/.*)(?!.*\\.)*)`
+3. ❌ `routes` + `headers` (конфликт)
+4. ❌ `_redirects` файл
+5. ❌ Удаление `vercel.json` полностью
 
 ## Альтернатива (если routes не работает)
 
