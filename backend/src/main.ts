@@ -123,12 +123,12 @@ async function bootstrap() {
     const csrfSecret = configService.get('csrf.secret');
     const csrfUtilities = doubleCsrf({
       getSecret: () => csrfSecret,
-      // Use simple cookie name in dev (HTTP), __Host- prefix in production (HTTPS)
-      // __Host- prefix requires secure=true, which needs HTTPS
-      cookieName: isDevelopment ? 'x-csrf-token' : '__Host-psifi.x-csrf-token',
+      // Use simple cookie name in dev (HTTP), simple name in production (cross-origin doesn't support __Host-)
+      // __Host- prefix requires secure=true + same-origin, but we need cross-origin (Vercel + Railway)
+      cookieName: 'x-csrf-token',
       cookieOptions: {
-        // Use 'lax' in dev for cross-origin localhost, 'strict' in production
-        sameSite: isDevelopment ? 'lax' : 'strict',
+        // Use 'lax' in dev, 'none' in production for cross-origin (Vercel frontend + Railway backend)
+        sameSite: isDevelopment ? 'lax' : 'none',
         path: '/',
         secure: !isDevelopment, // HTTPS only in production
         httpOnly: false, // Allow JavaScript to read cookie for double-submit pattern (required by csrf-csrf)

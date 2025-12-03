@@ -373,21 +373,22 @@ export class AuthService {
   private setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
     const isDevelopment = this.configService.get('nodeEnv') === 'development';
 
-    // Access token cookie (httpOnly, secure in production, sameSite strict in production)
+    // Access token cookie (httpOnly, secure in production, sameSite none for cross-origin)
     // Dev mode uses lax + no secure to support Vite proxy (HTTPS frontend -> HTTP backend via proxy)
+    // Production uses none + secure for cross-origin (Vercel frontend + Railway backend)
     res.cookie('access_token', accessToken, {
       httpOnly: true, // Cannot be accessed by client-side JavaScript (XSS protection)
       secure: !isDevelopment, // HTTPS only in production, allow HTTP in dev for Vite proxy
-      sameSite: isDevelopment ? 'lax' : 'strict', // Strict CSRF protection in production
+      sameSite: isDevelopment ? 'lax' : 'none', // 'none' allows cross-origin cookies (requires secure=true)
       maxAge: 60 * 60 * 1000, // 1 hour (matches JWT expiration)
       path: '/',
     });
 
-    // Refresh token cookie (httpOnly, secure in production, sameSite strict in production)
+    // Refresh token cookie (httpOnly, secure in production, sameSite none for cross-origin)
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: !isDevelopment, // HTTPS only in production
-      sameSite: isDevelopment ? 'lax' : 'strict', // Strict CSRF protection in production
+      sameSite: isDevelopment ? 'lax' : 'none', // 'none' allows cross-origin cookies (requires secure=true)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (matches refresh token expiration)
       path: '/',
     });
