@@ -22,6 +22,7 @@ export class ValidateTicketDto {
 export class ValidateTicketResponseDto {
   success: boolean;
   message: string;
+  pointsEarned?: number;
   user?: {
     id: string;
     firstName: string;

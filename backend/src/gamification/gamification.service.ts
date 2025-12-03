@@ -213,31 +213,38 @@ export class GamificationService {
   async onEventCheckIn(
     userId: string,
     eventId: string,
-  ): Promise<void> {
+  ): Promise<number> {
     // Get event details
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
-      select: { isPaid: true },
+      select: { isPaid: true, isExternalEvent: true },
     });
 
     if (!event) {
-      return;
+      return 0;
     }
 
     // Award points based on event type
-    const points = event.isPaid
-      ? POINTS.PAID_EVENT_CHECKIN
-      : POINTS.FREE_EVENT_CHECKIN;
+    let points: number;
+    if (event.isExternalEvent) {
+      points = POINTS.EXTERNAL_EVENT_CHECKIN; // 15
+    } else if (event.isPaid) {
+      points = POINTS.PAID_EVENT_CHECKIN; // 20
+    } else {
+      points = POINTS.FREE_EVENT_CHECKIN; // 10
+    }
 
     await this.awardPoints(
       userId,
       points,
-      `Check-in at ${event.isPaid ? 'paid' : 'free'} event`,
+      `Check-in at ${event.isExternalEvent ? 'external' : event.isPaid ? 'paid' : 'free'} event`,
     );
 
     // Check for achievements
     await this.checkFirstEvent(userId);
     await this.checkCategoryExpert(userId);
+
+    return points;
   }
 
   /**

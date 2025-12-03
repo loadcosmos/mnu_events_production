@@ -144,16 +144,18 @@ export class CheckinService {
         }),
       ]);
 
-      // Award points for check-in (async, don't wait)
-      this.gamificationService
-        .onEventCheckIn(ticket.userId, dto.eventId)
-        .catch((err) =>
-          this.logger.error('Gamification error:', err),
-        );
+      // Award points for check-in and get points earned
+      let pointsEarned = 0;
+      try {
+        pointsEarned = await this.gamificationService.onEventCheckIn(ticket.userId, dto.eventId);
+      } catch (err) {
+        this.logger.error('Gamification error:', err);
+      }
 
       return {
         success: true,
         message: 'Check-in successful',
+        pointsEarned,
         user: {
           id: ticket.user.id,
           firstName: ticket.user.firstName,
@@ -228,16 +230,18 @@ export class CheckinService {
         }),
       ]);
 
-      // Award points for check-in (async, don't wait)
-      this.gamificationService
-        .onEventCheckIn(registration.userId, dto.eventId)
-        .catch((err) =>
-          this.logger.error('Gamification error:', err),
-        );
+      // Award points for check-in and get points earned
+      let pointsEarned = 0;
+      try {
+        pointsEarned = await this.gamificationService.onEventCheckIn(registration.userId, dto.eventId);
+      } catch (err) {
+        this.logger.error('Gamification error:', err);
+      }
 
       return {
         success: true,
         message: 'Check-in successful',
+        pointsEarned,
         user: {
           id: registration.user.id,
           firstName: registration.user.firstName,
@@ -357,18 +361,20 @@ export class CheckinService {
       },
     });
 
-    // Award points for check-in (async, don't wait)
-    this.gamificationService
-      .onEventCheckIn(userId, event.id)
-      .catch((err) =>
-        this.logger.error('Gamification error:', err),
-      );
+    // Award points for check-in and get points earned
+    let pointsEarned = 0;
+    try {
+      pointsEarned = await this.gamificationService.onEventCheckIn(userId, event.id);
+    } catch (err) {
+      this.logger.error('Gamification error:', err);
+    }
 
     // SECURITY FIX: No manual cleanup needed - Redis TTL handles expiration
 
     return {
       success: true,
       message: 'Check-in successful',
+      pointsEarned,
       checkIn: {
         id: checkIn.id,
         eventId: checkIn.eventId,
