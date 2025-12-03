@@ -10,6 +10,30 @@ Quick reference and guidance for Claude Code when working with MNU Events Platfo
 - Show code/logs only when necessary
 - Long responses only on user request
 
+## 📝 Documentation Rule
+
+**CRITICAL: Update `docs/` after EVERY significant action!**
+
+When you complete ANY of the following:
+- ✅ Fix a bug or error
+- ✅ Deploy changes to production (Railway/Vercel)
+- ✅ Run database seed or migrations
+- ✅ Solve a problem (especially after multiple attempts)
+- ✅ Configure new services or settings
+
+**YOU MUST:**
+1. Update relevant `docs/*.md` file with the solution
+2. Include: problem, solution, commands used, results
+3. Commit the documentation update
+
+**Why?** When context resets, docs are the ONLY source of truth about what was done.
+
+**Example files to update:**
+- `docs/VERCEL_404_FIX.md` - Deployment issues
+- `docs/RAILWAY_SETUP.md` - Railway configuration
+- `docs/DATABASE_SEED.md` - Database operations
+- Create new files as needed
+
 ## 🎯 Project Overview
 
 **MNU Events Platform** - University events management system
