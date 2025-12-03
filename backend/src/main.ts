@@ -161,6 +161,7 @@ async function bootstrap() {
         '/api/api-docs',         // Swagger docs
         '/api/docs',             // Swagger docs
         '/api/advertisements/impression', // Advertisement impression tracking (partial match)
+        '/api/migration/fix-checkin-modes', // One-time migration endpoint
       ];
 
       if (
