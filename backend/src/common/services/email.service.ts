@@ -14,7 +14,7 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter | null = null;
   private isEmailConfigured: boolean = false;
-  private emailFrom: string;
+  private emailFrom: string = 'noreply@example.com';
 
   constructor(private configService: ConfigService) {
     this.initializeEmailService();
