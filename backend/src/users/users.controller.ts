@@ -4,6 +4,8 @@ import {
   Body,
   Patch,
   Param,
+  Delete,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';

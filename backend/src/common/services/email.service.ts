@@ -21,7 +21,7 @@ export class EmailService {
   }
 
   private initializeEmailService() {
-    this.apiKey = this.configService.get<string>('SMTP2GO_API_KEY');
+    this.apiKey = this.configService.get<string>('SMTP2GO_API_KEY') || null;
     this.apiUrl = this.configService.get<string>('SMTP2GO_API_URL') || 'https://api.smtp2go.com/v3/email/send';
     const emailFrom = this.configService.get<string>('EMAIL_FROM');
 
