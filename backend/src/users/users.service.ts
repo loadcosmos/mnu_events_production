@@ -264,26 +264,4 @@ export class UsersService {
     return { message: 'User deleted successfully' };
   }
 
-  async forceDeleteByEmail(email: string) {
-    const users = await this.prisma.user.findMany({
-      where: {
-        email: {
-          equals: email,
-          mode: 'insensitive',
-        },
-      },
-    });
-
-    if (users.length === 0) {
-      return { message: 'No user found with this email' };
-    }
-
-    for (const user of users) {
-      await this.prisma.user.delete({
-        where: { id: user.id },
-      });
-    }
-
-    return { message: `Deleted ${users.length} user(s) with email ${email}` };
-  }
 }

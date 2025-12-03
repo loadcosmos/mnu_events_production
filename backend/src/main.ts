@@ -162,7 +162,6 @@ async function bootstrap() {
         '/api/docs',             // Swagger docs
         '/api/advertisements/impression', // Advertisement impression tracking (partial match)
         '/api/users/verify-all/emails',  // Admin bulk email verification (JWT protected)
-        '/api/users/force-delete',       // Emergency force delete (Secret protected)
       ];
 
       if (

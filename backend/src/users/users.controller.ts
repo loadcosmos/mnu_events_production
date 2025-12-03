@@ -4,10 +4,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-  Query,
   UseGuards,
-  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -17,7 +14,6 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
-import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -118,18 +114,5 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.usersService.remove(id, user.id, user.role);
-  }
-  @Delete('force-delete/:email')
-  @Public()
-  @ApiOperation({ summary: 'Force delete user by email (Emergency only)' })
-  @ApiResponse({ status: 200, description: 'User deleted' })
-  forceDelete(
-    @Param('email') email: string,
-    @Query('secret') secret: string,
-  ) {
-    if (secret !== 'secret123') {
-      throw new ForbiddenException('Invalid secret');
-    }
-    return this.usersService.forceDeleteByEmail(email);
   }
 }
