@@ -405,7 +405,7 @@ export default function HomePage() {
                           </button>
                           <Button
                             size="lg"
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl px-8 h-12 font-bold text-base border-none"
+                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl px-8 h-12 font-bold text-base border-none"
                             asChild
                           >
                             <Link to="/events">View All Events</Link>

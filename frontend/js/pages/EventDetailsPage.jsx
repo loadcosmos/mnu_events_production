@@ -587,7 +587,7 @@ export default function EventDetailsPage() {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <Link to={`/organizer/event-qr/${event.id}`}>
-                          <Button variant="outline" size="sm" className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white">
+                          <Button variant="outline" size="sm" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white">
                             <i className="fa-solid fa-desktop mr-1" />
                             QR Display
                           </Button>

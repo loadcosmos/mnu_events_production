@@ -164,7 +164,7 @@ export default function CsiDashboardPage() {
 
             <div className="bg-white dark:bg-[#1a1a1a] rounded-xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg transition-colors duration-300">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
                   <i className="fa-solid fa-star text-white text-2xl" />
                 </div>
                 <div>
