@@ -91,8 +91,8 @@ export default function EventModal({ eventId, isOpen, onClose }) {
       console.error('[EventModal] Registration failed:', err);
       const errorMessage = err.response?.data?.message
         ? (Array.isArray(err.response.data.message)
-            ? err.response.data.message.join(', ')
-            : err.response.data.message)
+          ? err.response.data.message.join(', ')
+          : err.response.data.message)
         : err.message || 'Failed to register for event';
       toast.error(errorMessage);
     } finally {
@@ -199,6 +199,15 @@ export default function EventModal({ eventId, isOpen, onClose }) {
 
       {/* Modern Modal Content - Single Column Layout with Liquid Glass */}
       <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto liquid-glass-strong rounded-2xl shadow-2xl transform transition-all duration-300 scale-100">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+          aria-label="Close modal"
+        >
+          <i className="fa-solid fa-xmark text-xl" />
+        </button>
+
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f]"></div>

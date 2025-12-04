@@ -34,7 +34,7 @@ const GamificationCard = ({ userId }) => {
             setAchievements(achievementsData);
         } catch (err) {
             console.error('Error loading gamification data:', err);
-            setError('Не удалось загрузить данные геймификации');
+            setError('Failed to load gamification data');
         } finally {
             setLoading(false);
         }
@@ -42,11 +42,11 @@ const GamificationCard = ({ userId }) => {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow-md p-6 border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                 <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-8 bg-gray-200 dark:bg-[#2a2a2a] rounded w-1/3 mb-4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-[#2a2a2a] rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-[#2a2a2a] rounded w-2/3"></div>
                 </div>
             </div>
         );
@@ -54,7 +54,7 @@ const GamificationCard = ({ userId }) => {
 
     if (error) {
         return (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow-md p-6 border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                 <p className="text-red-600">{error}</p>
             </div>
         );
@@ -66,7 +66,7 @@ const GamificationCard = ({ userId }) => {
     const recentAchievements = achievements.slice(0, 5);
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
             {/* Header with gradient */}
             <div
                 className="p-6 text-white"
@@ -75,48 +75,48 @@ const GamificationCard = ({ userId }) => {
                 }}
             >
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold">Ваш прогресс</h2>
+                    <h2 className="text-2xl font-bold">Your Progress</h2>
                     <span className="text-5xl">{levelConfig.icon}</span>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div>
-                        <p className="text-sm opacity-90 mb-1">Текущий уровень</p>
+                        <p className="text-sm opacity-90 mb-1">Current Level</p>
                         <p className="text-3xl font-bold">{levelConfig.label}</p>
                     </div>
                     <div className="ml-auto text-right">
-                        <p className="text-sm opacity-90 mb-1">Баллы</p>
+                        <p className="text-sm opacity-90 mb-1">Points</p>
                         <p className="text-3xl font-bold">{stats.points}</p>
                     </div>
                 </div>
             </div>
 
             {/* Progress section */}
-            <div className="p-6 bg-gray-50">
+            <div className="p-6 bg-gray-50 dark:bg-[#0f0f0f] transition-colors duration-300">
                 <LevelProgressBar currentPoints={stats.points} currentLevel={stats.level} />
             </div>
 
             {/* Statistics */}
             <div className="p-6 grid grid-cols-3 gap-4">
                 <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900">{stats.eventsAttended || 0}</p>
-                    <p className="text-sm text-gray-600">Событий посещено</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.eventsAttended || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Events Attended</p>
                 </div>
                 <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900">{stats.clubsJoined || 0}</p>
-                    <p className="text-sm text-gray-600">Клубов</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.clubsJoined || 0}</p>
+                    <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Clubs</p>
                 </div>
                 <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900">{achievements.length}</p>
-                    <p className="text-sm text-gray-600">Достижений</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{achievements.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Achievements</p>
                 </div>
             </div>
 
             {/* Recent achievements */}
             {recentAchievements.length > 0 && (
-                <div className="p-6 border-t border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        Последние достижения
+                <div className="p-6 border-t border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+                        Recent Achievements
                     </h3>
                     <div className="space-y-3">
                         {recentAchievements.map((achievement) => (
@@ -131,9 +131,9 @@ const GamificationCard = ({ userId }) => {
                     {achievements.length > 5 && (
                         <button
                             onClick={() => {/* TODO: Navigate to achievements page */ }}
-                            className="mt-4 w-full text-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                            className="mt-4 w-full text-center text-sm font-medium text-[#d62e1f] hover:text-[#ff4433] transition-colors"
                         >
-                            Показать все достижения ({achievements.length})
+                            Show all achievements ({achievements.length})
                         </button>
                     )}
                 </div>
@@ -141,9 +141,9 @@ const GamificationCard = ({ userId }) => {
 
             {/* No achievements yet */}
             {recentAchievements.length === 0 && (
-                <div className="p-6 border-t border-gray-200 text-center">
-                    <p className="text-gray-500">
-                        У вас пока нет достижений. Посещайте мероприятия, чтобы получать баллы и награды!
+                <div className="p-6 border-t border-gray-200 dark:border-[#2a2a2a] text-center transition-colors duration-300">
+                    <p className="text-gray-500 dark:text-[#a0a0a0] transition-colors duration-300">
+                        You don't have any achievements yet. Attend events to earn points and rewards!
                     </p>
                 </div>
             )}
@@ -156,3 +156,4 @@ GamificationCard.propTypes = {
 };
 
 export default GamificationCard;
+

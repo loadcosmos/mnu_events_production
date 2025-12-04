@@ -6,7 +6,7 @@ export default function HeroCarousel({ slides = [], autoRotate = true, interval 
   const [isPaused, setIsPaused] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  
+
   const carouselRef = useRef(null);
 
   const nextSlide = useCallback(() => {
@@ -33,11 +33,11 @@ export default function HeroCarousel({ slides = [], autoRotate = true, interval 
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
-    
+
     if (isLeftSwipe) {
       nextSlide();
     } else if (isRightSwipe) {
@@ -98,7 +98,7 @@ export default function HeroCarousel({ slides = [], autoRotate = true, interval 
               <div className="max-w-7xl mx-auto">
                 {slide.isAd && (
                   <div className="inline-block bg-purple-500/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white mb-3">
-                    Реклама
+                    Ad
                   </div>
                 )}
 
@@ -187,10 +187,9 @@ export default function HeroCarousel({ slides = [], autoRotate = true, interval 
               onClick={() => goToSlide(index)}
               className={`
                 h-2 rounded-full transition-all duration-300
-                ${
-                  index === currentIndex
-                    ? 'bg-white w-8'
-                    : 'bg-white/50 hover:bg-white/75 w-2'
+                ${index === currentIndex
+                  ? 'bg-white w-8'
+                  : 'bg-white/50 hover:bg-white/75 w-2'
                 }
               `}
               aria-label={`Go to slide ${index + 1}`}

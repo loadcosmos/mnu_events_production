@@ -8,6 +8,7 @@ import { cn } from '../lib/utils';
 /**
  * Административный Layout для организатора
  * Sidebar слева, минималистичный дизайн: красный, белый, черный
+ * Mobile-responsive: sidebar полностью скрыт на мобильных, открывается как overlay
  */
 export default function OrganizerLayout({ children }) {
   const location = useLocation();
@@ -17,7 +18,26 @@ export default function OrganizerLayout({ children }) {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('ENG');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const langDropdownRef = useRef(null);
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // Auto-close sidebar on mobile
+      if (mobile) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -46,18 +66,39 @@ export default function OrganizerLayout({ children }) {
     { path: '/organizer/analytics', label: 'Analytics', icon: '📈' },
   ];
 
+  // Close sidebar when clicking a link on mobile
+  const handleNavClick = () => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex transition-colors duration-300">
+      {/* Mobile Overlay */}
+      {isMobile && sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Left Sidebar */}
       <aside className={cn(
-        "fixed left-0 top-0 liquid-glass-strong text-white transition-all duration-300 z-40 m-4 rounded-3xl h-[calc(100vh-2rem)]",
-        sidebarOpen ? "w-64" : "w-20"
+        "liquid-glass-strong text-white transition-all duration-300 z-50",
+        isMobile
+          ? `fixed inset-y-0 left-0 w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+          : `fixed left-0 top-0 m-4 rounded-3xl h-[calc(100vh-2rem)] ${sidebarOpen ? 'w-64' : 'w-20'}`
       )}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 border-b border-white/10 flex items-center px-4 rounded-2xl">
-            {sidebarOpen ? (
-              <Link to="/organizer" className="flex items-center space-x-2">
+          <div className={cn(
+            "h-16 border-b border-white/10 flex items-center px-4",
+            !isMobile && "rounded-2xl"
+          )}>
+            {(sidebarOpen || isMobile) ? (
+              <Link to="/organizer" className="flex items-center space-x-2" onClick={handleNavClick}>
                 <div className="w-8 h-8 bg-red-600 rounded-2xl flex items-center justify-center text-white font-bold">
                   M
                 </div>
@@ -81,6 +122,7 @@ export default function OrganizerLayout({ children }) {
                   <li key={item.path}>
                     <Link
                       to={item.path}
+                      onClick={handleNavClick}
                       className={cn(
                         "flex items-center px-4 py-3 rounded-2xl transition-colors",
                         isActive
@@ -89,7 +131,7 @@ export default function OrganizerLayout({ children }) {
                       )}
                     >
                       <span className="text-xl mr-3">{item.icon}</span>
-                      {sidebarOpen && <span className="font-medium">{item.label}</span>}
+                      {(sidebarOpen || isMobile) && <span className="font-medium">{item.label}</span>}
                     </Link>
                   </li>
                 );
@@ -99,7 +141,7 @@ export default function OrganizerLayout({ children }) {
 
           {/* User Section */}
           <div className="border-t border-white/10 p-4">
-            {sidebarOpen ? (
+            {(sidebarOpen || isMobile) ? (
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold">
@@ -142,26 +184,35 @@ export default function OrganizerLayout({ children }) {
       {/* Main Content Area */}
       <div className={cn(
         "flex-1 transition-all duration-300",
-        sidebarOpen ? "ml-[272px]" : "ml-[88px]"
+        isMobile ? "ml-0" : (sidebarOpen ? "ml-[272px]" : "ml-[88px]")
       )}>
         {/* Top Header */}
-        <header className="h-16 liquid-glass-strong flex items-center justify-between px-6 sticky top-0 z-30 mx-4 mt-4 rounded-2xl">
-          <div className="flex items-center space-x-4">
+        <header className={cn(
+          "h-16 liquid-glass-strong flex items-center justify-between px-4 md:px-6 sticky top-0 z-30",
+          isMobile ? "mx-2 mt-2" : "mx-4 mt-4",
+          "rounded-2xl"
+        )}>
+          <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200/50 dark:hover:bg-white/10"
+              aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
             >
-              {sidebarOpen ? '☰' : '☰'}
+              {isMobile ? (
+                <i className="fa-solid fa-bars text-lg" />
+              ) : (
+                '☰'
+              )}
             </Button>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+            <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300 truncate">
               {navItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
             </h1>
           </div>
 
           {/* Right side */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {/* Language selector */}
             <div className="relative" ref={langDropdownRef}>
               <Button
@@ -199,10 +250,14 @@ export default function OrganizerLayout({ children }) {
         </header>
 
         {/* Main Content */}
-        <main className="bg-gray-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-6rem)] p-6">
+        <main className={cn(
+          "bg-gray-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-6rem)]",
+          isMobile ? "p-3" : "p-6"
+        )}>
           {children}
         </main>
       </div>
     </div>
   );
 }
+

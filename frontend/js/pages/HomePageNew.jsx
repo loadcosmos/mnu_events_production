@@ -353,7 +353,7 @@ export default function HomePage() {
                       <div className="max-w-4xl text-center space-y-6">
                         {/* Ad Badge */}
                         <div className="inline-block bg-yellow-500 text-black px-4 py-2 rounded-full text-sm font-bold uppercase">
-                          Реклама
+                          Ad
                         </div>
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
                           {content.title}
@@ -369,7 +369,7 @@ export default function HomePage() {
                             }}
                             className="liquid-glass-red-button px-8 h-12 flex items-center justify-center text-white rounded-2xl font-bold text-base"
                           >
-                            Узнать больше
+                            Learn More
                           </button>
                         </div>
                       </div>

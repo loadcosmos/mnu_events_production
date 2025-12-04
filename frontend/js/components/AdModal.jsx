@@ -43,11 +43,11 @@ export default function AdModal({ ad, isOpen, onClose }) {
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          
+
           {/* Ad Label */}
           <div className="absolute top-4 left-4">
             <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#d62e1f]/80 backdrop-blur-sm text-xs text-white font-medium">
-              <span>Реклама</span>
+              <span>Ad</span>
             </div>
           </div>
         </div>

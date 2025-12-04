@@ -304,7 +304,7 @@ export default function ProfilePage() {
         <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              Геймификация <span className="text-[#d62e1f]">Progress</span>
+              Gamification <span className="text-[#d62e1f]">Progress</span>
             </h2>
 
             <GamificationCard userId={currentUser?.id} />
@@ -320,23 +320,43 @@ export default function ProfilePage() {
               Quick <span className="text-[#d62e1f]">Access</span>
             </h2>
 
-            <Link
-              to="/registrations"
-              className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#d62e1f] rounded-full flex items-center justify-center">
-                  <i className="fa-solid fa-calendar-check text-white text-xl" />
+            <div className="space-y-4">
+              <Link
+                to="/registrations"
+                className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#d62e1f] rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-calendar-check text-white text-xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
+                      My Registrations
+                    </h3>
+                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">View and manage your event registrations</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
-                    My Registrations
-                  </h3>
-                  <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">View and manage your event registrations</p>
+                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
+              </Link>
+
+              <Link
+                to="/csi-dashboard"
+                className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <i className="fa-solid fa-chart-pie text-white text-xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
+                      CSI Statistics
+                    </h3>
+                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">View your CSI activity progress and statistics</p>
+                  </div>
                 </div>
-              </div>
-              <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
-            </Link>
+                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
+              </Link>
+            </div>
           </div>
         </div>
       )}

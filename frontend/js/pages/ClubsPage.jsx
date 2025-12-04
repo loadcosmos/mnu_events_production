@@ -153,118 +153,116 @@ export default function ClubsPage() {
           <div className="max-w-7xl mx-auto px-4 pb-4 relative animate-in slide-in-from-top duration-300">
             {/* Filter Status Bar - Fixed Right */}
             {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
-            <div className="hidden md:block fixed right-6 top-32 z-20 w-64 p-4 rounded-2xl liquid-glass-strong shadow-xl animate-in slide-in-from-right">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-gray-700 dark:text-[#a0a0a0]">
-                  Active Filters
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-[#d62e1f] text-white text-xs font-bold">
-                  {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (startDate || endDate ? 1 : 0)}
-                </span>
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedCategory('ALL');
-                  setSelectedCsiTags([]);
-                  setStartDate('');
-                  setEndDate('');
-                }}
-                className="w-full text-sm font-semibold text-white bg-[#d62e1f] hover:bg-[#ff4433] transition-colors px-4 py-2 rounded-xl flex items-center justify-center gap-2"
-              >
-                <i className="fa-solid fa-xmark"></i>
-                Clear All Filters
-              </button>
-            </div>
-          )}
-
-          {/* Section: Categories */}
-          <div className="mb-4">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-              Категории
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-full font-semibold transition-colors duration-300 ${
-                    selectedCategory === cat
-                      ? 'liquid-glass-red-button text-white'
-                      : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Section: CSI Tags */}
-          <div className="mb-4">
-            <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-              CSI
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {csiCategories.map((csi) => {
-                const isSelected = selectedCsiTags.includes(csi.value);
-                const gradientClass = getCsiGradientClass(csi.value);
-                return (
-                  <button
-                    key={csi.value}
-                    onClick={() => toggleCsiTag(csi.value)}
-                    className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${
-                      isSelected
-                        ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
-                        : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <span className="mr-1.5">{getCsiIcon(csi.value)}</span>
-                    {csi.label.toUpperCase()}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section: Date Range */}
-          <div>
-            <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-              Дата создания
-            </h3>
-            <div className="flex gap-3 items-center flex-wrap">
-              <div className="flex-1 min-w-[200px]">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  placeholder="От"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
-                />
-              </div>
-              <span className="text-gray-500 dark:text-[#666666] font-medium">—</span>
-              <div className="flex-1 min-w-[200px]">
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  placeholder="До"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
-                />
-              </div>
-              {(startDate || endDate) && (
+              <div className="hidden md:block fixed right-6 top-32 z-20 w-64 p-4 rounded-2xl liquid-glass-strong shadow-xl animate-in slide-in-from-right">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-[#a0a0a0]">
+                    Active Filters
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-[#d62e1f] text-white text-xs font-bold">
+                    {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (startDate || endDate ? 1 : 0)}
+                  </span>
+                </div>
                 <button
                   onClick={() => {
+                    setSelectedCategory('ALL');
+                    setSelectedCsiTags([]);
                     setStartDate('');
                     setEndDate('');
                   }}
-                  className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white transition-colors font-semibold text-sm"
+                  className="w-full text-sm font-semibold text-white bg-[#d62e1f] hover:bg-[#ff4433] transition-colors px-4 py-2 rounded-xl flex items-center justify-center gap-2"
                 >
-                  <i className="fa-solid fa-xmark mr-2"></i>
-                  Очистить
+                  <i className="fa-solid fa-xmark"></i>
+                  Clear All Filters
                 </button>
-              )}
+              </div>
+            )}
+
+            {/* Section: Categories */}
+            <div className="mb-4">
+              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
+                Categories
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-full font-semibold transition-colors duration-300 ${selectedCategory === cat
+                        ? 'liquid-glass-red-button text-white'
+                        : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+
+            {/* Section: CSI Tags */}
+            <div className="mb-4">
+              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
+                CSI
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {csiCategories.map((csi) => {
+                  const isSelected = selectedCsiTags.includes(csi.value);
+                  const gradientClass = getCsiGradientClass(csi.value);
+                  return (
+                    <button
+                      key={csi.value}
+                      onClick={() => toggleCsiTag(csi.value)}
+                      className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${isSelected
+                          ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
+                          : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                    >
+                      <span className="mr-1.5">{getCsiIcon(csi.value)}</span>
+                      {csi.label.toUpperCase()}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section: Date Range */}
+            <div>
+              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
+                Creation Date
+              </h3>
+              <div className="flex gap-3 items-center flex-wrap">
+                <div className="flex-1 min-w-[200px]">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="От"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
+                  />
+                </div>
+                <span className="text-gray-500 dark:text-[#666666] font-medium">—</span>
+                <div className="flex-1 min-w-[200px]">
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="До"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
+                  />
+                </div>
+                {(startDate || endDate) && (
+                  <button
+                    onClick={() => {
+                      setStartDate('');
+                      setEndDate('');
+                    }}
+                    className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white transition-colors font-semibold text-sm"
+                  >
+                    <i className="fa-solid fa-xmark mr-2"></i>
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -479,11 +477,10 @@ export default function ClubsPage() {
                   return (
                     <label
                       key={csi.value}
-                      className={`flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all ${
-                        isSelected
+                      className={`flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all ${isSelected
                           ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
                           : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                      }`}
+                        }`}
                     >
                       <input
                         type="checkbox"
@@ -508,9 +505,8 @@ export default function ClubsPage() {
             >
               <span>Date Range</span>
               <i
-                className={`fa-solid fa-chevron-down text-sm transition-transform ${
-                  dateExpanded ? 'rotate-180' : ''
-                }`}
+                className={`fa-solid fa-chevron-down text-sm transition-transform ${dateExpanded ? 'rotate-180' : ''
+                  }`}
               />
             </button>
             {dateExpanded && (

@@ -41,7 +41,7 @@ export default function NativeAd({ ad, onImpression, onClick }) {
       <div className="absolute top-3 right-3 z-10">
         <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#d62e1f]/80 backdrop-blur-sm text-xs text-white">
           <Eye className="w-3 h-3" />
-          <span>Реклама</span>
+          <span>Ad</span>
         </div>
       </div>
 

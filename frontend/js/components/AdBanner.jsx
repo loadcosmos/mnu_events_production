@@ -83,7 +83,7 @@ export default function AdBanner({
 
         {/* Ad Label */}
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs text-white">
-          Реклама
+          Ad
         </div>
 
         {/* Hover Overlay */}
