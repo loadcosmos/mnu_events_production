@@ -70,16 +70,47 @@ Available MCP tools for deployment monitoring:
 
 **MNU Events Platform** - University events management system
 **Status:** 99% Complete | Grade: A | Production Ready: ✅ (Beta ready, testing phase)
-**Last Updated:** 2025-12-03
+**Last Updated:** 2025-12-04
 
 **Tech Stack:**
 - Backend: NestJS 10 + Prisma ORM + PostgreSQL
-- Frontend: React 19 + Vite 7 + Tailwind CSS + React Router v7
+- Frontend: React 19.2.1 + Vite 7 + Tailwind CSS + React Router v7
 - Auth: JWT with role-based access control (STUDENT, ORGANIZER, ADMIN, MODERATOR, **EXTERNAL_PARTNER**)
 - Design: Liquid glass (glassmorphism) + dark theme
 - **New:** Monetization, Gamification, Moderation, **External Partners** systems
 
-### 🆕 Recent Updates (2025-12-03)
+### 🆕 Recent Updates (2025-12-04)
+
+**UI/UX Improvements & Color Migration:**
+- ✅ **Landing Page Access Fixed**: Non-authenticated users can now access homepage (was redirecting to /login)
+- ✅ **Color Scheme Migration**: Unified red brand colors (#d62e1f) across main pages
+  - Updated PricingSettingsPage, OrganizerPage, ServiceDetailsPage
+  - Updated HomePageNew, CsiDashboardPage, EventDetailsPage
+  - Preserved semantic colors (ACADEMIC=blue, CULTURAL=purple)
+- ✅ **QR Check-In Button Fix**: Button disappears after successful check-in
+  - Backend now updates `registration.checkedInAt` in transaction
+  - Frontend conditionally renders based on check-in status
+- ✅ **CheckInSuccessPage**: New confirmation page with confetti animation
+  - Displays points earned with red gradient card
+  - Shows total points and current level badge
+  - Auto-redirect countdown (5 seconds) to registrations
+  - Manual navigation buttons to registrations/events
+  - Integrated with QR scanner success flow
+- ✅ **Security Updates**:
+  - React 19.2.0 → 19.2.1 (security patch)
+  - Fixed glob vulnerability (GHSA-5j98-mcp5-4vw2)
+  - All npm audit checks passing (0 vulnerabilities)
+- ✅ **Dependencies**: Installed canvas-confetti for celebration animations
+
+**Commits:**
+- 650d454 - Fix landing page redirect and QR check-in persistence
+- 4346cd9 - Add totalPoints and level to ValidateStudentResponseDto
+- 25290b8 - Update React to 19.2.1 and resolve glob vulnerability
+- b9508b4 - Color migration (pricing, organizer, services pages)
+- b388c6e - Color migration (homepage, CSI dashboard, event details)
+- b204f65 - Add CheckInSuccessPage with confetti animation
+
+### Previous Updates (2025-12-03)
 
 **Organizer Dashboard Enhancement:**
 - ✅ **Tabs & Status Filtering**: Added tabs (All/Published/Pending/Rejected) to view all events
