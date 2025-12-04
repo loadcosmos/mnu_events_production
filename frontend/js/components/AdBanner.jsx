@@ -32,23 +32,19 @@ export default function AdBanner({
   if (!ad) return null;
 
   const handleClick = () => {
-    // Trigger parent onClick handler to open modal
-    if (onClick) {
-      onClick(ad);
+    // Direct navigation to external URL
+    if (ad.externalUrl) {
+      window.open(ad.externalUrl, '_blank', 'noopener,noreferrer');
     }
-    // Note: External link opening is now handled by AdModal's "Learn More" button
   };
 
   const sizeClass = adSizes[position] || adSizes.TOP_BANNER;
 
-  // For banners below hero section, make them full width
-  const isFullWidth = position === 'TOP_BANNER' || position === 'BOTTOM_BANNER';
-  
   return (
-    <div className={`w-full ${isFullWidth ? '' : 'px-4 sm:px-6 lg:px-8'} my-4`}>
+    <div className="w-full px-4 sm:px-6 lg:px-8 my-4">
       <div
         className={`
-          ${isFullWidth ? 'w-full' : 'max-w-7xl mx-auto rounded-2xl'}
+          max-w-7xl mx-auto rounded-2xl
           overflow-hidden
           liquid-glass-card
           ${sizeClass.desktop} ${sizeClass.mobile}

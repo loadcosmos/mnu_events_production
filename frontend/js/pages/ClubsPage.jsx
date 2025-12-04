@@ -18,6 +18,7 @@ export default function ClubsPage() {
   const [endDate, setEndDate] = useState('');
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [desktopFiltersExpanded, setDesktopFiltersExpanded] = useState(false);
 
   // Collapsible filter sections
   const [categoryExpanded, setCategoryExpanded] = useState(false);
@@ -130,12 +131,28 @@ export default function ClubsPage() {
                 className="pl-12 pr-6 py-3 rounded-lg border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 transition-colors duration-300"
               />
             </div>
+            <button
+              onClick={() => setDesktopFiltersExpanded(!desktopFiltersExpanded)}
+              className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-[#2a2a2a] rounded-lg text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition-colors duration-300"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                />
+              </svg>
+              <span className="font-medium">Filters</span>
+              <i className={`fa-solid fa-chevron-${desktopFiltersExpanded ? 'up' : 'down'} text-sm transition-transform duration-300`} />
+            </button>
           </div>
         </div>
         {/* Category Filters */}
-        <div className="max-w-7xl mx-auto px-4 pb-4 relative">
-          {/* Filter Status Bar - Fixed Right */}
-          {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
+        {desktopFiltersExpanded && (
+          <div className="max-w-7xl mx-auto px-4 pb-4 relative animate-in slide-in-from-top duration-300">
+            {/* Filter Status Bar - Fixed Right */}
+            {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
             <div className="hidden md:block fixed right-6 top-32 z-20 w-64 p-4 rounded-2xl liquid-glass-strong shadow-xl animate-in slide-in-from-right">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-700 dark:text-[#a0a0a0]">
@@ -248,7 +265,8 @@ export default function ClubsPage() {
               )}
             </div>
           </div>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile: Compact Sticky Bar with Icons */}

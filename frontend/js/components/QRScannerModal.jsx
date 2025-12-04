@@ -69,10 +69,16 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
             } catch (err) {
               const errorMessage = err.response?.data?.message || err.message || 'Check-in failed';
               setError(errorMessage);
-              toast.error(errorMessage);
-              
-              // Clear error after 3 seconds
-              setTimeout(() => setError(null), 3000);
+              toast.error(errorMessage, {
+                duration: 4000,
+              });
+
+              // Stop scanner and close modal after error
+              stopScanner();
+              setTimeout(() => {
+                setError(null);
+                onClose();
+              }, 2000);
             }
           },
           (errorMessage) => {

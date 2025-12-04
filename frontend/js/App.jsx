@@ -79,7 +79,7 @@ function App() {
       <ScrollToTop />
       <ThemeProvider>
         <AuthProvider>
-          <Toaster />
+          <Toaster position="top-center" expand={false} richColors closeButton />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Публичные маршруты без Layout */}
