@@ -28,7 +28,25 @@
 
 ---
 
-## 🆕 Recent Changes (2025-12-01)
+## 🆕 Recent Changes (2025-12-04)
+
+### Major UI/UX Improvements:
+- ✅ **Full English Translation** - All UI components translated from Russian to English
+  - Frontend pages: MarketplacePage, TutoringPage, MorePage, ServiceDetailsPage, ClubsPage, ProfilePage
+  - Components: GamificationCard, LevelProgressBar, HeroCarousel, QR Scanner, Ad components
+  - Backend: Gamification levels, achievements, date formats
+- ✅ **Dark Theme Fixes** - Removed white borders/glow from header in dark mode (globals.css)
+- ✅ **QR Scanner Modal Redesign** - Simplified interface, improved UX, backdrop click to close
+- ✅ **Navigation Enhancements**:
+  - Added CSI Statistics link to ProfilePage (students only)
+  - Added "My Clubs" button to EventsPage
+- ✅ **API Integration** - TutoringPage now uses real API instead of mock data
+- ✅ **Gamification Translations**:
+  - Levels: Новичок→Beginner, Активист→Active, Лидер→Leader, Легенда→Legend
+  - Achievements: Первопроходец→Pioneer, etc.
+  - Date formats: Сегодня→Today, Вчера→Yesterday
+
+### Previous Updates (2025-12-01):
 
 ### Major Features Completed:
 - ✅ **QR Check-In System COMPLETE** - 4 event types with automatic mode detection (Type 1 + Type 2)
@@ -446,6 +464,6 @@
 
 ---
 
-**Last Updated:** 2025-12-01
-**Version:** 4.2 (QR Check-In System Complete - 4 Event Types)
-**Next Review:** Before full production deployment
+**Last Updated:** 2025-12-04
+**Version:** 1.0 (Production Ready - Full English UI)
+**Next Review:** Post-deployment monitoring

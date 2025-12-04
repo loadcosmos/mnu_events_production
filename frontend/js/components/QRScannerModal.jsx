@@ -3,7 +3,7 @@ import { X, Camera } from 'lucide-react';
 import checkinService from '../services/checkinService';
 import { toast } from 'sonner';
 
-export default function QRScannerModal({ eventId, onSuccess, onClose }) {
+export default function QRScannerModal({ event, onSuccess, onClose }) {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState(null);
   const scannerRef = useRef(null);
@@ -26,12 +26,12 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
           toast.error('QR scanner not available. Please install html5-qrcode package.');
           return;
         }
-        
+
         if (!Html5Qrcode) {
           setError('QR scanner library not available');
           return;
         }
-        
+
         if (!qrReaderRef.current) return;
 
         const elementId = qrReaderRef.current.id || 'qr-reader';
@@ -53,16 +53,16 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
             try {
               // Validate student check-in
               const response = await checkinService.validateStudent(decodedText);
-              
+
               if (response.success) {
                 toast.success('Check-in successful!', {
                   description: 'You have been checked in to this event.',
                 });
-                
+
                 if (onSuccess) {
                   onSuccess(response);
                 }
-                
+
                 stopScanner();
                 onClose();
               }
@@ -98,7 +98,7 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
     return () => {
       stopScanner();
     };
-  }, [scanning, eventId, onSuccess, onClose]);
+  }, [scanning, event, onSuccess, onClose]);
 
   const stopScanner = async () => {
     if (scannerRef.current) {
@@ -123,49 +123,61 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
     onClose();
   };
 
+  const handleBackdropClick = (e) => {
+    // Only close if clicking directly on the backdrop
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={handleClose}
+      onClick={handleBackdropClick}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleBackdropClick} />
 
       {/* Modal Content */}
       <div
         className="relative w-full max-w-md bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-[#2a2a2a]">
-          <div className="flex items-center gap-3">
-            <Camera className="w-6 h-6 text-[#d62e1f]" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Scan QR Code</h2>
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 z-10 liquid-glass-button text-gray-700 dark:text-gray-300 p-2 rounded-full hover:scale-110 transition-all"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Event Info */}
+        {event && (
+          <div className="p-6 border-b border-gray-200 dark:border-[#2a2a2a]">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{event.title}</h2>
+            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-1">
+                <i className="fa-regular fa-calendar text-[#d62e1f]" />
+                <span>{new Date(event.startDate).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <i className="fa-solid fa-location-dot text-[#d62e1f]" />
+                <span>{event.location}</span>
+              </div>
+            </div>
           </div>
-          <button
-            onClick={handleClose}
-            className="liquid-glass-button text-gray-700 dark:text-gray-300 p-2 rounded-full hover:scale-110 transition-all"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        )}
 
         {/* Scanner Area */}
         <div className="p-6">
           {!scanning ? (
-            <div className="text-center space-y-4">
-              <div className="w-64 h-64 mx-auto bg-gray-100 dark:bg-[#0a0a0a] rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-[#2a2a2a]">
-                <Camera className="w-16 h-16 text-gray-400 dark:text-gray-600" />
-              </div>
-              <p className="text-gray-600 dark:text-gray-400">
-                Click the button below to start scanning
-              </p>
+            <div className="space-y-4">
               <button
                 onClick={startScanning}
-                className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-xl font-bold text-lg hover:scale-105 transition-all"
+                className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-xl font-bold text-lg hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
-                <Camera className="w-5 h-5 inline mr-2" />
+                <Camera className="w-5 h-5" />
                 Start Camera
               </button>
             </div>
@@ -176,13 +188,13 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
                 ref={qrReaderRef}
                 className="w-full rounded-xl overflow-hidden bg-gray-100 dark:bg-[#0a0a0a] min-h-[300px]"
               />
-              
+
               {error && (
                 <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50">
                   <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
                 </div>
               )}
-              
+
               <button
                 onClick={handleClose}
                 className="w-full px-6 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-all"
@@ -196,4 +208,3 @@ export default function QRScannerModal({ eventId, onSuccess, onClose }) {
     </div>
   );
 }
-

@@ -45,7 +45,7 @@ const gamificationService = {
                 max: 100,
                 color: '#9ca3af', // gray
                 bgColor: '#f3f4f6',
-                label: 'Новичок',
+                label: 'Beginner',
                 icon: '🌱',
             },
             ACTIVE: {
@@ -53,7 +53,7 @@ const gamificationService = {
                 max: 500,
                 color: '#3b82f6', // blue
                 bgColor: '#dbeafe',
-                label: 'Активист',
+                label: 'Active',
                 icon: '🔥',
             },
             LEADER: {
@@ -61,7 +61,7 @@ const gamificationService = {
                 max: 1000,
                 color: '#a855f7', // purple
                 bgColor: '#f3e8ff',
-                label: 'Лидер',
+                label: 'Leader',
                 icon: '👑',
             },
             LEGEND: {
@@ -69,7 +69,7 @@ const gamificationService = {
                 max: Infinity,
                 color: '#f59e0b', // gold
                 bgColor: '#fef3c7',
-                label: 'Легенда',
+                label: 'Legend',
                 icon: '⭐',
             },
         };
@@ -142,12 +142,12 @@ const gamificationService = {
         const now = new Date();
         const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 0) return 'Сегодня';
-        if (diffDays === 1) return 'Вчера';
-        if (diffDays < 7) return `${diffDays} дней назад`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} недель назад`;
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
 
-        return date.toLocaleDateString('ru-RU', {
+        return date.toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',

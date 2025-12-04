@@ -15,7 +15,7 @@ export default function EventDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -170,15 +170,15 @@ export default function EventDetailsPage() {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('en-GB', { 
+      date: date.toLocaleDateString('en-GB', {
         weekday: 'long',
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       }),
-      time: date.toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      time: date.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit'
       }),
       full: date.toLocaleString('en-GB', {
         weekday: 'long',
@@ -254,7 +254,7 @@ export default function EventDetailsPage() {
   const eventEndDate = new Date(event.endDate);
   const now = new Date();
   const isPast = eventEndDate.getTime() < now.getTime();
-  
+
   // Debug в development режиме
   if (import.meta.env.DEV) {
     console.log('[EventDetailsPage] Event status check:', {
@@ -514,10 +514,10 @@ export default function EventDetailsPage() {
                           {registering
                             ? 'Registering...'
                             : !isAuthenticated()
-                            ? 'Login to Register'
-                            : isFull
-                            ? 'Event Full'
-                            : 'Register for Event'}
+                              ? 'Login to Register'
+                              : isFull
+                                ? 'Event Full'
+                                : 'Register for Event'}
                         </Button>
                       )
                     )}
@@ -623,15 +623,15 @@ export default function EventDetailsPage() {
 
                 {/* Сообщение для организаторов чужих событий и админов */}
                 {!isPast && isAuthenticated() && user?.role !== 'STUDENT' &&
-                 !(user?.role === 'ORGANIZER' && (event.creatorId === user.id || event.creator?.id === user.id)) && (
-                  <div className="p-4 rounded-md bg-gray-50 border border-gray-200 mt-4">
-                    <p className="text-sm md:text-base text-muted-foreground text-center">
-                      {user?.role === 'ORGANIZER'
-                        ? 'You can only manage your own events. Go to dashboard to view your events.'
-                        : 'Only students can register for events.'}
-                    </p>
-                  </div>
-                )}
+                  !(user?.role === 'ORGANIZER' && (event.creatorId === user.id || event.creator?.id === user.id)) && (
+                    <div className="p-4 rounded-md bg-gray-50 border border-gray-200 mt-4">
+                      <p className="text-sm md:text-base text-muted-foreground text-center">
+                        {user?.role === 'ORGANIZER'
+                          ? 'You can only manage your own events. Go to dashboard to view your events.'
+                          : 'Only students can register for events.'}
+                      </p>
+                    </div>
+                  )}
 
                 {isPast && (
                   <div className="p-4 rounded-md bg-gray-50 border border-gray-200">
@@ -648,7 +648,7 @@ export default function EventDetailsPage() {
         {/* QR Scanner Modal */}
         {showQRScanner && (
           <QRScannerModal
-            eventId={id}
+            event={event}
             onSuccess={(response) => {
               setHasCheckedIn(true);
               toast.success('Check-in successful!');
@@ -660,4 +660,5 @@ export default function EventDetailsPage() {
     </div>
   );
 }
+
 

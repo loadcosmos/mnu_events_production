@@ -37,7 +37,7 @@ export const LEVEL_THRESHOLDS = {
 export class GamificationService {
   private readonly logger = new Logger(GamificationService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Award points to a user and check for level up
@@ -148,8 +148,8 @@ export class GamificationService {
       await this.grantAchievement(
         userId,
         'ATTENDANCE',
-        'Первопроходец',
-        'Посетил первое мероприятие',
+        'Pioneer',
+        'Attended first event',
         POINTS.FIRST_EVENT,
       );
     }
@@ -184,7 +184,7 @@ export class GamificationService {
           userId,
           'CATEGORY',
           achievementName,
-          `Посетил 10+ мероприятий категории ${category}`,
+          `Attended 10+ ${category} events`,
           POINTS.CATEGORY_EXPERT,
         );
       }
@@ -196,15 +196,15 @@ export class GamificationService {
    */
   private getCategoryAchievementName(category: string): string {
     const names: { [key: string]: string } = {
-      CULTURAL: 'Культурный',
-      SPORTS: 'Спортсмен',
-      TECH: 'Технарь',
-      ACADEMIC: 'Ученый',
-      SOCIAL: 'Социальный лев',
-      CAREER: 'Карьерист',
-      OTHER: 'Универсал',
+      CULTURAL: 'Culturist',
+      SPORTS: 'Athlete',
+      TECH: 'Technician',
+      ACADEMIC: 'Scholar',
+      SOCIAL: 'Social Butterfly',
+      CAREER: 'Careerist',
+      OTHER: 'All-rounder',
     };
-    return names[category] || 'Эксперт';
+    return names[category] || 'Expert';
   }
 
   /**
@@ -314,8 +314,8 @@ export class GamificationService {
       user.level === 'LEGEND'
         ? 100
         : ((user.points - currentLevelThreshold) /
-            (nextLevelThreshold - currentLevelThreshold)) *
-          100;
+          (nextLevelThreshold - currentLevelThreshold)) *
+        100;
 
     return {
       points: user.points,
