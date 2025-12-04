@@ -30,8 +30,8 @@
 ## 🚀 Deployment
 
 ### Production Stack
-- **Frontend:** Vercel (https://your-app.vercel.app)
-- **Backend API:** Railway (https://your-api.railway.app)
+- **Frontend:** Vercel (https:/mnu-events-production.vercel.app)
+- **Backend API:** Railway (https://mnueventsproduction-production.up.railway.app)
 - **Database:** Postgres on Railway
 - **Email:** SMTP2GO for transactional emails
 
@@ -142,11 +142,13 @@ DATABASE_URL=postgresql://user:pass@host:port/db
 - **[FEATURES.md](FEATURES.md)** - Complete feature list and user scenarios
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deployment guide for Railway and Vercel
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development workflow and testing
+- **[paper_draft.md](paper_draft.md)** - Academic capstone project paper
 
-###Recent Updates (December 2024)
+### Recent Updates (December 2025)
 - **[docs/UI_UX_IMPROVEMENTS_DEC2024.md](docs/UI_UX_IMPROVEMENTS_DEC2024.md)** - UI/UX fixes and translations to English
 - **[docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md](docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md)** - Admin dashboard and email service updates
 - **[docs/QR_CHECKIN_SYSTEM.md](docs/QR_CHECKIN_SYSTEM.md)** - Comprehensive QR check-in system documentation
+- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ---
 
