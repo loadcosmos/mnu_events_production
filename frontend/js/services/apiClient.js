@@ -113,18 +113,26 @@ apiClient.interceptors.response.use(
       switch (status) {
         case 401:
           // Unauthorized - session expired or token revoked
-          console.error('[API Error] Unauthorized - redirecting to login');
+          console.error('[API Error] Unauthorized');
 
           // Clear CSRF token
           csrfToken = null;
 
-          toast.error('Session expired', {
-            description: 'Please log in again',
-            duration: 3000,
-          });
+          // Check if this is just an auth check (e.g., /auth/profile on initial load)
+          // Don't redirect if user is already on public pages or if it's an auth check request
+          const isAuthCheckRequest = error.config?.url?.includes('/auth/profile') ||
+                                      error.config?.url?.includes('/auth/csrf-token');
+          const publicPaths = ['/', '/login', '/admin/login', '/events', '/clubs', '/verify-email'];
+          const isPublicPath = publicPaths.some(path => window.location.pathname === path || window.location.pathname.startsWith(path));
 
-          // Redirect to login page
-          if (window.location.pathname !== '/login' && window.location.pathname !== '/admin/login') {
+          if (!isAuthCheckRequest && !isPublicPath) {
+            // Only show toast and redirect if this is NOT an auth check and NOT on public page
+            toast.error('Session expired', {
+              description: 'Please log in again',
+              duration: 3000,
+            });
+
+            // Redirect to login page
             setTimeout(() => {
               window.location.href = '/login';
             }, 1000);
