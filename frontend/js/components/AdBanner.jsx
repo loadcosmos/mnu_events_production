@@ -2,22 +2,10 @@ import React, { useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 
 const adSizes = {
-  TOP_BANNER: {
-    desktop: 'h-[150px]',
-    mobile: 'h-[80px]',
-  },
-  BOTTOM_BANNER: {
-    desktop: 'h-[150px]',
-    mobile: 'h-[80px]',
-  },
-  NATIVE_FEED: {
-    desktop: 'h-[150px]',
-    mobile: 'h-[80px]',
-  },
-  HERO_SLIDE: {
-    desktop: 'h-[400px]',
-    mobile: 'h-[300px]',
-  },
+  TOP_BANNER: 'h-[100px] md:h-[200px]',
+  BOTTOM_BANNER: 'h-[100px] md:h-[200px]',
+  NATIVE_FEED: 'h-[100px] md:h-[200px]',
+  HERO_SLIDE: 'h-[300px] md:h-[400px]',
 };
 
 export default function AdBanner({
@@ -36,9 +24,16 @@ export default function AdBanner({
   if (!ad) return null;
 
   const handleClick = () => {
+    // Track click if handler provided
+    if (onClick) {
+      onClick(ad.id);
+    }
     // Direct navigation to external URL
-    if (ad.externalUrl) {
-      window.open(ad.externalUrl, '_blank', 'noopener,noreferrer');
+    const url = ad.externalUrl || ad.linkUrl;
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      console.warn('Ad has no external URL:', ad);
     }
   };
 
@@ -51,7 +46,7 @@ export default function AdBanner({
           max-w-7xl mx-auto rounded-2xl
           overflow-hidden
           liquid-glass-card
-          ${sizeClass.desktop} ${sizeClass.mobile}
+          ${sizeClass}
           cursor-pointer hover:scale-[1.01] transition-all duration-300
           relative group
           border border-gray-200 dark:border-[#2a2a2a]

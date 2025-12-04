@@ -243,7 +243,8 @@ export default function Layout({ children }) {
             <img
               src={isDark ? "/images/logo.png" : "/images/logoblack.png"}
               alt="MNU Events"
-              className="h-12 transition-all duration-300"
+              className="h-12 w-auto"
+              loading="eager"
             />
           </Link>
 
