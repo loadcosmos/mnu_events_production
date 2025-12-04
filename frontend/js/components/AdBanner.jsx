@@ -3,12 +3,16 @@ import { ExternalLink } from 'lucide-react';
 
 const adSizes = {
   TOP_BANNER: {
-    desktop: 'h-[90px]',
-    mobile: 'h-[50px]',
+    desktop: 'h-[150px]',
+    mobile: 'h-[80px]',
   },
   BOTTOM_BANNER: {
-    desktop: 'h-[90px]',
-    mobile: 'h-[50px]',
+    desktop: 'h-[150px]',
+    mobile: 'h-[80px]',
+  },
+  NATIVE_FEED: {
+    desktop: 'h-[150px]',
+    mobile: 'h-[80px]',
   },
   HERO_SLIDE: {
     desktop: 'h-[400px]',

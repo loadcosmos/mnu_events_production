@@ -363,7 +363,9 @@ export default function HomePage() {
                             type="button"
                             onClick={() => {
                               handleAdClick(content.id);
-                              openAdModal(content);
+                              if (content.externalUrl) {
+                                window.open(content.externalUrl, '_blank', 'noopener,noreferrer');
+                              }
                             }}
                             className="liquid-glass-red-button px-8 h-12 flex items-center justify-center text-white rounded-2xl font-bold text-base"
                           >
@@ -470,7 +472,6 @@ export default function HomePage() {
           ad={ads.topBanner}
           position="TOP_BANNER"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
         />
       )}
 
@@ -688,7 +689,6 @@ export default function HomePage() {
           ad={ads.nativeFeed}
           position="NATIVE_FEED"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
         />
       )}
 
@@ -830,7 +830,6 @@ export default function HomePage() {
           ad={ads.bottomBanner}
           position="BOTTOM_BANNER"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
         />
       )}
 
