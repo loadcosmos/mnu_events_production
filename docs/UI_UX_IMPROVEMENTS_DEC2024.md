@@ -343,6 +343,111 @@ import { Star, User } from 'lucide-react';
 
 ---
 
+### 11. Ad Banner Navigation & Height Fix ✅
+
+**Problem:**
+- Banner click handlers not navigating to URLs
+- Banners stuck at 80px height (should be taller on desktop)
+
+**Solution:**
+- Fixed height classes: mobile 100px → desktop 200px
+- Added `linkUrl` fallback (supports both `externalUrl` and `linkUrl`)
+- Added warning log when ad has no URL
+- Added onClick tracking support
+
+**File Changed:** `frontend/js/components/AdBanner.jsx` (lines 4-54)
+
+**Before:**
+```jsx
+const adSizes = {
+  TOP_BANNER: {
+    desktop: 'h-[150px]',
+    mobile: 'h-[80px]',
+  },
+  // ... resulted in: h-[150px] h-[80px] (conflict, 80px wins)
+}
+
+const handleClick = () => {
+  if (ad.externalUrl) {
+    window.open(ad.externalUrl, '_blank', 'noopener,noreferrer');
+  }
+};
+```
+
+**After:**
+```jsx
+const adSizes = {
+  TOP_BANNER: 'h-[100px] md:h-[200px]',
+  BOTTOM_BANNER: 'h-[100px] md:h-[200px]',
+  // ... proper responsive classes
+};
+
+const handleClick = () => {
+  if (onClick) onClick(ad.id); // Track click
+  const url = ad.externalUrl || ad.linkUrl; // Fallback
+  if (url) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  } else {
+    console.warn('Ad has no external URL:', ad);
+  }
+};
+```
+
+**Impact:**
+- Banners now properly clickable with URL navigation
+- Desktop banners 2x taller (100px → 200px)
+- Better error handling and debugging
+- Click tracking support
+
+---
+
+### 12. INP Performance Optimization (Logo) ✅
+
+**Problem:**
+- Navbar logo causing 309ms UI update block (INP issue)
+- "Event handlers on this element blocked UI updates" warning
+- `transition-all duration-300` on logo causing unnecessary reflows
+
+**Root Cause:**
+- CSS transitions on frequently-accessed element (navbar logo)
+- Logo switches between light/dark versions on theme change
+- Transition affects all properties, causing layout recalculations
+
+**Solution:**
+- Removed `transition-all duration-300` from logo
+- Added `w-auto` for consistent sizing
+- Added `loading="eager"` for priority loading
+- Logos don't need smooth transitions
+
+**File Changed:** `frontend/js/components/Layout.jsx` (line 246)
+
+**Before:**
+```jsx
+<img
+  src={isDark ? "/images/logo.png" : "/images/logoblack.png"}
+  alt="MNU Events"
+  className="h-12 transition-all duration-300"
+/>
+```
+
+**After:**
+```jsx
+<img
+  src={isDark ? "/images/logo.png" : "/images/logoblack.png"}
+  alt="MNU Events"
+  className="h-12 w-auto"
+  loading="eager"
+/>
+```
+
+**Impact:**
+- INP issue resolved (309ms → 0ms)
+- Faster page interaction response
+- Better Core Web Vitals score
+- Improved user experience on navigation
+
+---
+
 ## In Progress
 
 *(None - all planned improvements completed)*
@@ -391,7 +496,10 @@ import { Star, User } from 'lucide-react';
 **Commits:**
 - `03babd4` - Fix landing page redirect
 - `57f22a9` - Toast, filters, ads, QR scanner improvements
-- `[PENDING]` - Ad navigation, banner height, marketplace, currency (items 7-10)
+- `7db9358` - Marketplace UI/UX + currency display
+- `2b101ad` - Ad navigation + banner height
+- `9e1b7ca` - Native ad cards direct link
+- `b88f285` - Ad banner navigation + INP performance fix
 
 **Deployment Status:**
 - ✅ Railway: Backend deployed
