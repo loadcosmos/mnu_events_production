@@ -121,7 +121,7 @@ export default function ClubsPage() {
       <div className="hidden md:block sticky top-20 z-30 liquid-glass-strong border-b border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-2xl">
+            <div className="relative flex-1">
               <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#a0a0a0] text-lg transition-colors duration-300" />
               <Input
                 type="search"
@@ -131,140 +131,123 @@ export default function ClubsPage() {
                 className="pl-12 pr-6 py-3 rounded-lg border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 transition-colors duration-300"
               />
             </div>
+
             <button
               onClick={() => setDesktopFiltersExpanded(!desktopFiltersExpanded)}
-              className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-[#2a2a2a] rounded-lg text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition-colors duration-300"
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${desktopFiltersExpanded || (selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate)
+                ? 'bg-[#d62e1f] text-white shadow-lg'
+                : 'bg-white dark:bg-[#1a1a1a] text-gray-700 dark:text-[#a0a0a0] border border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-[#2a2a2a]'
+                }`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                />
-              </svg>
-              <span className="font-medium">Filters</span>
-              <i className={`fa-solid fa-chevron-${desktopFiltersExpanded ? 'up' : 'down'} text-sm transition-transform duration-300`} />
+              <i className="fa-solid fa-filter" />
+              <span>Filters</span>
+              {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
+                <span className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs">
+                  {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (startDate || endDate ? 1 : 0)}
+                </span>
+              )}
+              <i className={`fa-solid fa-chevron-down ml-2 transition-transform duration-300 ${desktopFiltersExpanded ? 'rotate-180' : ''}`} />
             </button>
           </div>
-        </div>
-        {/* Category Filters */}
-        {desktopFiltersExpanded && (
-          <div className="max-w-7xl mx-auto px-4 pb-4 relative animate-in slide-in-from-top duration-300">
-            {/* Filter Status Bar - Fixed Right */}
-            {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
-              <div className="hidden md:block fixed right-6 top-32 z-20 w-64 p-4 rounded-2xl liquid-glass-strong shadow-xl animate-in slide-in-from-right">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-gray-700 dark:text-[#a0a0a0]">
-                    Active Filters
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#d62e1f] text-white text-xs font-bold">
-                    {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (startDate || endDate ? 1 : 0)}
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedCategory('ALL');
-                    setSelectedCsiTags([]);
-                    setStartDate('');
-                    setEndDate('');
-                  }}
-                  className="w-full text-sm font-semibold text-white bg-[#d62e1f] hover:bg-[#ff4433] transition-colors px-4 py-2 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <i className="fa-solid fa-xmark"></i>
-                  Clear All Filters
-                </button>
-              </div>
-            )}
 
-            {/* Section: Categories */}
-            <div className="mb-4">
-              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-                Categories
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-full font-semibold transition-colors duration-300 ${selectedCategory === cat
-                        ? 'liquid-glass-red-button text-white'
-                        : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                      }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Section: CSI Tags */}
-            <div className="mb-4">
-              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-                CSI
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {csiCategories.map((csi) => {
-                  const isSelected = selectedCsiTags.includes(csi.value);
-                  const gradientClass = getCsiGradientClass(csi.value);
-                  return (
-                    <button
-                      key={csi.value}
-                      onClick={() => toggleCsiTag(csi.value)}
-                      className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${isSelected
-                          ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
-                          : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
-                        }`}
-                    >
-                      <span className="mr-1.5">{getCsiIcon(csi.value)}</span>
-                      {csi.label.toUpperCase()}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Section: Date Range */}
-            <div>
-              <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-2">
-                Creation Date
-              </h3>
-              <div className="flex gap-3 items-center flex-wrap">
-                <div className="flex-1 min-w-[200px]">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    placeholder="От"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
-                  />
-                </div>
-                <span className="text-gray-500 dark:text-[#666666] font-medium">—</span>
-                <div className="flex-1 min-w-[200px]">
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    placeholder="До"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
-                  />
-                </div>
-                {(startDate || endDate) && (
+          {/* Collapsible Filters Section */}
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${desktopFiltersExpanded ? 'max-h-[800px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
+            <div className="pb-2">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Filter Options</h3>
+                {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
                   <button
                     onClick={() => {
+                      setSelectedCategory('ALL');
+                      setSelectedCsiTags([]);
                       setStartDate('');
                       setEndDate('');
                     }}
-                    className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white transition-colors font-semibold text-sm"
+                    className="text-sm text-[#d62e1f] hover:text-[#ff4433] font-semibold flex items-center gap-1"
                   >
-                    <i className="fa-solid fa-xmark mr-2"></i>
-                    Clear
+                    <i className="fa-solid fa-xmark" />
+                    Clear All
                   </button>
                 )}
               </div>
+
+              <div className="grid grid-cols-1 gap-6">
+                {/* Section: Categories */}
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
+                    Categories
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${selectedCategory === cat
+                          ? 'liquid-glass-red-button text-white'
+                          : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                          }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Section: CSI Tags */}
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
+                    CSI Attributes
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {csiCategories.map((csi) => {
+                      const isSelected = selectedCsiTags.includes(csi.value);
+                      const gradientClass = getCsiGradientClass(csi.value);
+                      return (
+                        <button
+                          key={csi.value}
+                          onClick={() => toggleCsiTag(csi.value)}
+                          className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${isSelected
+                            ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
+                            : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                            }`}
+                        >
+                          <span className="mr-1.5">{getCsiIcon(csi.value)}</span>
+                          {csi.label.toUpperCase()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Section: Date Range */}
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
+                    Date Range
+                  </h3>
+                  <div className="flex gap-3 items-center flex-wrap">
+                    <div className="flex-1 min-w-[200px] max-w-xs">
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
+                      />
+                    </div>
+                    <span className="text-gray-500 dark:text-[#666666] font-medium">—</span>
+                    <div className="flex-1 min-w-[200px] max-w-xs">
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Mobile: Compact Sticky Bar with Icons */}
