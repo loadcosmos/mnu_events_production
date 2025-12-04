@@ -133,12 +133,14 @@ export default function MyRegistrationsPage() {
       toast.dismiss(loadingToast);
 
       if (response.success) {
-        toast.success('Check-in успешен!', {
-          description: `Вы зарегистрированы на мероприятии. Получено ${response.pointsEarned || 0} XP`,
+        // Navigate to success page with URL params
+        const params = new URLSearchParams({
+          points: response.pointsEarned || 0,
+          total: response.totalPoints || response.pointsEarned || 0,
+          level: response.level || 'NEWCOMER',
+          event: scanningEventId ? registrations.find(r => r.event.id === scanningEventId)?.event?.title || 'Event' : 'Event',
         });
-
-        // Reload registrations to update UI
-        await loadRegistrations();
+        navigate(`/checkin-success?${params.toString()}`);
       } else {
         toast.error('Check-in не удался', {
           description: response.message || 'Попробуйте еще раз',

@@ -44,6 +44,7 @@ const MockPaymentPage = lazy(() => import('./pages/MockPaymentPage.jsx'));
 const ModerationQueuePage = lazy(() => import('./pages/ModerationQueuePage.jsx'));
 const ModeratorDashboardPage = lazy(() => import('./pages/ModeratorDashboardPage.jsx'));
 const CsiDashboardPage = lazy(() => import('./pages/CsiDashboardPage.jsx'));
+const CheckInSuccessPage = lazy(() => import('./pages/CheckInSuccessPage.jsx'));
 
 // External Partners System Pages
 const TicketPurchasePage = lazy(() => import('./pages/TicketPurchasePage.jsx'));
@@ -150,6 +151,14 @@ function App() {
                 element={
                   <ProtectedRoute roles={['STUDENT']}>
                     <Layout><CsiDashboardPage /></Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkin-success"
+                element={
+                  <ProtectedRoute roles={['STUDENT']}>
+                    <Layout><CheckInSuccessPage /></Layout>
                   </ProtectedRoute>
                 }
               />
