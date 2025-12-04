@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -39,10 +39,10 @@ export default function OrganizerLayout({ children }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await logout();
     navigate('/');
-  };
+  }, [logout, navigate]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -60,18 +60,18 @@ export default function OrganizerLayout({ children }) {
     };
   }, [langOpen]);
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { path: '/organizer', label: 'Dashboard', icon: '📊' },
     { path: '/organizer/create-event', label: 'Create Event', icon: '➕' },
     { path: '/organizer/analytics', label: 'Analytics', icon: '📈' },
-  ];
+  ], []);
 
   // Close sidebar when clicking a link on mobile
-  const handleNavClick = () => {
+  const handleNavClick = useCallback(() => {
     if (isMobile) {
       setSidebarOpen(false);
     }
-  };
+  }, [isMobile]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex transition-colors duration-300">
@@ -206,7 +206,7 @@ export default function OrganizerLayout({ children }) {
                 '☰'
               )}
             </Button>
-            <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300 truncate">
+            <h1 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white transition-colors duration-300 truncate">
               {navItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
             </h1>
           </div>
@@ -252,7 +252,7 @@ export default function OrganizerLayout({ children }) {
         {/* Main Content */}
         <main className={cn(
           "bg-gray-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-6rem)]",
-          isMobile ? "p-3" : "p-6"
+          isMobile ? "p-4" : "p-6"
         )}>
           {children}
         </main>

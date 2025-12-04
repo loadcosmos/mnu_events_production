@@ -156,20 +156,12 @@ export default function EventsPage() {
               </h1>
               <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Find your next adventure</p>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate('/clubs')}
-                className="liquid-glass-button text-gray-900 dark:text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-lg border border-gray-300 dark:border-[#2a2a2a]"
-              >
-                My Clubs
-              </button>
-              <button
-                onClick={() => navigate('/registrations')}
-                className="liquid-glass-red-button text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
-              >
-                My Registrations
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/registrations')}
+              className="liquid-glass-red-button text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
+            >
+              My Registrations
+            </button>
           </div>
         </div>
       </div>

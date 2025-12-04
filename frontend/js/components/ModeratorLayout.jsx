@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -20,10 +20,10 @@ export default function ModeratorLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const langDropdownRef = useRef(null);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await logout();
     navigate('/');
-  };
+  }, [logout, navigate]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,10 +41,10 @@ export default function ModeratorLayout({ children }) {
     };
   }, [langOpen]);
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { path: '/moderator', label: 'Dashboard', icon: '📊' },
     { path: '/moderator/queue', label: 'Moderation Queue', icon: '✅' },
-  ];
+  ], []);
 
   // Detect mobile screen
   useEffect(() => {
@@ -59,9 +59,9 @@ export default function ModeratorLayout({ children }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleNavClick = () => {
+  const handleNavClick = useCallback(() => {
     if (isMobile) setSidebarOpen(false);
-  };
+  }, [isMobile]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex transition-colors duration-300">
@@ -183,7 +183,7 @@ export default function ModeratorLayout({ children }) {
             >
               {isMobile ? <i className="fa-solid fa-bars text-lg" /> : '☰'}
             </Button>
-            <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white truncate">
+            <h1 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white truncate">
               {navItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
             </h1>
           </div>
@@ -229,7 +229,7 @@ export default function ModeratorLayout({ children }) {
         {/* Main Content */}
         <main className={cn(
           "bg-gray-50 dark:bg-[#0a0a0a] min-h-[calc(100vh-6rem)]",
-          isMobile ? "p-3" : "p-6"
+          isMobile ? "p-4" : "p-6"
         )}>
           {children}
         </main>

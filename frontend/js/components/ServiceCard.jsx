@@ -3,9 +3,9 @@ import { Star, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const priceTypeLabels = {
-  HOURLY: 'за час',
-  FIXED: 'фиксированная',
-  PER_SESSION: 'за занятие',
+  HOURLY: 'per hour',
+  FIXED: 'fixed',
+  PER_SESSION: 'per session',
 };
 
 const categoryColors = {
@@ -74,7 +74,7 @@ export default function ServiceCard({ service }) {
         {/* Type Badge */}
         <div className="absolute top-3 right-3">
           <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300">
-            {service.type === 'TUTORING' ? 'Репетиторство' : 'Услуга'}
+            {service.type === 'TUTORING' ? 'Tutoring' : 'Service'}
           </span>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function ServiceCard({ service }) {
                 </span>
               </>
             ) : (
-              <span className="text-xs text-gray-500 dark:text-gray-500">Нет отзывов</span>
+              <span className="text-xs text-gray-500 dark:text-gray-500">No reviews</span>
             )}
           </div>
 
@@ -151,7 +151,7 @@ export default function ServiceCard({ service }) {
             shadow-md hover:shadow-lg
           "
         >
-          Заказать
+          Order
         </button>
       </div>
     </div>
