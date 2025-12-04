@@ -97,34 +97,60 @@ This script automatically starts the database, installs dependencies, applies mi
 
 Create `backend/.env` from `backend/.env.example`.
 
-#### Authentication & Security
+#### Production Configuration (Railway)
 ```bash
-# JWT token signing keys (generate secure random strings)
-JWT_SECRET=your-secret-key-change-in-production
-REFRESH_TOKEN_SECRET=your-refresh-secret-change-in-production
-EMAIL_VERIFICATION_SECRET=your-verification-secret-change-in-production
+# Database
+DATABASE_URL="${{Postgres.DATABASE_URL}}"  # Railway auto-injected
 
-# Payment signing secret (for QR codes, etc.)
-PAYMENT_SECRET=your-payment-secret-key
+# Server Configuration
+NODE_ENV="production"
+NODE_OPTIONS="--dns-result-order=ipv4first"
+PORT="3001"
+HOST="0.0.0.0"
 
-# Token expiration
-JWT_EXPIRES_IN=1h
-REFRESH_TOKEN_EXPIRES_IN=7d
+# Authentication & Security
+JWT_SECRET="88187cb4dbed06827f35e9cf3a56e22cdd18899efc831f131f9f45d0bbab16b6"
+JWT_EXPIRATION="1h"
+JWT_REFRESH_SECRET="67088a7cb2f16b81f652fe9e190163471be4d743657f925e4fbd1c2faaaad0da"
+REFRESH_TOKEN_SECRET="67088a7cb2f16b81f652fe9e190163471be4d743657f925e4fbd1c2faaaad0da"
+REFRESH_TOKEN_EXPIRATION="7d"
+EMAIL_VERIFICATION_SECRET="cf9c2d41fe040848f4762cff9e8103b4bb52aefeb44e87f73bfa24d38790aec6"
+EMAIL_VERIFICATION_EXPIRATION="24h"
+PAYMENT_SECRET="1a17c6d2b17c5ca6cfe51430d0fe07de8f9000b9b7c954ea8dbb257f9e75909a"
+CSRF_SECRET="5b0a6a610ac6605992c9ab4379f5324f"
+
+# CORS Configuration
+CORS_ORIGIN="https://mnu-events-production.vercel.app,https://mnueventsproduction-production.up.railway.app,https://mnu-events-production-*.vercel.app"
+
+# Redis (Upstash)
+REDIS_HOST="amazing-stud-43722.upstash.io"
+REDIS_PORT="6379"
+REDIS_PASSWORD="AarKAAIncDJiNTNiNDFjMTUyYmY0YTkxYjNlMWY4YjJhODRjNTA5ZnAyNDM3MjI"
+REDIS_DB="0"
+REDIS_TLS="true"
+
+# Email Configuration (SMTP2GO API)
+EMAIL_FROM="nurgali_aibar@kazguu.kz"
+SMTP2GO_API_KEY="api-0DBA910BC76045A48D625CAE1B2928DD"
+SMTP2GO_API_URL="https://api.smtp2go.com/v3/email/send"
+
+# Rate Limiting
+THROTTLE_TTL="60"
+THROTTLE_LIMIT="100"
+
+# Logging
+LOG_LEVEL="info"
+LOG_FILE_ENABLED="false"
 ```
 
-#### Email Configuration (SMTP2GO)
+#### Local Development
+For local development, copy the production values or use these test values:
 ```bash
-SMTP_HOST=mail.smtp2go.com
-SMTP_PORT=587
-SMTP_USER=your-smtp2go-username
-SMTP_PASS=your-smtp2go-password
-SMTP_FROM_NAME=MNU Events
-SMTP_FROM_EMAIL=noreply@yourdomain.com
-```
-
-#### Database (Railway Production)
-```bash
-DATABASE_URL=postgresql://user:pass@host:port/db
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mnu_events"
+NODE_ENV="development"
+JWT_SECRET="dev-secret-key-change-me"
+CORS_ORIGIN="http://localhost:5173"
+# ... other settings
 ```
 
 ### Test Accounts (after seeding)
@@ -145,6 +171,7 @@ DATABASE_URL=postgresql://user:pass@host:port/db
 - **[paper_draft.md](paper_draft.md)** - Academic capstone project paper
 
 ### Recent Updates (December 2025)
+- **[docs/UI_UX_MOBILE_OPTIMIZATION.md](docs/UI_UX_MOBILE_OPTIMIZATION.md)** - Mobile responsiveness & INP performance improvements
 - **[docs/UI_UX_IMPROVEMENTS_DEC2024.md](docs/UI_UX_IMPROVEMENTS_DEC2024.md)** - UI/UX fixes and translations to English
 - **[docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md](docs/ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md)** - Admin dashboard and email service updates
 - **[docs/QR_CHECKIN_SYSTEM.md](docs/QR_CHECKIN_SYSTEM.md)** - Comprehensive QR check-in system documentation
