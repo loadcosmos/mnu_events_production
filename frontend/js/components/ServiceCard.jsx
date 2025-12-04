@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Clock, DollarSign, User } from 'lucide-react';
+import { Star, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const priceTypeLabels = {
@@ -127,9 +127,8 @@ export default function ServiceCard({ service }) {
 
           {/* Price */}
           <div className="flex flex-col items-end">
-            <div className="flex items-center gap-1 text-lg font-bold text-[#d62e1f] dark:text-[#d62e1f]">
-              <DollarSign className="w-4 h-4" />
-              <span>{service.price.toLocaleString()}₸</span>
+            <div className="text-lg font-bold text-[#d62e1f] dark:text-[#d62e1f]">
+              {service.price.toLocaleString()} ₸
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-500">
               {priceTypeLabels[service.priceType]}

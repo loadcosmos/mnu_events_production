@@ -149,18 +149,18 @@ export default function MarketplacePage() {
           <div className="flex gap-3">
             <Button
               onClick={() => navigate('/services/create')}
-              className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white"
+              className="rounded-xl bg-gradient-to-r from-[#d62e1f] to-[#b91c1c] hover:from-[#b91c1c] hover:to-[#991b1b] text-white shadow-md hover:shadow-lg transition-all"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Service
+              Создать услугу
             </Button>
             <Button
               onClick={() => navigate('/advertisements/create')}
               variant="outline"
-              className="rounded-xl border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
+              className="rounded-xl border-[#d62e1f] dark:border-[#d62e1f] text-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-all"
             >
               <Megaphone className="w-4 h-4 mr-2" />
-              Post Ad
+              Разместить рекламу
             </Button>
           </div>
         </div>
@@ -179,8 +179,8 @@ export default function MarketplacePage() {
                 w-full pl-12 pr-4 py-3 rounded-lg
                 bg-white dark:bg-[#1a1a1a]
                 border border-gray-200 dark:border-[#2a2a2a]
-                focus:border-purple-500 dark:focus:border-purple-500
-                focus:ring-2 focus:ring-purple-500/20
+                focus:border-[#d62e1f] dark:focus:border-[#d62e1f]
+                focus:ring-2 focus:ring-[#d62e1f]/20
                 text-gray-900 dark:text-white
                 outline-none transition-all
               "
@@ -197,10 +197,10 @@ export default function MarketplacePage() {
                 px-4 py-2 rounded-lg
                 bg-white dark:bg-[#1a1a1a]
                 border border-gray-200 dark:border-[#2a2a2a]
-                focus:border-purple-500 dark:focus:border-purple-500
-                focus:ring-2 focus:ring-purple-500/20
+                focus:border-[#d62e1f] dark:focus:border-[#d62e1f]
+                focus:ring-2 focus:ring-[#d62e1f]/20
                 text-gray-900 dark:text-white
-                outline-none
+                outline-none cursor-pointer transition-all
               "
             >
               {categories.map((cat) => (
@@ -218,10 +218,10 @@ export default function MarketplacePage() {
                 px-4 py-2 rounded-lg
                 bg-white dark:bg-[#1a1a1a]
                 border border-gray-200 dark:border-[#2a2a2a]
-                focus:border-purple-500 dark:focus:border-purple-500
-                focus:ring-2 focus:ring-purple-500/20
+                focus:border-[#d62e1f] dark:focus:border-[#d62e1f]
+                focus:ring-2 focus:ring-[#d62e1f]/20
                 text-gray-900 dark:text-white
-                outline-none
+                outline-none cursor-pointer transition-all
               "
             >
               {sortOptions.map((option) => (
