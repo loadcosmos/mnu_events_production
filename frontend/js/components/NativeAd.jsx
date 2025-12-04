@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ExternalLink, Eye } from 'lucide-react';
-import AdModal from './AdModal';
 
 export default function NativeAd({ ad, onImpression, onClick }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   useEffect(() => {
     // Track impression when ad is rendered
     if (onImpression && ad) {
@@ -18,8 +15,11 @@ export default function NativeAd({ ad, onImpression, onClick }) {
     if (onClick) {
       onClick(ad.id);
     }
-    // Open modal instead of navigating
-    setIsModalOpen(true);
+    // Direct navigation to external URL
+    const url = ad.externalUrl || ad.linkUrl;
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   };
 
   return (
@@ -108,13 +108,6 @@ export default function NativeAd({ ad, onImpression, onClick }) {
         <span>Спонсируется</span>
         <span className="text-[#d62e1f] dark:text-[#d62e1f]">Продвижение</span>
       </div>
-
-      {/* Ad Modal */}
-      <AdModal
-        ad={ad}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 }
