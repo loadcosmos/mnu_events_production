@@ -5,7 +5,7 @@
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Backend** | NestJS 10 + Prisma + PostgreSQL | REST API with JWT auth |
-| **Frontend** | React 19 + Vite 7 + Tailwind | SPA with glassmorphism UI |
+| **Frontend** | React 19 + Vite 7 + Tailwind + React Query | SPA with glassmorphism UI |
 | **Auth** | JWT + RBAC | Roles: STUDENT, ORGANIZER, MODERATOR, ADMIN, EXTERNAL_PARTNER |
 | **Deploy** | Railway (backend) + Vercel (frontend) | Separate CI/CD pipelines |
 
@@ -30,10 +30,6 @@ npx prisma studio                       # DB GUI
 # Frontend (cd frontend/)
 npm run dev                             # Dev server (port 5173)
 npm run build                           # Production build
-
-# Docker
-docker-compose up -d postgres           # DB only
-docker-compose up -d                    # All services
 ```
 
 ---
@@ -43,9 +39,28 @@ docker-compose up -d                    # All services
 | Purpose | Backend | Frontend |
 |---------|---------|----------|
 | **Utilities** | `src/common/utils/` | `js/utils/` |
-| **Constants** | `src/common/constants/` | `js/utils/` |
+| **Services** | `src/*/` modules | `js/services/` |
+| **React Query Hooks** | - | `js/hooks/` ⭐ NEW |
+| **Pages** | - | `js/pages/{category}/` ⭐ REORGANIZED |
 | **Entry** | `src/main.ts` | `js/App.jsx` |
 | **Schema** | `prisma/schema.prisma` | - |
+
+### Frontend Pages Structure (Reorganized 2025-12-08)
+```
+js/pages/
+├── admin/           # Admin dashboard, users, events, partners, pricing
+├── auth/            # Login, verify-email
+├── clubs/           # Clubs, club details
+├── events/          # Events, details, create, edit
+├── home/            # HeroSlider, MarketplaceSection, EventsHorizontalScroll
+├── moderator/       # Moderator dashboard, queue
+├── organizer/       # Organizer dashboard, scanner, analytics
+├── partner/         # Partner dashboard
+├── payments/        # Ticket purchase, status, mock payment
+├── services/        # Marketplace, service details, create
+├── student/         # Profile, registrations, CSI dashboard
+└── advertisements/  # Create advertisement
+```
 
 ---
 
@@ -55,35 +70,41 @@ docker-compose up -d                    # All services
 - **API:** http://localhost:3001/api
 - **Swagger:** http://localhost:3001/api/docs
 
-**Test Accounts:** `admin@kazguu.kz`, `organizer@kazguu.kz`, `student1@kazguu.kz` (all: `Password123!`)
-
 ---
 
 ## MCP Tools (Use These!)
 
-```
+```bash
 # Railway
-mcp__railway-mcp-server__list-deployments  → Check deploy status
-mcp__railway-mcp-server__get-logs          → Get build/deploy logs
+mcp__railway-mcp-server__list-deployments  # Check deploy status
+mcp__railway-mcp-server__get-logs          # Get build/deploy logs
 
-# Vercel  
-mcp__vercel-mnu-events__list_deployments   → Check deploy status
-mcp__vercel-mnu-events__get_deployment_build_logs → Get build logs
+# Context7 (Documentation)
+mcp__context7__resolve-library-id          # Find library docs
+mcp__context7__get-library-docs            # Get library documentation
 ```
 
 **Always:** Check deployment status after `git push`. Never assume success.
 
 ---
 
-## Documentation Rules
+## React Query Integration (Added 2025-12-08)
 
-1. **Read `docs/` first** before analyzing code
-2. **Update docs after every significant change** (bug fix, deploy, migration)
-3. **Doc naming:** `docs/[COMPONENT]_[ISSUE]_FIX.md` or `docs/[FEATURE]_IMPLEMENTATION.md`
+**Setup:** `QueryClientProvider` wraps `<App />` in `main.jsx`
 
-**Key Docs:**
-- `docs/QR_CHECKIN_SYSTEM.md` - Complete check-in system (1000+ lines)
-- `docs/DATA_MIGRATION_GUIDE.md` - Migration best practices
+**Available Hooks:**
+```javascript
+// js/hooks/
+import { useEvents, useEvent, useCreateEvent } from '@/hooks';
+import { useServices, useService } from '@/hooks';
+import { useCurrentUser, useUpdateProfile } from '@/hooks';
+```
+
+**Benefits:**
+- Automatic caching (5 min stale time)
+- Request deduplication
+- Background refetching
+- Simplified data fetching code
 
 ---
 
@@ -96,7 +117,10 @@ import { validatePagination, createPaginatedResponse } from '../common/utils';
 import { determineCheckInMode } from '../common/utils/checkin-mode.utils';
 
 // Frontend utilities
-import { ROLES, formatDate, getCategoryColor } from '@/utils';
+import { formatDate, getCategoryColor } from '@/utils';
+
+// Frontend React Query hooks
+import { useEvents, useServices } from '@/hooks';
 ```
 
 **Role Guard Pattern:**
@@ -115,8 +139,23 @@ For detailed information, see:
 - **Development Guide:** `DEVELOPMENT.md`  
 - **Status/Roadmap:** `PROJECT_STATUS.md`
 - **Feature Details:** `docs/*.md`
-- **Testing Protocols:** `agent_docs/TESTING.md` *(if complex testing needed)*
 
 ---
 
-*Last Updated: 2025-12-08 | v5.0 (Context Optimized)*
+## Recent Changes (2025-12-08)
+
+### Code Architecture
+- ✅ **React Query** added for API caching (`@tanstack/react-query`)
+- ✅ **Hooks directory** created with `useEvents`, `useServices`, `useClubs`, `useUser`
+- ✅ **Pages reorganized** from flat to categorical structure (12 folders)
+- ✅ **HomePage refactored** from 1076 to 280 lines
+- ✅ **EventsPage migrated** to React Query with debounced search
+- ✅ **ClubsPage migrated** to React Query with filters
+- ✅ **ErrorBoundary** added for graceful error handling
+- ✅ **HomePageNew.jsx removed** (legacy file)
+- ✅ **Barrel exports** added for services (`js/services/index.js`)
+
+---
+
+*Last Updated: 2025-12-08 | v5.2 (React Query + ErrorBoundary)*
+

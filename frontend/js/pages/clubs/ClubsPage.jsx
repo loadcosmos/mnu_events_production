@@ -1,21 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
-import clubsService from '../../services/clubsService';
+import { useClubs } from '../../hooks/useClubs';
 import FilterSheet from '../../components/FilterSheet';
 import { CLUB_CATEGORIES, CSI_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
 
 export default function ClubsPage() {
   const navigate = useNavigate();
-  const [clubs, setClubs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+
+  // Filter state
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedCsiTags, setSelectedCsiTags] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  // UI state
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [desktopFiltersExpanded, setDesktopFiltersExpanded] = useState(false);
@@ -28,6 +30,32 @@ export default function ClubsPage() {
   const categories = ['ALL', ...Object.values(CLUB_CATEGORIES)];
   const csiCategories = getAllCsiCategories();
 
+  // Debounce search input
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Build query params for React Query
+  const queryParams = useMemo(() => {
+    const params = { page: 1, limit: 100 };
+
+    if (selectedCategory !== 'ALL') params.category = selectedCategory;
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (selectedCsiTags.length > 0) params.csiCategories = selectedCsiTags.join(',');
+    if (startDate) params.createdFrom = startDate;
+    if (endDate) params.createdTo = endDate;
+
+    return params;
+  }, [selectedCategory, debouncedSearch, selectedCsiTags, startDate, endDate]);
+
+  // Fetch clubs using React Query (automatic caching!)
+  const { data: clubs = [], isLoading: loading, error: queryError } = useClubs(queryParams);
+
+  const error = queryError?.message || '';
+
   const toggleCsiTag = (csiValue) => {
     setSelectedCsiTags((prev) =>
       prev.includes(csiValue)
@@ -35,75 +63,6 @@ export default function ClubsPage() {
         : [...prev, csiValue]
     );
   };
-
-  useEffect(() => {
-    const debounceTime = searchQuery ? 500 : 0;
-    const timer = setTimeout(() => {
-      loadClubs();
-    }, debounceTime);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCsiTags, searchQuery, startDate, endDate]);
-
-  const loadClubs = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const params = {
-        page: 1,
-        limit: 100,
-      };
-
-      if (selectedCategory !== 'ALL') {
-        params.category = selectedCategory;
-      }
-
-      if (searchQuery) {
-        params.search = searchQuery;
-      }
-
-      if (selectedCsiTags.length > 0) {
-        params.csiCategories = selectedCsiTags.join(',');
-      }
-
-      if (startDate) {
-        params.createdFrom = startDate;
-      }
-
-      if (endDate) {
-        params.createdTo = endDate;
-      }
-
-      const response = await clubsService.getAll(params);
-
-      let clubsData = [];
-      if (response && typeof response === 'object') {
-        if (Array.isArray(response)) {
-          clubsData = response;
-        } else if (Array.isArray(response.data)) {
-          clubsData = response.data;
-        } else if (response.clubs && Array.isArray(response.clubs)) {
-          clubsData = response.clubs;
-        }
-      }
-
-      setClubs(clubsData);
-    } catch (err) {
-      console.error('[ClubsPage] Load clubs failed:', err);
-      const errorMessage =
-        err.response?.data?.message
-          ? Array.isArray(err.response.data.message)
-            ? err.response.data.message.join(', ')
-            : err.response.data.message
-          : err.message || 'Failed to load clubs';
-      setError(errorMessage);
-      setClubs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCategory, searchQuery, selectedCsiTags, startDate, endDate]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
@@ -461,8 +420,8 @@ export default function ClubsPage() {
                     <label
                       key={csi.value}
                       className={`flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all ${isSelected
-                          ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
-                          : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
+                        ? `bg-gradient-to-r ${gradientClass} text-white shadow-lg`
+                        : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
                         }`}
                     >
                       <input

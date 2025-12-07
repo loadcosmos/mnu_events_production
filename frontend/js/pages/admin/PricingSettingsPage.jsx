@@ -60,7 +60,7 @@ const PricingSettingsPage = () => {
     try {
       setSaving(true);
       await settingsService.updatePricing(pricing);
-      setSuccess('Тарифы успешно обновлены!');
+      setSuccess('Pricing updated successfully!');
     } catch (err) {
       setError(extractErrorMessage(err));
     } finally {
@@ -71,7 +71,7 @@ const PricingSettingsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center">
-        <div className="text-white text-xl">Загрузка...</div>
+        <div className="text-white text-xl">Loading...</div>
       </div>
     );
   }
@@ -82,10 +82,10 @@ const PricingSettingsPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Управление Тарифами
+            Pricing Management
           </h1>
           <p className="text-gray-300">
-            Настройка цен для внешних заведений
+            Configure pricing for external venues
           </p>
         </div>
 
@@ -95,7 +95,7 @@ const PricingSettingsPage = () => {
             {/* Base Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Базовое размещение
+                Basic Listing
               </label>
               <div className="relative">
                 <input
@@ -109,18 +109,18 @@ const PricingSettingsPage = () => {
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                  тг
+                  KZT
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Стандартное размещение мероприятия
+                Standard event listing
               </p>
             </div>
 
             {/* Premium Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Премиум размещение
+                Premium Listing
               </label>
               <div className="relative">
                 <input
@@ -134,18 +134,18 @@ const PricingSettingsPage = () => {
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                  тг
+                  KZT
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Размещение с приоритетом в выдаче
+                Priority listing with featured placement
               </p>
             </div>
 
             {/* Package Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Пакет (5 мероприятий)
+                Package (5 events)
               </label>
               <div className="relative">
                 <input
@@ -159,11 +159,11 @@ const PricingSettingsPage = () => {
                   required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                  тг
+                  KZT
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Выгодный пакет на 5 мероприятий
+                Discounted bundle for 5 events
               </p>
             </div>
 
@@ -187,30 +187,30 @@ const PricingSettingsPage = () => {
               disabled={saving}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-[#b52618] hover:to-red-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Сохранение...' : 'Сохранить изменения'}
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
 
           {/* Pricing Summary */}
           <div className="mt-8 pt-6 border-t border-white/20">
             <h3 className="text-white font-semibold mb-4">
-              Сводка по тарифам
+              Pricing Summary
             </h3>
             <div className="space-y-2 text-gray-300">
               <div className="flex justify-between">
-                <span>Базовое размещение:</span>
-                <span className="font-semibold">{pricing.basePrice.toLocaleString()} тг</span>
+                <span>Basic Listing:</span>
+                <span className="font-semibold">{pricing.basePrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between">
-                <span>Премиум размещение:</span>
-                <span className="font-semibold">{pricing.premiumPrice.toLocaleString()} тг</span>
+                <span>Premium Listing:</span>
+                <span className="font-semibold">{pricing.premiumPrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between">
-                <span>Пакет (5 мероприятий):</span>
-                <span className="font-semibold">{pricing.packagePrice.toLocaleString()} тг</span>
+                <span>Package (5 events):</span>
+                <span className="font-semibold">{pricing.packagePrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-white/10">
-                <span>Скидка при пакете:</span>
+                <span>Package Discount:</span>
                 <span className="font-semibold text-green-400">
                   {((1 - pricing.packagePrice / (pricing.basePrice * 5)) * 100).toFixed(0)}%
                 </span>

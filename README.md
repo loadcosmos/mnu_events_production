@@ -218,9 +218,17 @@ CORS_ORIGIN="http://localhost:5173"
 
 ---
 
-## 🌟 Recent Improvements (December 2024)
+## 🌟 Recent Improvements
 
-### UI/UX Enhancements
+### December 8, 2025 - Code Architecture Improvements
+- ✅ **React Query** - Added `@tanstack/react-query` for API caching and request deduplication
+- ✅ **Hooks Directory** - New `js/hooks/` with `useEvents`, `useServices`, `useUser` hooks
+- ✅ **Pages Reorganization** - Restructured from 45 flat files to 12 categorical folders
+- ✅ **HomePage Refactored** - Reduced from 1076 to 280 lines with extracted components
+- ✅ **Barrel Exports** - Added `js/services/index.js` for cleaner imports
+- ✅ **Removed Legacy Code** - Deleted `HomePageNew.jsx` duplicate
+
+### December 4, 2025 - UI/UX Enhancements
 - ✅ **Full English Translation** - All UI components translated from Russian
 - ✅ **Dark Theme Improvements** - Removed borders, enhanced consistency
 - ✅ **Simplified QR Scanner** - Streamlined interface, backdrop click to close
@@ -260,6 +268,6 @@ This is a university project. For questions or suggestions, please contact the d
 
 ---
 
-**Last Updated:** 2025-12-04  
-**Version:** 1.0 (Production Ready - Full English UI)  
+**Last Updated:** 2025-12-08  
+**Version:** 1.1 (React Query + Restructured Architecture)  
 **Deployment:** Railway + Vercel

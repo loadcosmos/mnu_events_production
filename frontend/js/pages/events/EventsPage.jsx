@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
-import eventsService from '../../services/eventsService';
+import { useEvents } from '../../hooks/useEvents';
 import EventModal from '../../components/EventModal';
 import FilterSheet from '../../components/FilterSheet';
 import NativeAd from '../../components/NativeAd';
@@ -14,24 +14,26 @@ const mockAds = [
   {
     id: 2,
     position: 'NATIVE_FEED',
-    imageUrl: '/images/event1.jpg', // Local image from public/images
+    imageUrl: '/images/event1.jpg',
     linkUrl: 'https://kaspi.kz',
-    title: 'Специальное предложение',
-    description: 'Получите скидку 20% на все товары!',
+    title: 'Special Offer',
+    description: 'Get 20% off on all products!',
   },
 ];
 
 export default function EventsPage() {
   const navigate = useNavigate();
+
+  // Filter state
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [selectedCsiTags, setSelectedCsiTags] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
+  // UI state
   const [modalEventId, setModalEventId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
@@ -47,6 +49,42 @@ export default function EventsPage() {
   const categories = ['ALL', ...Object.values(EVENT_CATEGORIES)];
   const statuses = ['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'];
   const csiCategories = getAllCsiCategories();
+
+  // Debounce search input
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Build query params for React Query
+  const queryParams = useMemo(() => {
+    const params = { page: 1, limit: 100 };
+
+    if (selectedCategory !== 'ALL') params.category = selectedCategory;
+    if (selectedStatus !== 'ALL') params.status = selectedStatus;
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (selectedCsiTags.length > 0) params.csiTags = selectedCsiTags.join(',');
+    if (startDate) params.startDateFrom = startDate;
+    if (endDate) params.startDateTo = endDate;
+
+    return params;
+  }, [selectedCategory, selectedStatus, debouncedSearch, selectedCsiTags, startDate, endDate]);
+
+  // Fetch events using React Query (automatic caching!)
+  const { data: eventsResponse, isLoading: loading, error: queryError } = useEvents(queryParams);
+
+  // Extract events from response
+  const events = useMemo(() => {
+    if (!eventsResponse) return [];
+    if (Array.isArray(eventsResponse)) return eventsResponse;
+    if (Array.isArray(eventsResponse.data)) return eventsResponse.data;
+    if (eventsResponse.events && Array.isArray(eventsResponse.events)) return eventsResponse.events;
+    return [];
+  }, [eventsResponse]);
+
+  const error = queryError?.message || '';
 
   const openEventModal = (eventId) => {
     setModalEventId(eventId);
@@ -66,82 +104,9 @@ export default function EventsPage() {
     );
   };
 
-  // Load events when filters change
-  useEffect(() => {
-    const debounceTime = searchQuery ? 500 : 300;
-    const timer = setTimeout(() => {
-      loadEvents();
-    }, debounceTime);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedStatus, selectedCsiTags, searchQuery, startDate, endDate]);
-
-  const loadEvents = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const params = {
-        page: 1,
-        limit: 100,
-      };
-
-      if (selectedCategory !== 'ALL') {
-        params.category = selectedCategory;
-      }
-
-      if (selectedStatus !== 'ALL') {
-        params.status = selectedStatus;
-      }
-
-      if (searchQuery) {
-        params.search = searchQuery;
-      }
-
-      if (selectedCsiTags.length > 0) {
-        params.csiTags = selectedCsiTags.join(',');
-      }
-
-      if (startDate) {
-        params.startDateFrom = startDate;
-      }
-
-      if (endDate) {
-        params.startDateTo = endDate;
-      }
-
-      const response = await eventsService.getAll(params);
-
-      let eventsData = [];
-      if (response && typeof response === 'object') {
-        if (Array.isArray(response)) {
-          eventsData = response;
-        } else if (Array.isArray(response.data)) {
-          eventsData = response.data;
-        } else if (response.events && Array.isArray(response.events)) {
-          eventsData = response.events;
-        }
-      }
-
-      setEvents(eventsData);
-    } catch (err) {
-      console.error('[EventsPage] Load events failed:', err);
-      const errorMessage =
-        err.response?.data?.message
-          ? Array.isArray(err.response.data.message)
-            ? err.response.data.message.join(', ')
-            : err.response.data.message
-          : err.message || 'Failed to load events';
-      setError(errorMessage);
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCategory, selectedStatus, searchQuery, selectedCsiTags, startDate, endDate]);
-
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.startDate) - new Date(b.startDate)
+  const sortedEvents = useMemo(() =>
+    [...events].sort((a, b) => new Date(a.startDate) - new Date(b.startDate)),
+    [events]
   );
 
   return (
