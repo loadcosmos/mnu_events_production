@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, SlidersHorizontal, Plus, Megaphone } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import ServiceCard from '../../components/ServiceCard';
-import servicesService from '../../services/servicesService';
+import { useServices } from '../../hooks/useServices';
 
 /**
  * MarketplaceSection - Services marketplace with search and filters
+ * Now uses React Query for caching and automatic refetching
  */
 
 const CATEGORIES = [
@@ -29,46 +30,15 @@ const SORT_OPTIONS = [
 export default function MarketplaceSection() {
     const navigate = useNavigate();
 
-    const [services, setServices] = useState([]);
+    // Fetch services using React Query (automatic caching!)
+    const { data: services = [], isLoading: loading } = useServices({ limit: 6, type: 'GENERAL' });
+
     const [filteredServices, setFilteredServices] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedSort, setSelectedSort] = useState('rating');
     const [showFilters, setShowFilters] = useState(false);
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
-
-    // Load services from API
-    useEffect(() => {
-        let isCancelled = false;
-
-        const loadServices = async () => {
-            try {
-                setLoading(true);
-                const response = await servicesService.getAll({ limit: 6, type: 'GENERAL' });
-
-                if (isCancelled) return;
-
-                const servicesData = response?.data || response || [];
-                setServices(servicesData);
-                setFilteredServices(servicesData);
-            } catch (err) {
-                console.error('[MarketplaceSection] Failed to load services:', err);
-                setServices([]);
-                setFilteredServices([]);
-            } finally {
-                if (!isCancelled) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        loadServices();
-
-        return () => {
-            isCancelled = true;
-        };
-    }, []);
 
     // Apply filters when dependencies change
     useEffect(() => {

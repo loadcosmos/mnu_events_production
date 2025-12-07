@@ -17,7 +17,7 @@ const LoginPage = lazy(() => import('./pages/auth/LoginPage.jsx'));
 const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage.jsx'));
 
 // Home page
-const HomePage = lazy(() => import('./pages/HomePageNew.jsx'));
+const HomePage = lazy(() => import('./pages/HomePage.jsx'));
 const MorePage = lazy(() => import('./pages/MorePage.jsx'));
 
 // Events pages
