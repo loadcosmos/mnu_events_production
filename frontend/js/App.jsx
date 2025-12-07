@@ -12,48 +12,69 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import { Toaster } from './components/ui/sonner.jsx';
 
 // Lazy load pages for better code splitting and performance
-const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
-const HomePage = lazy(() => import('./pages/HomePageNew.jsx'));
-const EventsPage = lazy(() => import('./pages/EventsPage.jsx'));
-const EventDetailsPage = lazy(() => import('./pages/EventDetailsPage.jsx'));
-const EventCheckInsPage = lazy(() => import('./pages/EventCheckInsPage.jsx'));
-const MyRegistrationsPage = lazy(() => import('./pages/MyRegistrationsPage.jsx'));
-const ClubsPage = lazy(() => import('./pages/ClubsPage.jsx'));
-const ClubDetailsPage = lazy(() => import('./pages/ClubDetailsPage.jsx'));
-const TutoringPage = lazy(() => import('./pages/TutoringPage.jsx'));
-const ServiceDetailsPage = lazy(() => import('./pages/ServiceDetailsPage.jsx'));
-const CreateServicePage = lazy(() => import('./pages/CreateServicePage.jsx'));
-const CreateAdvertisementPage = lazy(() => import('./pages/CreateAdvertisementPage.jsx'));
-const MarketplacePage = lazy(() => import('./pages/MarketplacePage.jsx'));
-const MorePage = lazy(() => import('./pages/MorePage.jsx'));
-const OrganizerPage = lazy(() => import('./pages/OrganizerPage.jsx'));
-const OrganizerScannerPage = lazy(() => import('./pages/OrganizerScannerPage.jsx'));
-const OrganizerAnalyticsPage = lazy(() => import('./pages/OrganizerAnalyticsPage.jsx'));
-const EventQRDisplayPage = lazy(() => import('./pages/EventQRDisplayPage.jsx'));
-const StudentScannerPage = lazy(() => import('./pages/StudentScannerPage.jsx'));
-const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage.jsx'));
-const CreateEventPage = lazy(() => import('./pages/CreateEventPage.jsx'));
-const EditEventPage = lazy(() => import('./pages/EditEventPage.jsx'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage.jsx'));
-const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage.jsx'));
-const AdminEventsPage = lazy(() => import('./pages/AdminEventsPage.jsx'));
-const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage.jsx'));
-const AdminClubsPage = lazy(() => import('./pages/AdminClubsPage.jsx'));
-const PricingSettingsPage = lazy(() => import('./pages/PricingSettingsPage.jsx'));
-const MockPaymentPage = lazy(() => import('./pages/MockPaymentPage.jsx'));
-const ModerationQueuePage = lazy(() => import('./pages/ModerationQueuePage.jsx'));
-const ModeratorDashboardPage = lazy(() => import('./pages/ModeratorDashboardPage.jsx'));
-const CsiDashboardPage = lazy(() => import('./pages/CsiDashboardPage.jsx'));
-const CheckInSuccessPage = lazy(() => import('./pages/CheckInSuccessPage.jsx'));
+// Auth pages
+const LoginPage = lazy(() => import('./pages/auth/LoginPage.jsx'));
+const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage.jsx'));
 
-// External Partners System Pages
-const TicketPurchasePage = lazy(() => import('./pages/TicketPurchasePage.jsx'));
-const TicketStatusPage = lazy(() => import('./pages/TicketStatusPage.jsx'));
-const PaymentVerificationPage = lazy(() => import('./pages/PaymentVerificationPage.jsx'));
-const PremiumPage = lazy(() => import('./pages/PremiumPage.jsx'));
-const PartnerDashboardPage = lazy(() => import('./pages/PartnerDashboardPage.jsx'));
-const PartnerEventsPage = lazy(() => import('./pages/PartnerEventsPage.jsx'));
-const AdminPartnersPage = lazy(() => import('./pages/AdminPartnersPage.jsx'));
+// Home page
+const HomePage = lazy(() => import('./pages/HomePageNew.jsx'));
+const MorePage = lazy(() => import('./pages/MorePage.jsx'));
+
+// Events pages
+const EventsPage = lazy(() => import('./pages/events/EventsPage.jsx'));
+const EventDetailsPage = lazy(() => import('./pages/events/EventDetailsPage.jsx'));
+const CreateEventPage = lazy(() => import('./pages/events/CreateEventPage.jsx'));
+const EditEventPage = lazy(() => import('./pages/events/EditEventPage.jsx'));
+
+// Clubs pages
+const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage.jsx'));
+const ClubDetailsPage = lazy(() => import('./pages/clubs/ClubDetailsPage.jsx'));
+
+// Services pages
+const TutoringPage = lazy(() => import('./pages/services/TutoringPage.jsx'));
+const ServiceDetailsPage = lazy(() => import('./pages/services/ServiceDetailsPage.jsx'));
+const CreateServicePage = lazy(() => import('./pages/services/CreateServicePage.jsx'));
+const MarketplacePage = lazy(() => import('./pages/services/MarketplacePage.jsx'));
+
+// Advertisements
+const CreateAdvertisementPage = lazy(() => import('./pages/advertisements/CreateAdvertisementPage.jsx'));
+
+// Student pages
+const MyRegistrationsPage = lazy(() => import('./pages/student/MyRegistrationsPage.jsx'));
+const ProfilePage = lazy(() => import('./pages/student/ProfilePage.jsx'));
+const CsiDashboardPage = lazy(() => import('./pages/student/CsiDashboardPage.jsx'));
+const CheckInSuccessPage = lazy(() => import('./pages/student/CheckInSuccessPage.jsx'));
+const StudentScannerPage = lazy(() => import('./pages/student/StudentScannerPage.jsx'));
+const PremiumPage = lazy(() => import('./pages/student/PremiumPage.jsx'));
+
+// Organizer pages
+const OrganizerPage = lazy(() => import('./pages/organizer/OrganizerPage.jsx'));
+const OrganizerScannerPage = lazy(() => import('./pages/organizer/OrganizerScannerPage.jsx'));
+const OrganizerAnalyticsPage = lazy(() => import('./pages/organizer/OrganizerAnalyticsPage.jsx'));
+const EventQRDisplayPage = lazy(() => import('./pages/organizer/EventQRDisplayPage.jsx'));
+const EventCheckInsPage = lazy(() => import('./pages/organizer/EventCheckInsPage.jsx'));
+const PaymentVerificationPage = lazy(() => import('./pages/organizer/PaymentVerificationPage.jsx'));
+
+// Moderator pages
+const ModerationQueuePage = lazy(() => import('./pages/moderator/ModerationQueuePage.jsx'));
+const ModeratorDashboardPage = lazy(() => import('./pages/moderator/ModeratorDashboardPage.jsx'));
+
+// Admin pages
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage.jsx'));
+const AdminEventsPage = lazy(() => import('./pages/admin/AdminEventsPage.jsx'));
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage.jsx'));
+const AdminClubsPage = lazy(() => import('./pages/admin/AdminClubsPage.jsx'));
+const AdminPartnersPage = lazy(() => import('./pages/admin/AdminPartnersPage.jsx'));
+const PricingSettingsPage = lazy(() => import('./pages/admin/PricingSettingsPage.jsx'));
+
+// Payments pages
+const MockPaymentPage = lazy(() => import('./pages/payments/MockPaymentPage.jsx'));
+const TicketPurchasePage = lazy(() => import('./pages/payments/TicketPurchasePage.jsx'));
+const TicketStatusPage = lazy(() => import('./pages/payments/TicketStatusPage.jsx'));
+
+// Partner pages
+const PartnerDashboardPage = lazy(() => import('./pages/partner/PartnerDashboardPage.jsx'));
+const PartnerEventsPage = lazy(() => import('./pages/partner/PartnerEventsPage.jsx'));
 
 /**
  * Loading spinner component shown while lazy-loaded pages are being fetched

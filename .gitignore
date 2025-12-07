@@ -42,6 +42,11 @@ Thumbs.db
 # Logs
 logs/
 *.log
+Logs.txt
+
+# Backup files
+*.backup
+*.bak
 
 # Database
 *.db
