@@ -141,6 +141,13 @@ THROTTLE_LIMIT="100"
 # Logging
 LOG_LEVEL="info"
 LOG_FILE_ENABLED="false"
+
+# Cloudinary (Image Upload)
+CLOUDINARY_URL="cloudinary://API_KEY:API_SECRET@CLOUD_NAME"
+# OR individual variables:
+# CLOUDINARY_CLOUD_NAME="your-cloud-name"
+# CLOUDINARY_API_KEY="your-api-key"
+# CLOUDINARY_API_SECRET="your-api-secret"
 ```
 
 #### Local Development

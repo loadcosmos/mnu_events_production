@@ -30,6 +30,31 @@
 
 ## 🆕 Recent Changes (2025-12-08)
 
+### Social Features Preparation:
+- ✅ **Database Schema** - Added 6 new Prisma models for upcoming social features:
+  - `FACULTY` role for teachers/deans/advisors (can't join clubs, specify position)
+  - `UserPreference` - interests, CSI tags, onboarding status
+  - `Post`, `PostLike`, `PostComment` - social posts with moderation
+  - `SavedEvent` - bookmark events
+  - `UserFollow` - user following system
+- ✅ **Cloudinary Integration** - Image upload with auto-compression (~70% size reduction)
+  - Avatar upload with face-detection cropping (400x400)
+  - Event banner upload (1200x675)
+  - Service image upload (800x600)
+  - Club logo upload (400x400)
+  - Generic image upload endpoint
+- ✅ **Image Crop Component** - `ImageUploadCrop.jsx` with:
+  - Drag & drop file selection
+  - Real-time crop preview
+  - Circle/square/banner aspect ratios
+  - Modal-based UI
+- ✅ **Upload API Endpoints**:
+  - `POST /api/users/me/avatar` - user avatar upload
+  - `POST /api/upload/event/:id` - event banner
+  - `POST /api/upload/service/:id` - service image
+  - `POST /api/upload/club/:id` - club logo
+  - `POST /api/upload/image` - generic image upload
+
 ### Code Architecture Improvements:
 - ✅ **React Query Integration** - Added `@tanstack/react-query` for API state management
   - QueryClientProvider wraps App in `main.jsx`
