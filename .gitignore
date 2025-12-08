@@ -35,6 +35,8 @@ build/
 # Claude Code settings (contains secrets!)
 .claude
 
+.agent
+
 # OS
 .DS_Store
 Thumbs.db

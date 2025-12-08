@@ -5,6 +5,7 @@ import {
     UseGuards,
     UseInterceptors,
     UploadedFile,
+    BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -23,10 +24,10 @@ export class UploadController {
     constructor(private readonly cloudinaryService: CloudinaryService) { }
 
     /**
-     * Upload event image (organizers, admins)
+     * Upload event image (organizers, partners, admins)
      */
     @Post('event/:eventId')
-    @Roles(Role.ORGANIZER, Role.ADMIN)
+    @Roles(Role.ORGANIZER, Role.EXTERNAL_PARTNER, Role.ADMIN)
     @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } }))
     @ApiOperation({ summary: 'Upload event banner image' })
     @ApiConsumes('multipart/form-data')
@@ -44,6 +45,9 @@ export class UploadController {
         @Param('eventId') eventId: string,
         @UploadedFile() file: Express.Multer.File,
     ) {
+        if (!file) {
+            throw new BadRequestException('No file provided. Make sure to send the file with field name "image"');
+        }
         const result = await this.cloudinaryService.uploadEventImage(file, eventId);
         return {
             message: 'Event image uploaded successfully',
