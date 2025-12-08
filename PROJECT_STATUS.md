@@ -54,6 +54,14 @@
   - `POST /api/upload/service/:id` - service image
   - `POST /api/upload/club/:id` - club logo
   - `POST /api/upload/image` - generic image upload
+- ✅ **Form Integration** - ImageUploadCrop added to:
+  - CreateEventPage (event banner)
+  - EditEventPage (event banner)
+  - CreateServicePage (service image)
+  - ProfilePage (user avatar)
+- ✅ **Dockerfile Improvements**:
+  - Added database connection retry logic (30 retries, 60 sec max wait)
+  - Prevents crash when Postgres is slow to start
 
 ### Code Architecture Improvements:
 - ✅ **React Query Integration** - Added `@tanstack/react-query` for API state management
