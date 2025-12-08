@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { formatDate } from '../../utils/dateFormatters';
@@ -14,6 +14,23 @@ export default function HeroSlider({
     setCurrentSlide,
     onEventClick,
 }) {
+    // Preload first event image for LCP improvement
+    useEffect(() => {
+        if (events.length > 0 && events[0].imageUrl) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = events[0].imageUrl;
+            link.fetchpriority = 'high';
+            document.head.appendChild(link);
+            return () => {
+                if (document.head.contains(link)) {
+                    document.head.removeChild(link);
+                }
+            };
+        }
+    }, [events]);
+
     if (loading) {
         return (
             <section className="relative h-screen -mt-20 pt-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 dark:from-[#0a0a0a] dark:via-[#1a1a1a] dark:to-[#0a0a0a] transition-colors duration-300">
@@ -128,8 +145,8 @@ export default function HeroSlider({
                                     key={idx}
                                     onClick={() => setCurrentSlide(idx)}
                                     className={`h-3 rounded-full transition-all ${idx === currentSlide
-                                            ? 'bg-[#d62e1f] w-8'
-                                            : 'liquid-glass-subtle hover:liquid-glass w-3'
+                                        ? 'bg-[#d62e1f] w-8'
+                                        : 'liquid-glass-subtle hover:liquid-glass w-3'
                                         }`}
                                     aria-label={`Go to slide ${idx + 1}`}
                                 />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -7,7 +7,7 @@ import registrationsService from '../services/registrationsService';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 
-export default function EventModal({ eventId, isOpen, onClose }) {
+const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -453,4 +453,6 @@ export default function EventModal({ eventId, isOpen, onClose }) {
       </div>
     </div>
   );
-}
+});
+
+export default EventModal;

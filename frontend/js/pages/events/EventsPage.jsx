@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useTransition, useDeferredValue, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
 import { useEvents } from '../../hooks/useEvents';
@@ -12,9 +12,13 @@ import { getCsiIcon, getCsiColors, getCsiGradientClass, getAllCsiCategories } fr
 export default function EventsPage() {
   const navigate = useNavigate();
 
+  // React 19 concurrent features for better INP
+  const [isPending, startTransition] = useTransition();
+
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  // useDeferredValue replaces debounce - keeps input responsive while deferring expensive filtering
+  const deferredSearch = useDeferredValue(searchQuery);
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [selectedCsiTags, setSelectedCsiTags] = useState([]);
@@ -38,27 +42,19 @@ export default function EventsPage() {
   const statuses = ['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'];
   const csiCategories = getAllCsiCategories();
 
-  // Debounce search input
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   // Build query params for React Query
   const queryParams = useMemo(() => {
     const params = { page: 1, limit: 100 };
 
     if (selectedCategory !== 'ALL') params.category = selectedCategory;
     if (selectedStatus !== 'ALL') params.status = selectedStatus;
-    if (debouncedSearch) params.search = debouncedSearch;
+    if (deferredSearch) params.search = deferredSearch;
     if (selectedCsiTags.length > 0) params.csiTags = selectedCsiTags.join(',');
     if (startDate) params.startDateFrom = startDate;
     if (endDate) params.startDateTo = endDate;
 
     return params;
-  }, [selectedCategory, selectedStatus, debouncedSearch, selectedCsiTags, startDate, endDate]);
+  }, [selectedCategory, selectedStatus, deferredSearch, selectedCsiTags, startDate, endDate]);
 
   // Fetch events using React Query (automatic caching!)
   const { data: eventsResponse, isLoading: loading, error: queryError } = useEvents(queryParams);
@@ -74,23 +70,46 @@ export default function EventsPage() {
 
   const error = queryError?.message || '';
 
-  const openEventModal = (eventId) => {
+  // Memoized callbacks for better performance
+  const openEventModal = useCallback((eventId) => {
     setModalEventId(eventId);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const closeEventModal = () => {
+  const closeEventModal = useCallback(() => {
     setIsModalOpen(false);
     setTimeout(() => setModalEventId(null), 300);
-  };
+  }, []);
 
-  const toggleCsiTag = (csiValue) => {
-    setSelectedCsiTags((prev) =>
-      prev.includes(csiValue)
-        ? prev.filter((tag) => tag !== csiValue)
-        : [...prev, csiValue]
-    );
-  };
+  // Use startTransition for filter changes - makes them non-blocking
+  const handleCategoryChange = useCallback((category) => {
+    startTransition(() => {
+      setSelectedCategory(category);
+    });
+  }, []);
+
+  const handleStatusChange = useCallback((status) => {
+    startTransition(() => {
+      setSelectedStatus(status);
+    });
+  }, []);
+
+  const toggleCsiTag = useCallback((csiValue) => {
+    startTransition(() => {
+      setSelectedCsiTags((prev) =>
+        prev.includes(csiValue)
+          ? prev.filter((tag) => tag !== csiValue)
+          : [...prev, csiValue]
+      );
+    });
+  }, []);
+
+  const handleDateChange = useCallback((type, value) => {
+    startTransition(() => {
+      if (type === 'start') setStartDate(value);
+      else setEndDate(value);
+    });
+  }, []);
 
   const sortedEvents = useMemo(() =>
     [...events].sort((a, b) => new Date(a.startDate) - new Date(b.startDate)),
@@ -184,7 +203,7 @@ export default function EventsPage() {
                     {categories.map((cat) => (
                       <button
                         key={cat}
-                        onClick={() => setSelectedCategory(cat)}
+                        onClick={() => handleCategoryChange(cat)}
                         className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${selectedCategory === cat
                           ? 'liquid-glass-red-button text-white'
                           : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
@@ -232,7 +251,7 @@ export default function EventsPage() {
                       <input
                         type="date"
                         value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        onChange={(e) => handleDateChange('start', e.target.value)}
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
                       />
                     </div>
@@ -241,7 +260,7 @@ export default function EventsPage() {
                       <input
                         type="date"
                         value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        onChange={(e) => handleDateChange('end', e.target.value)}
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
                       />
                     </div>
@@ -347,6 +366,9 @@ export default function EventsPage() {
                           src={imageUrl}
                           alt={event.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          width="400"
+                          height="208"
+                          loading="lazy"
                           onError={(e) => {
                             e.target.src = '/images/event-placeholder.jpg';
                           }}
@@ -452,7 +474,7 @@ export default function EventsPage() {
                       type="radio"
                       name="category"
                       checked={selectedCategory === category}
-                      onChange={() => setSelectedCategory(category)}
+                      onChange={() => handleCategoryChange(category)}
                       className="mr-3 accent-[#d62e1f]"
                     />
                     {category}
@@ -488,7 +510,7 @@ export default function EventsPage() {
                       type="radio"
                       name="status"
                       checked={selectedStatus === status}
-                      onChange={() => setSelectedStatus(status)}
+                      onChange={() => handleStatusChange(status)}
                       className="mr-3 accent-[#d62e1f]"
                     />
                     {status}
@@ -557,7 +579,7 @@ export default function EventsPage() {
                   <input
                     type="date"
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
+                    onChange={(e) => handleDateChange('start', e.target.value)}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#2a2a2a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
                   />
                 </div>
@@ -566,7 +588,7 @@ export default function EventsPage() {
                   <input
                     type="date"
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
+                    onChange={(e) => handleDateChange('end', e.target.value)}
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#2a2a2a] text-gray-900 dark:text-white focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 outline-none transition-colors duration-300"
                   />
                 </div>

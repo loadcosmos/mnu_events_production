@@ -1,23 +1,27 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate } from '../../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../../utils/categoryMappers';
 
 /**
  * EventCard - Reusable card for displaying event in horizontal scroll
+ * Memoized for better INP performance
  */
-function EventCard({ event, onClick }) {
+const EventCard = memo(function EventCard({ event, onClick }) {
     return (
         <div
             className="w-80 bg-white dark:bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl"
             onClick={() => onClick(event.id)}
         >
-            {/* Image with Gradient */}
-            <div className="relative">
+            {/* Image with Gradient - explicit dimensions for CLS prevention */}
+            <div className="relative h-48">
                 <img
                     src={event.imageUrl || '/images/event-placeholder.jpg'}
                     alt={event.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    width="320"
+                    height="192"
+                    loading="lazy"
                     onError={(e) => {
                         e.target.src = '/images/event-placeholder.jpg';
                     }}
@@ -81,7 +85,7 @@ function EventCard({ event, onClick }) {
             </div>
         </div>
     );
-}
+});
 
 /**
  * EventsHorizontalScroll - Horizontal scrolling events section
