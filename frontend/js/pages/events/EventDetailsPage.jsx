@@ -10,6 +10,7 @@ import registrationsService from '../../services/registrationsService';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
 import { Camera, CheckCircle } from 'lucide-react';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -329,7 +330,7 @@ export default function EventDetailsPage() {
               <CardContent>
                 <div className="prose max-w-none">
                   <p className="text-muted-foreground whitespace-pre-line">
-                    {event.description}
+                    {sanitizeText(event.description)}
                   </p>
                 </div>
               </CardContent>

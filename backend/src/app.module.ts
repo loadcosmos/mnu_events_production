@@ -25,6 +25,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { HealthModule } from './health/health.module';
 import { CommonModule } from './common/common.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -77,6 +78,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     SubscriptionsModule,
     GamificationModule,
     HealthModule,
+    CloudinaryModule,
   ],
   providers: [
     {

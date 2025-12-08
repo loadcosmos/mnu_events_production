@@ -5,6 +5,7 @@ import { useClubs } from '../../hooks/useClubs';
 import FilterSheet from '../../components/FilterSheet';
 import { CLUB_CATEGORIES, CSI_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function ClubsPage() {
   const navigate = useNavigate();
@@ -327,7 +328,7 @@ export default function ClubsPage() {
 
                         {/* Description */}
                         <p className="text-gray-600 dark:text-[#a0a0a0] text-sm line-clamp-3 transition-colors duration-300">
-                          {club.description || 'No description available'}
+                          {sanitizeText(club.description) || 'No description available'}
                         </p>
 
                         {/* Meta Info - Vertical Layout */}

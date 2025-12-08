@@ -285,25 +285,34 @@
 
 ## 🔴 Known Issues & Limitations
 
-### Critical Security Issues (5 remaining)
-1. ⚠️ **JWT tokens in localStorage** - XSS vulnerable (should use httpOnly cookies)
-2. ⚠️ **No JWT token blacklist** - Logout doesn't invalidate tokens
-3. ⚠️ **Database lookup on every request** - Performance issue
-4. ⚠️ **No CSRF protection** - Cross-site request forgery possible
-5. ⚠️ **No input sanitization** - XSS through user-generated content
+### ✅ Security Issues (RESOLVED - Dec 2025)
 
-**Status:** Can be deferred to post-beta launch
+**Previously reported issues have been addressed:**
+
+| Issue | Status | Implementation |
+|-------|--------|----------------|
+| JWT in localStorage | ✅ **FIXED** | JWT tokens now stored in `httpOnly` cookies (`auth.service.ts:setAuthCookies`) |
+| No JWT blacklist | ✅ **FIXED** | Token blacklist implemented via Redis (`jwt-blacklist.service.ts`) |
+| No CSRF protection | ✅ **FIXED** | Double-submit cookie pattern via `csrf-csrf` library (`main.ts`) |
+| XSS vulnerability | ✅ **FIXED** | DOMPurify sanitization on all user-generated content (`frontend/js/utils/sanitize.js`) |
+| DB lookup every request | ✅ **OPTIMIZED** | JWT payload caching, selective DB lookups only for critical operations |
+
+**Key Security Features Now Active:**
+- ✅ **Helmet Security Headers** - CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+- ✅ **httpOnly Cookies** - Access & refresh tokens secured from XSS
+- ✅ **CSRF Protection** - All mutating endpoints protected
+- ✅ **Input Sanitization** - `sanitizeText()` applied to all user content display
+- ✅ **JWT Blacklist** - Logout properly invalidates tokens via Redis TTL
+- ✅ **Constant-time Comparison** - Timing-attack safe verification code checks
+- ✅ **Structured Logging** - Winston logger with JSON format in production
 
 ### Production Gaps (Not blocking beta)
-- ⚠️ No health check endpoints
-- ⚠️ No structured logging service (only console.log)
 - ⚠️ No error tracking (Sentry or similar)
 - ⚠️ No monitoring/metrics (Prometheus/Grafana)
-- ⚠️ No CI/CD pipeline
 - ⚠️ Test coverage low (<45% backend, ~20% frontend)
 
 ### Technical Debt
-- Console.log debugging in production code
+- Some console.log debugging in production code (mostly replaced with Winston)
 - Some magic numbers (not in constants)
 - Missing JSDoc comments in places
 - No soft deletes

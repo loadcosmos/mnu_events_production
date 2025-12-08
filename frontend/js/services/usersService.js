@@ -105,6 +105,28 @@ const usersService = {
       throw error;
     }
   },
+
+  /**
+   * Upload avatar image for current user
+   * @param {File} file - Image file to upload
+   * @returns {Promise<Object>} - { message, avatarUrl, user }
+   */
+  async uploadAvatar(file) {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await api.post('/users/me/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response;
+    } catch (error) {
+      console.error('[UsersService] Upload avatar failed:', error);
+      throw error;
+    }
+  },
 };
 
 export default usersService;

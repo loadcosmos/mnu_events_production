@@ -19,6 +19,7 @@ model User {
   lastName  String
   avatar    String?
   faculty   String?
+  position  String?  // For FACULTY role: "Dean", "Professor", "Advisor", etc.
   role      Role     @default(STUDENT)
 
   // Email verification
@@ -44,6 +45,15 @@ model User {
   achievements     Achievement[]
   advertisements   Advertisement[] @relation("AdvertiserAds")
   externalPartner  ExternalPartner?
+  
+  // Social features
+  preferences      UserPreference?
+  posts            Post[]          @relation("PostAuthor")
+  postLikes        PostLike[]      @relation("PostLikes")
+  postComments     PostComment[]   @relation("PostComments")
+  savedEvents      SavedEvent[]    @relation("SavedEvents")
+  following        UserFollow[]    @relation("Following")
+  followers        UserFollow[]    @relation("Followers")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,6 +72,7 @@ enum Role {
   MODERATOR
   ADMIN
   EXTERNAL_PARTNER
+  FACULTY  // Teachers, deans, advisors - can't join clubs, posts auto-approved
 }
 
 model Event {
@@ -100,6 +111,7 @@ model Event {
   registrations Registration[]
   tickets       Ticket[]
   checkIns      CheckIn[]
+  savedBy       SavedEvent[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -602,4 +614,142 @@ model Achievement {
   @@index([userId])
   @@index([type])
   @@map("achievements")
+}
+
+// ============================================
+// SOCIAL FEATURES - POSTS & PREFERENCES
+// ============================================
+
+model UserPreference {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Interests
+  preferredCategories  String[] @default([])  // Category enum values
+  preferredCsiTags     String[] @default([])  // CsiCategory enum values
+  interestedClubIds    String[] @default([])  // Club IDs
+  
+  // Availability preferences
+  availableDays        String[] @default([])  // "MONDAY", "TUESDAY", etc.
+  preferredTimeSlot    String?                // "MORNING", "AFTERNOON", "EVENING"
+  
+  // Onboarding status
+  onboardingCompleted  Boolean  @default(false)
+  onboardingStep       Int      @default(1)
+  onboardingCompletedAt DateTime?
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([onboardingCompleted])
+  @@map("user_preferences")
+}
+
+model Post {
+  id            String     @id @default(uuid())
+  authorId      String
+  author        User       @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content       String     @db.Text
+  imageUrl      String?
+  
+  // Post type determines visibility and auto-approval
+  type          PostType   @default(STUDENT_POST)
+  
+  // Moderation
+  status        PostStatus @default(PENDING)
+  moderatedAt   DateTime?
+  moderationNote String?
+  
+  // Engagement
+  isPinned      Boolean    @default(false)
+  likesCount    Int        @default(0)
+  commentsCount Int        @default(0)
+  
+  // Relations
+  likes         PostLike[]
+  comments      PostComment[]
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  @@index([authorId])
+  @@index([type, status])
+  @@index([isPinned, createdAt])
+  @@index([status, createdAt])
+  @@map("posts")
+}
+
+enum PostType {
+  ANNOUNCEMENT   // From ADMIN/MODERATOR - shown prominently, auto-approved
+  FACULTY_POST   // From FACULTY role - auto-approved
+  STUDENT_POST   // From STUDENT - goes through moderation
+}
+
+enum PostStatus {
+  PENDING   // Awaiting moderation
+  APPROVED  // Visible to all authenticated users
+  REJECTED  // Not visible
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("PostLikes", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("PostComments", fields: [authorId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  
+  @@index([postId])
+  @@index([authorId])
+  @@map("post_comments")
+}
+
+// ============================================
+// SAVED EVENTS & USER FOLLOWS
+// ============================================
+
+model SavedEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("SavedEvents", fields: [userId], references: [id], onDelete: Cascade)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+  @@map("saved_events")
+}
+
+model UserFollow {
+  id          String   @id @default(uuid())
+  followerId  String
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("user_follows")
 }

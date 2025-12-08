@@ -6,6 +6,7 @@
 import React, { memo, useCallback } from 'react';
 import { formatDate } from '../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../utils/categoryMappers';
+import { sanitizeText } from '../utils/sanitize';
 
 const EventCard = memo(function EventCard({ event, onClick }) {
     const imageUrl = event.imageUrl || '/images/backg.jpg';
@@ -73,7 +74,7 @@ const EventCard = memo(function EventCard({ event, onClick }) {
 
                 {/* Description */}
                 <p className="text-gray-600 dark:text-[#a0a0a0] text-sm leading-relaxed line-clamp-2 flex-shrink-0">
-                    {event.description}
+                    {sanitizeText(event.description)}
                 </p>
 
                 {/* Meta Info */}

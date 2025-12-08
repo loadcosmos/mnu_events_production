@@ -1,14 +1,18 @@
 import {
   Controller,
   Get,
+  Post,
   Body,
   Patch,
   Param,
   Delete,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto, UpdateRoleDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,13 +20,17 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) { }
 
   @Get()
   @Roles(Role.ADMIN)
@@ -63,6 +71,43 @@ export class UsersController {
     // SECURITY FIX: Use authenticated user ID from JWT, not route parameter
     // This prevents IDOR vulnerability where users could update others' profiles
     return this.usersService.update(user.id, updateUserDto, user.id);
+  }
+
+  @Post('me/avatar')
+  @UseInterceptors(FileInterceptor('avatar', { limits: { fileSize: 5 * 1024 * 1024 } }))
+  @ApiOperation({ summary: 'Upload or update current user avatar' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Avatar uploaded successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid file type or size' })
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: any,
+  ) {
+    const result = await this.cloudinaryService.uploadAvatar(file, user.id);
+
+    // Update user's avatar URL in database
+    const updatedUser = await this.usersService.update(
+      user.id,
+      { avatar: result.secure_url },
+      user.id,
+    );
+
+    return {
+      message: 'Avatar uploaded successfully',
+      avatarUrl: result.secure_url,
+      user: updatedUser,
+    };
   }
 
   @Patch(':id')

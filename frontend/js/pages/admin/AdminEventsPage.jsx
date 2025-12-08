@@ -6,6 +6,7 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { toast } from 'sonner';
 import eventsService from '../../services/eventsService';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState([]);
@@ -190,7 +191,7 @@ export default function AdminEventsPage() {
                       {event.title}
                     </CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400 mb-3">
-                      {event.description}
+                      {sanitizeText(event.description)}
                     </CardDescription>
                     <div className="flex flex-wrap gap-2 mb-3">
                       <Badge className={getCategoryColor(event.category)}>

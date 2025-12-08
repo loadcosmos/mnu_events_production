@@ -13,6 +13,7 @@ import {
 import { Button } from '../../components/ui/button';
 
 import servicesService from '../../services/servicesService';
+import { sanitizeText } from '../../utils/sanitize';
 
 const priceTypeLabels = {
   HOURLY: 'per hour',
@@ -136,7 +137,7 @@ export default function ServiceDetailsPage() {
               {/* Description */}
               <div className="prose dark:prose-invert max-w-none">
                 <div className="text-gray-700 dark:text-[#a0a0a0] whitespace-pre-line transition-colors duration-300">
-                  {service.description}
+                  {sanitizeText(service.description)}
                 </div>
               </div>
             </div>

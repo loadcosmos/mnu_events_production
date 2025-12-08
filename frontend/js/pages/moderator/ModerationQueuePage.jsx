@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { moderationService } from '../../services/moderationService';
 import { Button } from '../../components/ui/button';
 import { formatDate } from '../../utils/dateFormatters';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function ModerationQueuePage() {
     const navigate = useNavigate();
@@ -76,7 +77,7 @@ export default function ModerationQueuePage() {
 
     const getItemDescription = (item) => {
         if (!item.details) return '';
-        return item.details.description || '';
+        return sanitizeText(item.details.description || '');
     };
 
     return (

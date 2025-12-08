@@ -7,12 +7,13 @@ import { Badge } from '../../components/ui/badge';
 import clubsService from '../../services/clubsService';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  
+
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -219,7 +220,7 @@ export default function ClubDetailsPage() {
                 </Badge>
               </div>
               <CardDescription className="text-base mt-2 dark:text-gray-400">
-                {club.description || 'No description available'}
+                {sanitizeText(club.description) || 'No description available'}
               </CardDescription>
             </div>
             {club.imageUrl && (

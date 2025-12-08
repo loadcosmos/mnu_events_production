@@ -6,6 +6,7 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { toast } from 'sonner';
 import clubsService from '../../services/clubsService';
+import { sanitizeText } from '../../utils/sanitize';
 
 export default function AdminClubsPage() {
   const [clubs, setClubs] = useState([]);
@@ -195,7 +196,7 @@ export default function AdminClubsPage() {
                           {club.name}
                         </CardTitle>
                         <CardDescription className="text-gray-600 dark:text-gray-400">
-                          {club.description}
+                          {sanitizeText(club.description)}
                         </CardDescription>
                       </div>
                     </div>

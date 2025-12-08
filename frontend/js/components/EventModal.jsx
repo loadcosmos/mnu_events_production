@@ -6,6 +6,7 @@ import eventsService from '../services/eventsService';
 import registrationsService from '../services/registrationsService';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
+import { sanitizeText } from '../utils/sanitize';
 
 const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
   const [event, setEvent] = useState(null);
@@ -337,7 +338,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
               <div>
                 <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-300">About this event</h3>
                 <p className="text-gray-700 dark:text-[#a0a0a0] text-base leading-relaxed transition-colors duration-300">
-                  {event.description || 'No description provided.'}
+                  {sanitizeText(event.description) || 'No description provided.'}
                 </p>
               </div>
 

@@ -22,6 +22,11 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   avatar?: string;
+
+  @ApiPropertyOptional({ example: 'Dean of Computer Science', description: 'Position/title for FACULTY role users' })
+  @IsString()
+  @IsOptional()
+  position?: string;
 }
 
 export class UpdateRoleDto {

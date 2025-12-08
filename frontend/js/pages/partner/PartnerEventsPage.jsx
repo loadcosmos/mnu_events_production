@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import eventsService from '../../services/eventsService';
+import { sanitizeText } from '../../utils/sanitize';
 import { toast } from 'sonner';
 import {
     Calendar,
@@ -202,7 +203,7 @@ export default function PartnerEventsPage() {
                                         </div>
                                         <CardTitle className="text-2xl mb-2">{event.title}</CardTitle>
                                         <CardDescription className="line-clamp-2">
-                                            {event.description || 'No description'}
+                                            {sanitizeText(event.description) || 'No description'}
                                         </CardDescription>
                                     </div>
                                     {event.isPaid && (

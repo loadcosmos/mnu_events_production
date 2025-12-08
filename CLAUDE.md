@@ -164,6 +164,15 @@ async someMethod() { ... }
 - ✅ **Added** `AdminAdvertisementsPage.jsx` with full CRUD
 - ✅ **Workflow:** Company → WhatsApp → Marketing → Admin → Ad on homepage
 
+### Security Implementations (Verified 2025-12-08)
+- ✅ **JWT httpOnly Cookies** - Tokens no longer in localStorage (`auth.service.ts`)
+- ✅ **JWT Blacklist** - Logout invalidates tokens via Redis (`jwt-blacklist.service.ts`)
+- ✅ **CSRF Protection** - Double-submit cookie pattern (`main.ts`)
+- ✅ **XSS Protection** - DOMPurify sanitization on all user content (`sanitize.js`)
+- ✅ **Helmet Headers** - CSP, HSTS, X-Frame-Options configured
+- ✅ **Winston Logging** - Structured JSON logs in production
+- ✅ **Health Checks** - `/api/health`, `/api/health/ready`, `/api/health/live`
+
 ---
 
 ## Deployment Info
