@@ -61,6 +61,17 @@ export default function HomePage() {
     setTimeout(() => setModalEventId(null), 300);
   };
 
+  // Ad modal handlers
+  const openAdModal = (ad) => {
+    setSelectedAd(ad);
+    setIsAdModalOpen(true);
+  };
+
+  const closeAdModal = () => {
+    setIsAdModalOpen(false);
+    setTimeout(() => setSelectedAd(null), 300);
+  };
+
   const handleAdClick = async (adId) => {
     try {
       await adsService.trackClick(adId);
@@ -285,7 +296,7 @@ export default function HomePage() {
           ad={ads.bottomBanner}
           position="BOTTOM_BANNER"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
+          onClick={handleAdClick}
         />
       )}
 
