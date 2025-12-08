@@ -63,6 +63,16 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3001}/api/health || exit 1
 
-# Запуск: db push для Railway (минует проблемные data migrations) + сервер
-CMD ["sh", "-c", "npx prisma@5.7.1 db push --accept-data-loss --skip-generate && node dist/main"]
+# Запуск: ждём базу данных, затем db push + сервер
+# Retry до 30 раз с паузой 2 секунды (max 60 секунд ожидания)
+CMD ["sh", "-c", "\
+  echo 'Waiting for database...' && \
+  for i in $(seq 1 30); do \
+    npx prisma@5.7.1 db push --accept-data-loss --skip-generate 2>/dev/null && break; \
+    echo \"Database not ready, retry $i/30...\"; \
+    sleep 2; \
+  done && \
+  echo 'Database ready, starting server...' && \
+  node dist/main \
+"]
 
