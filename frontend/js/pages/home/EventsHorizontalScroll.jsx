@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate } from '../../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../../utils/categoryMappers';
+import { SkeletonCard } from '../../components/ui/skeleton';
 
 /**
  * EventCard - Reusable card for displaying event in horizontal scroll
@@ -125,10 +126,16 @@ export default function EventsHorizontalScroll({
                     </Link>
                 </div>
 
-                {/* Loading State */}
+                {/* Loading State - Skeleton Cards */}
                 {loading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#2a2a2a] border-t-[#d62e1f]"></div>
+                    <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                        <div className="flex gap-6 min-w-max">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="w-80">
+                                    <SkeletonCard />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ) : error ? (
                     <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">

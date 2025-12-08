@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useTransition, useDeferredValue, useCallback } from 'react';
+import React, { useState, useMemo, useTransition, useDeferredValue, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
-import { useEvents } from '../../hooks/useEvents';
+import { useInfiniteEvents } from '../../hooks/useInfiniteEvents';
+import { SkeletonCard } from '../../components/ui/skeleton';
 import EventModal from '../../components/EventModal';
 import FilterSheet from '../../components/FilterSheet';
 import { formatDate } from '../../utils/dateFormatters';
@@ -42,9 +43,9 @@ export default function EventsPage() {
   const statuses = ['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'];
   const csiCategories = getAllCsiCategories();
 
-  // Build query params for React Query
+  // Build query params for React Query (without page/limit - handled by infinite query)
   const queryParams = useMemo(() => {
-    const params = { page: 1, limit: 100 };
+    const params = {};
 
     if (selectedCategory !== 'ALL') params.category = selectedCategory;
     if (selectedStatus !== 'ALL') params.status = selectedStatus;
@@ -56,17 +57,45 @@ export default function EventsPage() {
     return params;
   }, [selectedCategory, selectedStatus, deferredSearch, selectedCsiTags, startDate, endDate]);
 
-  // Fetch events using React Query (automatic caching!)
-  const { data: eventsResponse, isLoading: loading, error: queryError } = useEvents(queryParams);
+  // Fetch events using React Query with infinite scroll
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: loading,
+    error: queryError,
+  } = useInfiniteEvents(queryParams);
 
-  // Extract events from response
+  // Flatten pages into events array
   const events = useMemo(() => {
-    if (!eventsResponse) return [];
-    if (Array.isArray(eventsResponse)) return eventsResponse;
-    if (Array.isArray(eventsResponse.data)) return eventsResponse.data;
-    if (eventsResponse.events && Array.isArray(eventsResponse.events)) return eventsResponse.events;
-    return [];
-  }, [eventsResponse]);
+    if (!data?.pages) return [];
+    return data.pages.flatMap(page => page.events);
+  }, [data]);
+
+  // Intersection Observer for auto-loading more events
+  const loadMoreRef = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const error = queryError?.message || '';
 
@@ -332,8 +361,11 @@ export default function EventsPage() {
           )}
 
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-[#2a2a2a] border-t-[#d62e1f]"></div>
+            // Skeleton grid for initial loading
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : sortedEvents.length === 0 ? (
             <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
@@ -347,6 +379,7 @@ export default function EventsPage() {
                 <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
                   Showing <span className="font-semibold text-gray-900 dark:text-white">{sortedEvents.length}</span>{' '}
                   {sortedEvents.length === 1 ? 'event' : 'events'}
+                  {hasNextPage && ' (scroll for more)'}
                 </p>
               </div>
 
@@ -436,6 +469,25 @@ export default function EventsPage() {
                   );
                 })}
               </div>
+
+              {/* Load More Trigger - Intersection Observer target */}
+              <div ref={loadMoreRef} className="h-10 mt-8" />
+
+              {/* Loading more skeleton */}
+              {isFetchingNextPage && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <SkeletonCard key={`loading-${i}`} />
+                  ))}
+                </div>
+              )}
+
+              {/* End of list indicator */}
+              {!hasNextPage && sortedEvents.length > 0 && (
+                <div className="text-center py-8 text-gray-500 dark:text-[#666666]">
+                  <p className="text-sm">You've seen all events</p>
+                </div>
+              )}
             </>
           )}
         </div>

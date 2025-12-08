@@ -9,7 +9,7 @@ import AdBanner from '../components/AdBanner';
 import AdModal from '../components/AdModal';
 
 // Extracted home page components
-import { HeroSlider, MarketplaceSection, EventsHorizontalScroll } from './home';
+import { HeroSlider, EventsHorizontalScroll } from './home';
 
 /**
  * HomePage - Main landing page
@@ -247,9 +247,6 @@ export default function HomePage() {
           onClick={handleAdClick}
         />
       )}
-
-      {/* Services/Marketplace Section */}
-      <MarketplaceSection />
 
       {/* My Upcoming Events - Only for authenticated users */}
       {isAuthenticated() && myUpcomingEvents.length > 0 && (

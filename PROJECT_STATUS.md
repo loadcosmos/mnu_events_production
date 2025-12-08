@@ -36,24 +36,32 @@
   - Automatic caching (5 min stale time), request deduplication, background refetching
 - ✅ **Hooks Directory** - New `frontend/js/hooks/` with custom hooks:
   - `useEvents` - Events list with filters and pagination
+  - `useInfiniteEvents` - **NEW** Infinite scroll pagination with auto-loading
   - `useServices` - Services marketplace data
   - `useUser` / `useCurrentUser` - User profile and auth state
   - `useClubs` - Clubs list with filters
+- ✅ **Infinite Scroll** - EventsPage now loads events in batches (12 per page) as user scrolls
+- ✅ **Skeleton Loaders** - Replaced spinners with skeleton placeholders for better UX
+- ✅ **MarketplaceSection Removed from HomePage** - Has dedicated `/services` page
+- ✅ **Performance Optimizations** (INP, CLS, LCP):
+  - React 19 concurrent features (`useTransition`, `useDeferredValue`)
+  - Image preloading for hero content
+  - Reduced backdrop-filter blur on mobile
+  - Explicit image dimensions for CLS prevention
 - ✅ **Pages Reorganization** - Restructured from 45 flat files to 11 categorical folders:
   ```
   js/pages/
-  ├── admin/        # Dashboard, Users, Events, Partners, Pricing, Advertisements ⭐
+  ├── admin/        # Dashboard, Users, Events, Partners, Pricing, Advertisements
   ├── auth/         # Login, VerifyEmail
   ├── clubs/        # ClubsPage, ClubDetails
-  ├── events/       # EventsPage, EventDetails, CreateEvent, EditEvent
-  ├── home/         # HeroSlider, MarketplaceSection, EventsHorizontalScroll
+  ├── events/       # EventsPage (infinite scroll), EventDetails, CreateEvent, EditEvent
+  ├── home/         # HeroSlider, EventsHorizontalScroll
   ├── moderator/    # ModeratorDashboard, ModerationQueue
   ├── organizer/    # OrganizerDashboard, Scanner, Analytics, PaymentVerification
   ├── partner/      # PartnerDashboard, PartnerEvents
   ├── payments/     # TicketPurchase, TicketStatus, MockPayment
-  ├── services/     # Marketplace, ServiceDetails, CreateService, Tutoring
+  ├── services/     # Marketplace (dedicated page), ServiceDetails, CreateService, Tutoring
   └── student/      # Profile, Registrations, CsiDashboard, Premium
-  ```
   ```
 - ✅ **Advertisement System Redesign (2025-12-08)**
   - Admin-only ads: removed public ad posting, now managed via `/admin/advertisements`

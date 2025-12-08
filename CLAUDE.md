@@ -48,16 +48,16 @@ npm run build                           # Production build
 ### Frontend Pages Structure (Reorganized 2025-12-08)
 ```
 js/pages/
-├── admin/           # Dashboard, users, events, partners, pricing, advertisements ⭐
+├── admin/           # Dashboard, users, events, partners, pricing, advertisements
 ├── auth/            # Login, verify-email
 ├── clubs/           # Clubs, club details
-├── events/          # Events, details, create, edit
-├── home/            # HeroSlider, MarketplaceSection, EventsHorizontalScroll
+├── events/          # Events (infinite scroll), details, create, edit
+├── home/            # HeroSlider, EventsHorizontalScroll
 ├── moderator/       # Moderator dashboard, queue
 ├── organizer/       # Organizer dashboard, scanner, analytics
 ├── partner/         # Partner dashboard
 ├── payments/        # Ticket purchase, status, mock payment
-├── services/        # Marketplace, service details, create
+├── services/        # Marketplace (moved from HomePage)
 └── student/         # Profile, registrations, CSI dashboard
 ```
 
@@ -95,6 +95,7 @@ mcp__context7__get-library-docs            # Get library documentation
 ```javascript
 // js/hooks/
 import { useEvents, useEvent, useCreateEvent } from '@/hooks';
+import { useInfiniteEvents } from '@/hooks'; // ⭐ NEW - Infinite scroll
 import { useServices, useService } from '@/hooks';
 import { useCurrentUser, useUpdateProfile } from '@/hooks';
 ```

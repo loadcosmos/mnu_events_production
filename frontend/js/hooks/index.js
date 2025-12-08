@@ -7,6 +7,7 @@
 
 // Events hooks
 export * from './useEvents';
+export * from './useInfiniteEvents';
 
 // Services/Marketplace hooks
 export * from './useServices';
