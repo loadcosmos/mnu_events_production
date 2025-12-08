@@ -50,6 +50,7 @@ export default function AdminAdvertisementsPage() {
     // Form state
     const [formData, setFormData] = useState({
         title: '',
+        companyName: '',
         imageUrl: '',
         linkUrl: '',
         position: 'TOP_BANNER',
@@ -107,6 +108,7 @@ export default function AdminAdvertisementsPage() {
             setShowCreateForm(false);
             setFormData({
                 title: '',
+                companyName: '',
                 imageUrl: '',
                 linkUrl: '',
                 position: 'TOP_BANNER',
@@ -209,6 +211,16 @@ export default function AdminAdvertisementsPage() {
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="companyName" className="text-gray-700 dark:text-gray-300">Company Name</Label>
+                                    <Input
+                                        id="companyName"
+                                        placeholder="e.g., Coffee House LLP"
+                                        value={formData.companyName}
+                                        onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                                     />
                                 </div>
 
@@ -381,6 +393,11 @@ export default function AdminAdvertisementsPage() {
                                             <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
                                                 {ad.title}
                                             </h3>
+                                            {ad.companyName && (
+                                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                                    by {ad.companyName}
+                                                </span>
+                                            )}
                                             <Badge
                                                 variant="outline"
                                                 className={ad.isActive && ad.paymentStatus === 'PAID'

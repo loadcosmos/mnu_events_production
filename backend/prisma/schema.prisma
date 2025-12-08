@@ -361,6 +361,7 @@ enum PriceType {
 model Advertisement {
   id            String        @id @default(uuid())
   title         String
+  companyName   String?       // Name of the advertising company
   imageUrl      String
   linkUrl       String?
   position      AdPosition

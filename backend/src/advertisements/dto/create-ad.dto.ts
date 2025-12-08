@@ -11,6 +11,15 @@ export class CreateAdDto {
   title: string;
 
   @ApiProperty({
+    description: 'Company name (advertiser)',
+    example: 'Coffee House LLP',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  companyName?: string;
+
+  @ApiProperty({
     description: 'Image URL for the advertisement',
     example: 'https://example.com/ad-image.jpg',
   })

@@ -119,16 +119,17 @@ export class AdvertisementsService {
 
   /**
    * Update payment status (admin only)
+   * Also toggles isActive: PAID = active, PENDING = inactive
    */
   async updatePaymentStatus(id: string, updateStatusDto: UpdatePaymentStatusDto) {
-    const ad = await this.findOne(id);
+    await this.findOne(id);
 
     const updated = await this.prisma.advertisement.update({
       where: { id },
       data: {
         paymentStatus: updateStatusDto.status,
-        // Activate if paid and approved
-        isActive: updateStatusDto.status === 'PAID' && ad.isActive !== false,
+        // Toggle active state based on payment status
+        isActive: updateStatusDto.status === 'PAID',
       },
     });
 

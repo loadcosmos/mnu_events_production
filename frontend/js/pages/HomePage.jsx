@@ -61,15 +61,12 @@ export default function HomePage() {
     setTimeout(() => setModalEventId(null), 300);
   };
 
-  // Ad modal handlers
-  const openAdModal = (ad) => {
-    setSelectedAd(ad);
-    setIsAdModalOpen(true);
-  };
-
-  const closeAdModal = () => {
-    setIsAdModalOpen(false);
-    setTimeout(() => setSelectedAd(null), 300);
+  const handleAdClick = async (adId) => {
+    try {
+      await adsService.trackClick(adId);
+    } catch (err) {
+      console.error('[HomePage] Failed to track ad click:', err);
+    }
   };
 
   const handleAdImpression = async (adId) => {
@@ -236,7 +233,7 @@ export default function HomePage() {
           ad={ads.topBanner}
           position="TOP_BANNER"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
+          onClick={handleAdClick}
         />
       )}
 
@@ -264,7 +261,7 @@ export default function HomePage() {
           ad={ads.nativeFeed}
           position="NATIVE_FEED"
           onImpression={handleAdImpression}
-          onClick={openAdModal}
+          onClick={handleAdClick}
         />
       )}
 
