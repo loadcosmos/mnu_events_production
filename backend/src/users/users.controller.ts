@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -94,6 +95,10 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
+    if (!file) {
+      throw new BadRequestException('No file provided. Make sure to send the file with field name "avatar"');
+    }
+
     const result = await this.cloudinaryService.uploadAvatar(file, user.id);
 
     // Update user's avatar URL in database

@@ -24,10 +24,11 @@ export class UploadController {
     constructor(private readonly cloudinaryService: CloudinaryService) { }
 
     /**
-     * Upload event image (organizers, partners, admins)
+     * Upload event image
+     * Allowed: ORGANIZER, EXTERNAL_PARTNER, MODERATOR, ADMIN
      */
     @Post('event/:eventId')
-    @Roles(Role.ORGANIZER, Role.EXTERNAL_PARTNER, Role.ADMIN)
+    @Roles(Role.ORGANIZER, Role.EXTERNAL_PARTNER, Role.MODERATOR, Role.ADMIN)
     @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } }))
     @ApiOperation({ summary: 'Upload event banner image' })
     @ApiConsumes('multipart/form-data')
@@ -57,7 +58,10 @@ export class UploadController {
     }
 
     /**
-     * Upload service image (service owners)
+     * Upload service image
+     * Allowed: STUDENT (own services), ORGANIZER, FACULTY, ADMIN
+     * Note: No role restriction - any authenticated user can upload service images
+     * Service ownership is checked in the services controller
      */
     @Post('service/:serviceId')
     @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } }))
@@ -77,6 +81,9 @@ export class UploadController {
         @Param('serviceId') serviceId: string,
         @UploadedFile() file: Express.Multer.File,
     ) {
+        if (!file) {
+            throw new BadRequestException('No file provided. Make sure to send the file with field name "image"');
+        }
         const result = await this.cloudinaryService.uploadServiceImage(file, serviceId);
         return {
             message: 'Service image uploaded successfully',
@@ -86,7 +93,8 @@ export class UploadController {
     }
 
     /**
-     * Upload club logo/image (organizers, admins)
+     * Upload club logo/image
+     * Allowed: ORGANIZER, ADMIN
      */
     @Post('club/:clubId')
     @Roles(Role.ORGANIZER, Role.ADMIN)
@@ -107,6 +115,9 @@ export class UploadController {
         @Param('clubId') clubId: string,
         @UploadedFile() file: Express.Multer.File,
     ) {
+        if (!file) {
+            throw new BadRequestException('No file provided. Make sure to send the file with field name "image"');
+        }
         const result = await this.cloudinaryService.uploadClubImage(file, clubId);
         return {
             message: 'Club image uploaded successfully',
@@ -116,8 +127,9 @@ export class UploadController {
     }
 
     /**
-     * Generic image upload (any authenticated user)
-     * Returns URL without saving to any entity - frontend handles the save
+     * Generic image upload
+     * Allowed: ALL authenticated users (STUDENT, ORGANIZER, EXTERNAL_PARTNER, FACULTY, MODERATOR, ADMIN)
+     * Used for: avatars, posts, services (before save)
      */
     @Post('image')
     @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } }))
@@ -132,10 +144,14 @@ export class UploadController {
         },
     })
     @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid file type or size' })
     async uploadGenericImage(
         @UploadedFile() file: Express.Multer.File,
         @CurrentUser() user: any,
     ) {
+        if (!file) {
+            throw new BadRequestException('No file provided. Make sure to send the file with field name "image"');
+        }
         const result = await this.cloudinaryService.uploadPostImage(file, `generic_${user.id}_${Date.now()}`);
         return {
             message: 'Image uploaded successfully',
