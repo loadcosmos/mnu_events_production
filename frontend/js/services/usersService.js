@@ -116,10 +116,10 @@ const usersService = {
       const formData = new FormData();
       formData.append('avatar', file);
 
+      // Use axios directly for file upload with longer timeout
+      // Don't set Content-Type - browser will set it with correct boundary
       const response = await api.post('/users/me/avatar', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        timeout: 60000, // 60 seconds for file upload
       });
       return response;
     } catch (error) {
