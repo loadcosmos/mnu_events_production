@@ -4,9 +4,9 @@ import { Input } from '../../components/ui/input';
 import { useInfiniteEvents } from '../../hooks/useInfiniteEvents';
 import { SkeletonCard } from '../../components/ui/skeleton';
 import EventModal from '../../components/EventModal';
+import EventCard from '../../components/EventCard';
 import FilterSheet from '../../components/FilterSheet';
-import { formatDate } from '../../utils/dateFormatters';
-import { EVENT_CATEGORIES, CSI_CATEGORIES } from '../../utils/constants';
+import { EVENT_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiColors, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
 
 
@@ -384,90 +384,13 @@ export default function EventsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {sortedEvents.map((event) => {
-                  const imageUrl = event.imageUrl || '/images/backg.jpg';
-
-                  return (
-                    <div
-                      key={event.id}
-                      className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl flex flex-col"
-                      onClick={() => openEventModal(event.id)}
-                    >
-                      {/* Image Section - Fixed Height, No Scroll */}
-                      <div className="relative h-48 md:h-52 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-[#0a0a0a] transition-colors duration-300">
-                        <img
-                          src={imageUrl}
-                          alt={event.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          width="400"
-                          height="208"
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.src = '/images/event-placeholder.jpg';
-                          }}
-                        />
-                        {/* Subtle gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                      </div>
-
-                      {/* Content Section - Strict Vertical Layout with Proper Padding */}
-                      <div className="flex-1 flex flex-col px-5 py-5 md:px-6 md:py-6 space-y-4">
-                        {/* Category Badge and CSI Tags */}
-                        <div className="flex-shrink-0 flex items-center gap-2 flex-wrap">
-                          <span className="inline-block bg-[#d62e1f] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide">
-                            {event.category}
-                          </span>
-                          {/* CSI Tags */}
-                          {event.csiTags && event.csiTags.length > 0 && (
-                            event.csiTags.map((csiTag) => {
-                              const colors = getCsiColors(csiTag);
-                              return (
-                                <span
-                                  key={csiTag}
-                                  className={`inline-flex items-center gap-1 ${colors.bg} ${colors.text} ${colors.border} px-2.5 py-1 rounded-lg text-xs font-semibold border`}
-                                >
-                                  {getCsiIcon(csiTag)}
-                                </span>
-                              );
-                            })
-                          )}
-                        </div>
-
-                        {/* Date/Time - MNU Red + Bold */}
-                        <div className="flex items-center gap-2.5 flex-shrink-0">
-                          <i className="fa-regular fa-calendar text-[#d62e1f] text-base" />
-                          <span className="text-base font-bold text-[#d62e1f]">{formatDate(event.startDate)}</span>
-                        </div>
-
-                        {/* Event Title - Large + Bold */}
-                        <h3 className="text-2xl md:text-2xl font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight flex-shrink-0 transition-colors duration-300">
-                          {event.title}
-                        </h3>
-
-                        {/* Description - Controlled Height */}
-                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm leading-relaxed line-clamp-2 flex-shrink-0 transition-colors duration-300">
-                          {event.description}
-                        </p>
-
-                        {/* Meta Info - Vertical Stack */}
-                        <div className="flex flex-col gap-2.5 pt-4 border-t border-gray-200 dark:border-[#2a2a2a] flex-shrink-0 transition-colors duration-300">
-                          {/* Location */}
-                          <div className="flex items-center gap-2.5">
-                            <i className="fa-solid fa-location-dot text-[#d62e1f] text-base flex-shrink-0" />
-                            <span className="text-sm font-medium text-gray-600 dark:text-[#a0a0a0] truncate transition-colors duration-300">{event.location}</span>
-                          </div>
-                          {/* Capacity */}
-                          <div className="flex items-center gap-2.5">
-                            <i className="fa-solid fa-users text-[#d62e1f] text-base flex-shrink-0" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-                              {event._count?.registrations || 0} / {event.capacity}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {sortedEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    onClick={openEventModal}
+                  />
+                ))}
               </div>
 
               {/* Load More Trigger - Intersection Observer target */}
