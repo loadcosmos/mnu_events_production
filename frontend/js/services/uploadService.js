@@ -12,6 +12,12 @@ const uploadService = {
      * @returns {Promise<{imageUrl: string, publicId: string}>}
      */
     async uploadEventImage(eventId, file) {
+        console.log('[UploadService] Uploading event image:', {
+            eventId,
+            fileName: file?.name,
+            fileSize: file?.size,
+            fileType: file?.type,
+        });
         const formData = new FormData();
         formData.append('image', file);
         return api.post(`/upload/event/${eventId}`, formData, { timeout: 60000 });

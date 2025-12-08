@@ -102,9 +102,10 @@ export default function ImageUploadCrop({
     }, [aspectRatio, shape]);
 
     const getCroppedBlob = useCallback(() => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             if (!imgRef.current || !completedCrop) {
-                resolve(null);
+                console.error('[ImageUploadCrop] Missing imgRef or completedCrop');
+                reject(new Error('No image or crop area defined'));
                 return;
             }
 
@@ -113,12 +114,17 @@ export default function ImageUploadCrop({
             const scaleX = image.naturalWidth / image.width;
             const scaleY = image.naturalHeight / image.height;
 
-            canvas.width = completedCrop.width * scaleX;
-            canvas.height = completedCrop.height * scaleY;
+            // Ensure we have valid dimensions
+            const cropWidth = Math.max(1, Math.round(completedCrop.width * scaleX));
+            const cropHeight = Math.max(1, Math.round(completedCrop.height * scaleY));
+
+            canvas.width = cropWidth;
+            canvas.height = cropHeight;
 
             const ctx = canvas.getContext('2d');
             if (!ctx) {
-                resolve(null);
+                console.error('[ImageUploadCrop] Could not get canvas context');
+                reject(new Error('Could not get canvas context'));
                 return;
             }
 
@@ -130,20 +136,24 @@ export default function ImageUploadCrop({
                 completedCrop.height * scaleY,
                 0,
                 0,
-                canvas.width,
-                canvas.height
+                cropWidth,
+                cropHeight
             );
 
             canvas.toBlob(
                 (blob) => {
                     if (blob) {
+                        console.log('[ImageUploadCrop] Created blob:', blob.size, 'bytes');
                         // Create a File from the Blob
-                        const file = new File([blob], selectedFile?.name || 'cropped-image.jpg', {
+                        const fileName = selectedFile?.name || 'cropped-image.jpg';
+                        const file = new File([blob], fileName.replace(/\.[^/.]+$/, '.jpg'), {
                             type: 'image/jpeg',
                         });
+                        console.log('[ImageUploadCrop] Created file:', file.name, file.size, 'bytes');
                         resolve(file);
                     } else {
-                        resolve(null);
+                        console.error('[ImageUploadCrop] canvas.toBlob returned null');
+                        reject(new Error('Failed to create blob from canvas'));
                     }
                 },
                 'image/jpeg',
@@ -153,9 +163,16 @@ export default function ImageUploadCrop({
     }, [completedCrop, selectedFile]);
 
     const handleConfirmCrop = async () => {
-        const croppedFile = await getCroppedBlob();
-        if (croppedFile && onUpload) {
-            onUpload(croppedFile);
+        try {
+            console.log('[ImageUploadCrop] Starting crop...');
+            const croppedFile = await getCroppedBlob();
+            console.log('[ImageUploadCrop] Got cropped file:', croppedFile);
+            if (croppedFile && onUpload) {
+                await onUpload(croppedFile);
+            }
+        } catch (error) {
+            console.error('[ImageUploadCrop] Crop failed:', error);
+            alert('Failed to crop image. Please try again.');
         }
         handleCancelCrop();
     };
