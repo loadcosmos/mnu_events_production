@@ -152,14 +152,6 @@ export default function ServicesPage() {
               <Plus className="w-4 h-4 mr-2" />
               Create Service
             </Button>
-            <Button
-              onClick={() => navigate('/advertisements/create')}
-              variant="outline"
-              className="rounded-xl"
-            >
-              <Megaphone className="w-4 h-4 mr-2" />
-              Post Ad
-            </Button>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import { AdPosition } from '@prisma/client';
 
 @Injectable()
 export class AdvertisementsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // Pricing for different ad positions (тг/week)
   private readonly AD_PRICING = {
@@ -71,11 +71,14 @@ export class AdvertisementsService {
 
   /**
    * Get active advertisements by position
+   * Note: Ads are shown if approved by moderator (isActive: true)
+   * Payment status check is relaxed to allow free/promotional ads
    */
   async getActiveAds(position?: AdPosition) {
     const where: any = {
-      isActive: true,
-      paymentStatus: 'PAID',
+      isActive: true, // Approved by moderator
+      // Allow both PAID and PENDING (for free campaigns and testing)
+      paymentStatus: { in: ['PAID', 'PENDING'] },
       startDate: { lte: new Date() },
       endDate: { gte: new Date() },
     };

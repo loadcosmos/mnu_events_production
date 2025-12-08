@@ -1,112 +1,78 @@
 # Documentation Index
 
-This directory contains technical documentation for MNU Events Platform.
+Technical documentation for MNU Events Platform.
 
-**Last Updated:** 2025-12-04
+**Last Updated:** 2025-12-08
 
 ---
 
 ## 📑 Documentation Files
 
-### 🎯 Core Documentation
+### Core Documentation
 
-#### [QR_CHECKIN_SYSTEM.md](QR_CHECKIN_SYSTEM.md)
-**Comprehensive QR check-in system documentation**
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [QR_CHECKIN_SYSTEM.md](QR_CHECKIN_SYSTEM.md) | QR check-in system (4 event types, auto mode detection) | ✅ Current |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues and solutions | ✅ Current |
+| [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Railway/Vercel deployment instructions | ✅ Current |
+
+---
+
+## 🎯 Quick Navigation
+
+### For Developers
+- **Getting Started:** [../README.md](../README.md)
+- **Development Guide:** [../DEVELOPMENT.md](../DEVELOPMENT.md)
+- **AI Agent Context:** [../CLAUDE.md](../CLAUDE.md)
+
+### For Deployment
+- **Deployment:** [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
+- **Issues:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+### For Testing
+- **QR System:** [QR_CHECKIN_SYSTEM.md](QR_CHECKIN_SYSTEM.md)
+
+---
+
+## 📂 Document Descriptions
+
+### QR_CHECKIN_SYSTEM.md
+Comprehensive QR check-in system documentation:
 - 4 event types (internal/external, free/paid)
 - Automatic check-in mode detection
 - Student and organizer scanning workflows
-- Unit test coverage
+- Unit test coverage (11 tests)
 - Migration scripts
 
-#### [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-**Common issues and solutions**
-- Email verification problems
+### TROUBLESHOOTING.md
+Common issues and solutions:
+- Email verification problems (SMTP2GO)
 - Dashboard visibility issues
 - Authentication troubleshooting
-- UI/UX fixes
 - Database connection issues
-- Deployment problems
+- Deployment problems (Railway, Vercel)
 
-### 🚀 Deployment & Production
-
-#### [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-**Railway and Vercel deployment instructions**
-- Environment setup
-- Database configuration
-- Frontend/backend deployment
-- Production checklist
-
-#### [PRODUCTION_READY_CHANGES.md](PRODUCTION_READY_CHANGES.md)
-**Changes required for production deployment**
-- Security improvements
-- Performance optimizations
-- Configuration updates
-
-### 📊 Feature Documentation
-
-#### [UI_UX_IMPROVEMENTS_DEC2024.md](UI_UX_IMPROVEMENTS_DEC2024.md)
-**December 2024 UI/UX improvements**
-- Full English translation
-- Dark theme fixes
-- QR scanner redesign
-- Navigation enhancements
-- 17 files modified
-
-#### [ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md](ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md)
-**Admin dashboard and email service updates**
-- SMTP2GO integration
-- Email service improvements
-- Admin panel enhancements
-
-### 🗄️ Database
-
-#### [DATA_MIGRATION_GUIDE.md](DATA_MIGRATION_GUIDE.md)
-**Database migration procedures**
-- Schema changes
-- Data migration scripts
-- Rollback procedures
+### DEPLOYMENT_GUIDE.md
+Production deployment instructions:
+- Railway backend deployment
+- Vercel frontend deployment
+- Environment configuration
+- Security checklist
+- Post-deployment testing
 
 ---
 
-## 🎯 Quick Reference
+## 🔗 Root-Level Documentation
 
-### For Developers
-- Start here: [../README.md](../README.md)
--  Deployment: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-- Issues: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-
-### For Testing
-- QR System: [QR_CHECKIN_SYSTEM.md](QR_CHECKIN_SYSTEM.md)
-- UI Changes: [UI_UX_IMPROVEMENTS_DEC2024.md](UI_UX_IMPROVEMENTS_DEC2024.md)
-
-### For Production
-- Deployment: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-- Production Checklist: [PRODUCTION_READY_CHANGES.md](PRODUCTION_READY_CHANGES.md)
-- Troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+| Document | Purpose |
+|----------|---------|
+| [README.md](../README.md) | Project overview, quick start |
+| [CLAUDE.md](../CLAUDE.md) | AI agent context (stack, commands, paths) |
+| [DEVELOPMENT.md](../DEVELOPMENT.md) | Development setup, testing, commands |
+| [PROJECT_STATUS.md](../PROJECT_STATUS.md) | Full project status, roadmap, metrics |
+| [SECURITY_CHECKLIST.md](../SECURITY_CHECKLIST.md) | Security review before production |
+| [paper_draft.md](../paper_draft.md) | Academic capstone paper |
 
 ---
 
-## 📝 Document Status
-
-| Document | Status | Last Updated |
-|----------|--------|--------------|
-| QR_CHECKIN_SYSTEM.md | ✅ Current | 2025-12-01 |
-| TROUBLESHOOTING.md | ✅ Current | 2025-12-04 |
-| UI_UX_IMPROVEMENTS_DEC2024.md | ✅ Current | 2025-12-04 |
-| DEPLOYMENT_GUIDE.md | ✅ Current | 2025-12-02 |
-| PRODUCTION_READY_CHANGES.md | ✅ Current | 2025-12-02 |
-| ADMIN_DASHBOARD_EMAIL_IMPROVEMENTS.md | ✅ Current | 2025-12-03 |
-| DATA_MIGRATION_GUIDE.md | ✅ Current | 2025-12-02 |
-
----
-
-## 🔗 Related Documentation
-
-- [Project Status](../PROJECT_STATUS.md)
-- [Features List](../FEATURES.md)
-- [Development Guide](../DEVELOPMENT.md)
-- [Main README](../README.md)
-
----
-
-**Note:** Old troubleshooting documents have been consolidated into TROUBLESHOOTING.md for easier maintenance.
+**Note:** Documentation was consolidated on 2025-12-08 for easier maintenance.

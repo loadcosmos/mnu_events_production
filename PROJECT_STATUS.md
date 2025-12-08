@@ -6,7 +6,7 @@
 
 **Overall Implementation:** 99% Complete
 **Current Grade:** A (95/100) - Production-ready with full monetization & partners system
-**Last Updated:** 2025-12-01
+**Last Updated:** 2025-12-08
 **Team:** 1 developer
 **Timeline:** 6 weeks (Phases 1-6 COMPLETE)
 
@@ -28,23 +28,51 @@
 
 ---
 
-## 🆕 Recent Changes (2025-12-04)
+## 🆕 Recent Changes (2025-12-08)
 
-### Major UI/UX Improvements:
+### Code Architecture Improvements:
+- ✅ **React Query Integration** - Added `@tanstack/react-query` for API state management
+  - QueryClientProvider wraps App in `main.jsx`
+  - Automatic caching (5 min stale time), request deduplication, background refetching
+- ✅ **Hooks Directory** - New `frontend/js/hooks/` with custom hooks:
+  - `useEvents` - Events list with filters and pagination
+  - `useServices` - Services marketplace data
+  - `useUser` / `useCurrentUser` - User profile and auth state
+  - `useClubs` - Clubs list with filters
+- ✅ **Pages Reorganization** - Restructured from 45 flat files to 11 categorical folders:
+  ```
+  js/pages/
+  ├── admin/        # Dashboard, Users, Events, Partners, Pricing, Advertisements ⭐
+  ├── auth/         # Login, VerifyEmail
+  ├── clubs/        # ClubsPage, ClubDetails
+  ├── events/       # EventsPage, EventDetails, CreateEvent, EditEvent
+  ├── home/         # HeroSlider, MarketplaceSection, EventsHorizontalScroll
+  ├── moderator/    # ModeratorDashboard, ModerationQueue
+  ├── organizer/    # OrganizerDashboard, Scanner, Analytics, PaymentVerification
+  ├── partner/      # PartnerDashboard, PartnerEvents
+  ├── payments/     # TicketPurchase, TicketStatus, MockPayment
+  ├── services/     # Marketplace, ServiceDetails, CreateService, Tutoring
+  └── student/      # Profile, Registrations, CsiDashboard, Premium
+  ```
+  ```
+- ✅ **Advertisement System Redesign (2025-12-08)**
+  - Admin-only ads: removed public ad posting, now managed via `/admin/advertisements`
+  - Removed "Post Ad" buttons from MarketplacePage, ServicesPage, MarketplaceSection
+  - New workflow: Company → WhatsApp → Marketing → Admin → Ad on homepage
+- ✅ **ErrorBoundary** - Global error handling component with graceful fallback UI
+- ✅ **Skeleton Component** - Loading placeholder for improved UX
+- ✅ **Barrel Exports** - Added `js/services/index.js` and `js/hooks/index.js` for cleaner imports
+- ✅ **HomePage Refactored** - Reduced from 1076 to 280 lines with extracted components
+- ✅ **Legacy Cleanup** - Removed `HomePageNew.jsx` duplicate
+
+### Previous Updates (2025-12-04):
+
+### UI/UX Improvements:
 - ✅ **Full English Translation** - All UI components translated from Russian to English
-  - Frontend pages: MarketplacePage, TutoringPage, MorePage, ServiceDetailsPage, ClubsPage, ProfilePage
-  - Components: GamificationCard, LevelProgressBar, HeroCarousel, QR Scanner, Ad components
-  - Backend: Gamification levels, achievements, date formats
-- ✅ **Dark Theme Fixes** - Removed white borders/glow from header in dark mode (globals.css)
-- ✅ **QR Scanner Modal Redesign** - Simplified interface, improved UX, backdrop click to close
-- ✅ **Navigation Enhancements**:
-  - Added CSI Statistics link to ProfilePage (students only)
-  - Added "My Clubs" button to EventsPage
-- ✅ **API Integration** - TutoringPage now uses real API instead of mock data
-- ✅ **Gamification Translations**:
-  - Levels: Новичок→Beginner, Активист→Active, Лидер→Leader, Легенда→Legend
-  - Achievements: Первопроходец→Pioneer, etc.
-  - Date formats: Сегодня→Today, Вчера→Yesterday
+- ✅ **Dark Theme Fixes** - Removed white borders/glow from header in dark mode
+- ✅ **QR Scanner Modal Redesign** - Simplified interface, backdrop click to close
+- ✅ **Navigation Enhancements** - CSI Statistics link, "My Clubs" button
+- ✅ **Gamification Translations** - Levels and achievements in English
 
 ### Previous Updates (2025-12-01):
 
@@ -242,7 +270,7 @@
 - [x] **ModerationQueue model**
 - [x] **EventPricing model**
 - [x] **ExternalPartner model** - Full partner management with commission tracking
-- [x] **Advertisement model** - Multi-position ad system
+- [x] **Advertisement model** - Multi-position ad system (admin-only)
 - [x] **Email verification** - Verification codes and expiry
 
 ---
@@ -464,6 +492,6 @@
 
 ---
 
-**Last Updated:** 2025-12-04
-**Version:** 1.0 (Production Ready - Full English UI)
+**Last Updated:** 2025-12-08
+**Version:** 1.1 (React Query + Modular Architecture)
 **Next Review:** Post-deployment monitoring

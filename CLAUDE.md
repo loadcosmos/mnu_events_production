@@ -48,7 +48,7 @@ npm run build                           # Production build
 ### Frontend Pages Structure (Reorganized 2025-12-08)
 ```
 js/pages/
-├── admin/           # Admin dashboard, users, events, partners, pricing
+├── admin/           # Dashboard, users, events, partners, pricing, advertisements ⭐
 ├── auth/            # Login, verify-email
 ├── clubs/           # Clubs, club details
 ├── events/          # Events, details, create, edit
@@ -58,8 +58,7 @@ js/pages/
 ├── partner/         # Partner dashboard
 ├── payments/        # Ticket purchase, status, mock payment
 ├── services/        # Marketplace, service details, create
-├── student/         # Profile, registrations, CSI dashboard
-└── advertisements/  # Create advertisement
+└── student/         # Profile, registrations, CSI dashboard
 ```
 
 ---
@@ -132,13 +131,16 @@ async someMethod() { ... }
 
 ---
 
-## Detailed References
+## 📚 Documentation Map
 
-For detailed information, see:
-- **Setup/Install:** `SETUP.md`
-- **Development Guide:** `DEVELOPMENT.md`  
-- **Status/Roadmap:** `PROJECT_STATUS.md`
-- **Feature Details:** `docs/*.md`
+| Document | Purpose | When to Use |
+|----------|---------|-------------|
+| `README.md` | Project overview, deployment | Quick start, deployment URLs |
+| `DEVELOPMENT.md` | Setup, commands, testing | Development workflow |
+| `PROJECT_STATUS.md` | Full status, roadmap | Feature status, metrics |
+| `docs/QR_CHECKIN_SYSTEM.md` | QR system details | Check-in implementation |
+| `docs/DEPLOYMENT_GUIDE.md` | Deployment instructions | Production deployment |
+| `docs/TROUBLESHOOTING.md` | Common issues | Bug fixing |
 
 ---
 
@@ -152,10 +154,36 @@ For detailed information, see:
 - ✅ **EventsPage migrated** to React Query with debounced search
 - ✅ **ClubsPage migrated** to React Query with filters
 - ✅ **ErrorBoundary** added for graceful error handling
-- ✅ **HomePageNew.jsx removed** (legacy file)
-- ✅ **Barrel exports** added for services (`js/services/index.js`)
+
+### Advertisement System Redesign (2025-12-08)
+- ✅ **Admin-only ads** - removed public ad posting, now managed via `/admin/advertisements`
+- ✅ **Removed** "Post Ad" buttons from MarketplacePage, ServicesPage, MarketplaceSection
+- ✅ **Removed** public `/advertisements/create` route
+- ✅ **Removed** mock ads from EventsPage
+- ✅ **Added** `AdminAdvertisementsPage.jsx` with full CRUD
+- ✅ **Workflow:** Company → WhatsApp → Marketing → Admin → Ad on homepage
 
 ---
 
-*Last Updated: 2025-12-08 | v5.2 (React Query + ErrorBoundary)*
+## Deployment Info
+
+| Service | Platform | URL |
+|---------|----------|-----|
+| **Frontend** | Vercel | https://mnu-events-production.vercel.app |
+| **Backend API** | Railway | https://mnueventsproduction-production.up.railway.app |
+| **Database** | Railway (PostgreSQL) | Internal connection |
+| **Email** | SMTP2GO | Transactional emails |
+
+**Deploy commands:**
+```bash
+# Frontend (Vercel) - auto-deploys on push to main
+git push origin main
+
+# Backend (Railway) - auto-deploys on push, or manually:
+railway up
+```
+
+---
+
+*Last Updated: 2025-12-08 | v5.4 (Ad System Redesign)*
 

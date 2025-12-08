@@ -37,8 +37,8 @@ const ServiceDetailsPage = lazy(() => import('./pages/services/ServiceDetailsPag
 const CreateServicePage = lazy(() => import('./pages/services/CreateServicePage.jsx'));
 const MarketplacePage = lazy(() => import('./pages/services/MarketplacePage.jsx'));
 
-// Advertisements
-const CreateAdvertisementPage = lazy(() => import('./pages/advertisements/CreateAdvertisementPage.jsx'));
+// Admin Advertisements
+const AdminAdvertisementsPage = lazy(() => import('./pages/admin/AdminAdvertisementsPage.jsx'));
 
 // Student pages
 const MyRegistrationsPage = lazy(() => import('./pages/student/MyRegistrationsPage.jsx'));
@@ -131,14 +131,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
-                  path="/advertisements/create"
-                  element={
-                    <ProtectedRoute roles={['STUDENT']}>
-                      <Layout><CreateAdvertisementPage /></Layout>
-                    </ProtectedRoute>
-                  }
-                />
+
 
                 {/* Защищенные маршруты для организаторов - требуют роль ORGANIZER */}
                 <Route
@@ -313,6 +306,7 @@ function AdminRoutes() {
       <Route path="/clubs" element={<AdminClubsPage />} />
       <Route path="/pricing" element={<PricingSettingsPage />} />
       <Route path="/partners" element={<AdminPartnersPage />} />
+      <Route path="/advertisements" element={<AdminAdvertisementsPage />} />
       <Route path="/payments" element={<PaymentVerificationPage />} />
       <Route path="/profile" element={<ProfilePage />} />
     </Routes>

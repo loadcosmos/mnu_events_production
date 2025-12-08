@@ -60,6 +60,40 @@ const adsService = {
       console.warn('Failed to track ad click:', error);
     }
   },
+
+  // ============ Admin Methods ============
+
+  /**
+   * Get all advertisements (admin only)
+   */
+  getAll: async () => {
+    try {
+      const response = await api.get('/advertisements');
+      return response;
+    } catch (error) {
+      console.error('[adsService] Failed to get all advertisements:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Update advertisement payment status (admin only)
+   * @param {string} adId - Advertisement ID
+   * @param {string} status - Payment status (PENDING, PAID, EXPIRED)
+   */
+  updatePaymentStatus: async (adId, status) => {
+    const response = await api.patch(`/advertisements/${adId}/payment-status`, { status });
+    return response;
+  },
+
+  /**
+   * Delete advertisement (admin only)
+   * @param {string} adId - Advertisement ID
+   */
+  delete: async (adId) => {
+    const response = await api.delete(`/advertisements/${adId}`);
+    return response;
+  },
 };
 
 export default adsService;

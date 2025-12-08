@@ -8,7 +8,7 @@
 
 **Version:** 1.0 (Production Ready)  
 **Completion:** 99% ✅  
-**Last Updated:** 2025-12-04
+**Last Updated:** 2025-12-08
 
 | What Works | Status |
 |------------|--------|
@@ -208,6 +208,7 @@ CORS_ORIGIN="http://localhost:5173"
 -  📊 View platform statistics
 - 🎯 Moderate all events and services
 - 🏢 Manage external partners
+- 📣 **Manage advertisements** (admin-only workflow)
 
 ### For External Partners (Companies, Venues)
 - 🎪 Create paid events for students
@@ -223,10 +224,10 @@ CORS_ORIGIN="http://localhost:5173"
 ### December 8, 2025 - Code Architecture Improvements
 - ✅ **React Query** - Added `@tanstack/react-query` for API caching and request deduplication
 - ✅ **Hooks Directory** - New `js/hooks/` with `useEvents`, `useServices`, `useUser` hooks
-- ✅ **Pages Reorganization** - Restructured from 45 flat files to 12 categorical folders
+- ✅ **Pages Reorganization** - Restructured from 45 flat files to 11 categorical folders
 - ✅ **HomePage Refactored** - Reduced from 1076 to 280 lines with extracted components
-- ✅ **Barrel Exports** - Added `js/services/index.js` for cleaner imports
-- ✅ **Removed Legacy Code** - Deleted `HomePageNew.jsx` duplicate
+- ✅ **Advertisement System Redesign** - Now admin-only (Company → WhatsApp → Marketing → Admin)
+- ✅ **Removed Legacy Code** - Deleted public ad creation page and buttons
 
 ### December 4, 2025 - UI/UX Enhancements
 - ✅ **Full English Translation** - All UI components translated from Russian
@@ -269,5 +270,5 @@ This is a university project. For questions or suggestions, please contact the d
 ---
 
 **Last Updated:** 2025-12-08  
-**Version:** 1.1 (React Query + Restructured Architecture)  
-**Deployment:** Railway + Vercel
+**Version:** 1.2 (React Query + Advertisement System Redesign)  
+**Deployment:** Railway (backend) + Vercel (frontend)

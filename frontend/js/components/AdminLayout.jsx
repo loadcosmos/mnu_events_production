@@ -64,6 +64,8 @@ export default function AdminLayout({ children }) {
     { path: '/admin/events', label: 'Manage Events', icon: '📅' },
     { path: '/admin/users', label: 'Manage Users', icon: '👥' },
     { path: '/admin/clubs', label: 'Manage Clubs', icon: '🏢' },
+    { path: '/admin/partners', label: 'Partners', icon: '🤝' },
+    { path: '/admin/advertisements', label: 'Advertisements', icon: '📢' },
     { path: '/admin/pricing', label: 'Pricing Settings', icon: '💰' },
   ], []);
 

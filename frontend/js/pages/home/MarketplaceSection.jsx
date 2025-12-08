@@ -103,14 +103,6 @@ export default function MarketplaceSection() {
                             <Plus className="w-4 h-4 mr-2" />
                             Create Service
                         </Button>
-                        <Button
-                            onClick={() => navigate('/advertisements/create')}
-                            variant="outline"
-                            className="rounded-xl border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
-                        >
-                            <Megaphone className="w-4 h-4 mr-2" />
-                            Post Ad
-                        </Button>
                     </div>
                 </div>
 
