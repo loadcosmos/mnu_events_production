@@ -14,7 +14,9 @@ import {
     SelectValue,
 } from '../../components/ui/select.jsx';
 import servicesService from '../../services/servicesService';
+import uploadService from '../../services/uploadService';
 import { toast } from 'sonner';
+import ImageUploadCrop from '../../components/ImageUploadCrop';
 
 const CATEGORIES = [
     { value: 'DESIGN', label: 'Design' },
@@ -34,6 +36,7 @@ export default function CreateServicePage() {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         title: '',
@@ -54,6 +57,24 @@ export default function CreateServicePage() {
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         setError('');
+    };
+
+    const handleImageUpload = async (file) => {
+        try {
+            setUploadingImage(true);
+            const result = await uploadService.uploadImage(file);
+            handleChange('imageUrl', result.imageUrl);
+            toast.success('Image uploaded!', {
+                description: 'Service image has been uploaded.',
+            });
+        } catch (err) {
+            console.error('[CreateServicePage] Image upload failed:', err);
+            toast.error('Upload failed', {
+                description: err.message || 'Failed to upload image.',
+            });
+        } finally {
+            setUploadingImage(false);
+        }
     };
 
     const validateForm = () => {
@@ -240,16 +261,17 @@ export default function CreateServicePage() {
                             </div>
                         </div>
 
-                        {/* Image URL */}
+                        {/* Service Image */}
                         <div className="space-y-2">
-                            <Label htmlFor="imageUrl" className="dark:text-white">Image URL (optional)</Label>
-                            <Input
-                                id="imageUrl"
-                                type="url"
-                                placeholder="https://example.com/image.jpg"
-                                value={formData.imageUrl}
-                                onChange={(e) => handleChange('imageUrl', e.target.value)}
-                                className="rounded-xl"
+                            <ImageUploadCrop
+                                currentImage={formData.imageUrl}
+                                onUpload={handleImageUpload}
+                                shape="square"
+                                aspectRatio={4 / 3}
+                                maxSizeMB={10}
+                                label="Service Image (optional)"
+                                loading={uploadingImage}
+                                disabled={loading}
                             />
                         </div>
 

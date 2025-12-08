@@ -14,7 +14,9 @@ import {
   SelectValue,
 } from '../../components/ui/select.jsx';
 import eventsService from '../../services/eventsService';
+import uploadService from '../../services/uploadService';
 import { toast } from 'sonner';
+import ImageUploadCrop from '../../components/ImageUploadCrop';
 
 const CATEGORIES = [
   { value: 'ACADEMIC', label: 'Academic' },
@@ -32,6 +34,7 @@ export default function EditEventPage() {
   const { isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
@@ -135,6 +138,24 @@ export default function EditEventPage() {
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setError('');
+  };
+
+  const handleImageUpload = async (file) => {
+    try {
+      setUploadingImage(true);
+      const result = await uploadService.uploadEventImage(id, file);
+      handleChange('imageUrl', result.imageUrl);
+      toast.success('Image uploaded!', {
+        description: 'Event banner has been uploaded.',
+      });
+    } catch (err) {
+      console.error('[EditEventPage] Image upload failed:', err);
+      toast.error('Upload failed', {
+        description: err.message || 'Failed to upload image.',
+      });
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const validateForm = () => {
@@ -401,16 +422,17 @@ export default function EditEventPage() {
               />
             </div>
 
-            {/* Image URL */}
+            {/* Event Banner Image */}
             <div className="space-y-2">
-              <Label htmlFor="imageUrl" className="dark:text-white">Image URL (optional)</Label>
-              <Input
-                id="imageUrl"
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={formData.imageUrl}
-                onChange={(e) => handleChange('imageUrl', e.target.value)}
-                className="rounded-xl"
+              <ImageUploadCrop
+                currentImage={formData.imageUrl}
+                onUpload={handleImageUpload}
+                shape="banner"
+                aspectRatio={16 / 9}
+                maxSizeMB={10}
+                label="Event Banner (optional)"
+                loading={uploadingImage}
+                disabled={saving}
               />
             </div>
 
