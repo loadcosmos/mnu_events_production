@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useMyPosts, useDeletePost } from '../../hooks';
@@ -12,9 +12,13 @@ import { toast } from 'sonner';
 export default function MyPostsPage() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('published');
+    const [isPulling, setIsPulling] = useState(false);
+    const [pullDistance, setPullDistance] = useState(0);
+    const startY = useRef(0);
+    const containerRef = useRef(null);
 
     // React Query hooks
-    const { data, isLoading: loading, refetch } = useMyPosts();
+    const { data, isLoading: loading, refetch, isFetching } = useMyPosts();
     const deletePostMutation = useDeletePost();
 
     // Extract data from React Query result
@@ -34,6 +38,38 @@ export default function MyPostsPage() {
         } catch (error) {
             toast.error('Failed to delete post');
         }
+    };
+
+    // Pull-to-refresh handlers
+    const handleTouchStart = (e) => {
+        const container = containerRef.current;
+        if (container && container.scrollTop === 0) {
+            startY.current = e.touches[0].clientY;
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        const container = containerRef.current;
+        if (container && container.scrollTop === 0 && startY.current > 0) {
+            const currentY = e.touches[0].clientY;
+            const distance = currentY - startY.current;
+
+            if (distance > 0) {
+                e.preventDefault();
+                setIsPulling(true);
+                setPullDistance(Math.min(distance, 80));
+            }
+        }
+    };
+
+    const handleTouchEnd = async () => {
+        if (pullDistance > 60) {
+            await refetch();
+            toast.success('Refreshed');
+        }
+        setIsPulling(false);
+        setPullDistance(0);
+        startY.current = 0;
     };
 
     const renderPostList = (postList, emptyMessage) => {
@@ -71,7 +107,33 @@ export default function MyPostsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] pb-24 md:pb-8 transition-colors duration-300">
+        <div
+            ref={containerRef}
+            className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] pb-24 md:pb-8 transition-colors duration-300 overflow-y-auto"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {/* Pull-to-refresh indicator */}
+            {isPulling && (
+                <div
+                    className="absolute top-0 left-0 right-0 flex justify-center items-center transition-transform"
+                    style={{ transform: `translateY(${pullDistance - 40}px)` }}
+                >
+                    <div className="bg-white dark:bg-[#1a1a1a] rounded-full p-3 shadow-lg border border-gray-200 dark:border-[#2a2a2a]">
+                        <i
+                            className={`fa-solid fa-arrow-rotate-right text-[#d62e1f] ${
+                                isFetching ? 'fa-spin' : ''
+                            }`}
+                            style={{
+                                transform: `rotate(${pullDistance * 4}deg)`,
+                                transition: isFetching ? 'none' : 'transform 0.1s',
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-gradient-to-b from-gray-200 via-gray-100 to-gray-50 dark:from-[#1a1a1a] dark:via-[#0f0f0f] dark:to-[#0a0a0a] py-6 px-4 border-b border-gray-200 dark:border-[#2a2a2a]">
                 <div className="max-w-4xl mx-auto">

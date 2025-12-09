@@ -2,7 +2,7 @@
 
 **Modern platform for managing student life at university**
 
-> Unified system for events, clubs, student services, and activity gamification. Developed specifically for Kazakh-German University (KazGUU).
+> Unified system for events, clubs, student services, and activity gamification. Developed specifically for KazGUU.
 
 ## 📊 Project Status
 

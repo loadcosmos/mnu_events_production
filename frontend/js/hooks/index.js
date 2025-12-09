@@ -23,3 +23,6 @@ export * from './usePosts';
 
 // Saved items hooks
 export * from './useSavedItems';
+
+// Follows hooks
+export * from './useFollows';
