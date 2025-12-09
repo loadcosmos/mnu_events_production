@@ -87,24 +87,28 @@ mcp__context7__get-library-docs            # Get library documentation
 
 ---
 
-## React Query Integration (Added 2025-12-08)
+## React Query Integration (Added 2025-12-08, Extended 2025-12-09)
 
 **Setup:** `QueryClientProvider` wraps `<App />` in `main.jsx`
 
 **Available Hooks:**
 ```javascript
 // js/hooks/
-import { useEvents, useEvent, useCreateEvent } from '@/hooks';
-import { useInfiniteEvents } from '@/hooks'; // ⭐ NEW - Infinite scroll
+import { useEvents, useEvent, useCreateEvent, useInfiniteEvents } from '@/hooks';
 import { useServices, useService } from '@/hooks';
+import { useClubs, useClub } from '@/hooks';
 import { useCurrentUser, useUpdateProfile } from '@/hooks';
+import { usePosts, useInfinitePosts, useMyPosts, useCreatePost, useDeletePost } from '@/hooks';
+import { useSavedPosts, useSavedEvents, useToggleSavePost, useToggleSaveEvent } from '@/hooks';
+import { useFollowStats, useFollowers, useFollowing, useToggleFollow } from '@/hooks'; // ⭐ NEW
 ```
 
 **Benefits:**
 - Automatic caching (5 min stale time)
 - Request deduplication
 - Background refetching
-- Simplified data fetching code
+- Optimistic updates for likes, saves, follows
+- Infinite scroll support
 
 ---
 
@@ -142,6 +146,40 @@ async someMethod() { ... }
 | `docs/QR_CHECKIN_SYSTEM.md` | QR system details | Check-in implementation |
 | `docs/DEPLOYMENT_GUIDE.md` | Deployment instructions | Production deployment |
 | `docs/TROUBLESHOOTING.md` | Common issues | Bug fixing |
+
+---
+
+## Recent Changes (2025-12-09)
+
+### IMPROVEMENT_PLAN.md - 100% Complete 🎉
+
+#### High Priority (5/5)
+- ✅ Backend post type filtering (`type[]` query param)
+- ✅ isPinned validation (ADMIN/MODERATOR only)
+- ✅ React Query hooks for posts (`usePosts.js`)
+- ✅ Skeleton loading for NewsFeedSection
+- ✅ Backend filtering in NewsFeedSection
+
+#### Medium Priority (5/5)
+- ✅ Saved in BottomNavigation
+- ✅ `useSavedItems.js` hooks with optimistic updates
+- ✅ Infinite scroll for CommunityPage
+- ✅ `useFollows.js` hooks (useFollowStats, useToggleFollow)
+- ✅ Pull-to-refresh for MyPostsPage
+
+#### Low Priority (6/6)
+- ✅ Image preview in CreatePostModal (FileReader API)
+- ✅ Clickable FollowStats counters (`FollowersModal.jsx`)
+- ✅ Search, filters, sort for CommunityPage (debounced)
+- ✅ Error Boundaries (already in App.jsx)
+- ✅ Relative time (already uses formatDistanceToNow)
+- ✅ ProfilePage tabs (Overview, Saved, Settings)
+
+### New Files Created (2025-12-09)
+- `frontend/js/hooks/useFollows.js` - Follow system hooks
+- `frontend/js/hooks/usePosts.js` - Posts hooks
+- `frontend/js/hooks/useSavedItems.js` - Saved items hooks
+- `frontend/js/components/profile/FollowersModal.jsx` - Followers/following modal
 
 ---
 
@@ -195,5 +233,5 @@ railway up
 
 ---
 
-*Last Updated: 2025-12-08 | v5.4 (Ad System Redesign)*
+*Last Updated: 2025-12-09 | v5.5 (Improvement Plan 100% Complete)*
 
