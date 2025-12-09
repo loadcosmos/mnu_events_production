@@ -35,7 +35,7 @@ export class PostsController {
         @Query('page') page?: number,
         @Query('limit') limit?: number,
     ) {
-        return this.postsService.findAll(user.id, page || 1, limit || 20);
+        return this.postsService.findAll(user.id, user.role, page || 1, limit || 20);
     }
 
     @Get('moderation')

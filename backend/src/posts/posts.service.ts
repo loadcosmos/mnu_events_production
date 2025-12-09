@@ -10,12 +10,37 @@ export class PostsService {
     /**
      * Get posts with visibility rules
      */
-    async findAll(userId: string, page = 1, limit = 20) {
+    async findAll(userId: string, userRole: Role, page = 1, limit = 20) {
         const skip = (page - 1) * limit;
+
+        // External partners cannot see any posts
+        if (userRole === Role.EXTERNAL_PARTNER) {
+            return {
+                data: [],
+                meta: { total: 0, page, limit, totalPages: 0 },
+            };
+        }
 
         const where: Prisma.PostWhereInput = {
             status: PostStatus.APPROVED,
         };
+
+        // Visibility rules based on requester role
+        if (userRole === Role.STUDENT) {
+            // Students see: Student posts, Faculty posts, Announcements
+            where.OR = [
+                { type: PostType.STUDENT_POST },
+                { type: PostType.FACULTY_POST },
+                { type: PostType.ANNOUNCEMENT },
+            ];
+        } else if (userRole === Role.FACULTY) {
+            // Faculty sees: Faculty posts, Announcements (NOT Student posts)
+            where.OR = [
+                { type: PostType.FACULTY_POST },
+                { type: PostType.ANNOUNCEMENT },
+            ];
+        }
+        // Admin/Moderator sees everything (no additional filter needed)
 
         const [posts, total] = await Promise.all([
             this.prisma.post.findMany({
