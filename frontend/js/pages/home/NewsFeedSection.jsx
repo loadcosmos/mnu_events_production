@@ -17,12 +17,20 @@ export default function NewsFeedSection() {
 
         const loadPosts = async () => {
             try {
-                const response = await postsService.getAll({ page: 1, limit: 3 });
+                const response = await postsService.getAll({ page: 1, limit: 10 });
                 if (!isCancelled) {
                     // Filter to show only ANNOUNCEMENT and FACULTY_POST
-                    const newsPosts = (response.data || []).filter(
-                        p => p.type === 'ANNOUNCEMENT' || p.type === 'FACULTY_POST'
-                    ).slice(0, 3);
+                    // Prioritize pinned posts first, then sort by date
+                    const newsPosts = (response.data || [])
+                        .filter(p => p.type === 'ANNOUNCEMENT' || p.type === 'FACULTY_POST')
+                        .sort((a, b) => {
+                            // Pinned posts first
+                            if (a.isPinned && !b.isPinned) return -1;
+                            if (!a.isPinned && b.isPinned) return 1;
+                            // Then by date
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                        })
+                        .slice(0, 3);
                     setPosts(newsPosts);
                 }
             } catch (error) {
@@ -96,6 +104,12 @@ export default function NewsFeedSection() {
                                         {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                                     </p>
                                 </div>
+                                {post.isPinned && (
+                                    <Badge className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5">
+                                        <i className="fa-solid fa-thumbtack mr-1 text-[10px]" />
+                                        Pinned
+                                    </Badge>
+                                )}
                                 {post.type === 'ANNOUNCEMENT' && (
                                     <Badge className="bg-red-100 text-red-800 text-xs px-2 py-0.5">
                                         <i className="fa-solid fa-bullhorn mr-1 text-[10px]" />

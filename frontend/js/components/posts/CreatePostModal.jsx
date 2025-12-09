@@ -21,12 +21,14 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [postType, setPostType] = useState('STUDENT_POST');
+    const [isPinned, setIsPinned] = useState(false);
 
     // Determine allowed types based on role
     // Default is STUDENT_POST (will be handled by backend)
     // Backend automatically sets type based on role mostly, but Admin can choose ANNOUNCEMENT.
 
     const canMakeAnnouncement = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+    const canPinPost = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,7 +49,8 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             const postData = {
                 content,
                 imageUrl,
-                type: canMakeAnnouncement && postType === 'ANNOUNCEMENT' ? 'ANNOUNCEMENT' : undefined
+                type: canMakeAnnouncement && postType === 'ANNOUNCEMENT' ? 'ANNOUNCEMENT' : undefined,
+                isPinned: canPinPost ? isPinned : undefined
             };
 
             await postsService.create(postData);
@@ -56,6 +59,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             setContent('');
             setImageFile(null);
             setPostType('STUDENT_POST');
+            setIsPinned(false);
             if (onPostCreated) onPostCreated();
             onClose();
         } catch (error) {
@@ -122,6 +126,23 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                             </p>
                         )}
                     </div>
+
+                    {/* Pin option for Admin/Moderator */}
+                    {canPinPost && (
+                        <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                            <input
+                                type="checkbox"
+                                id="isPinned"
+                                checked={isPinned}
+                                onChange={(e) => setIsPinned(e.target.checked)}
+                                className="w-5 h-5 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                            />
+                            <label htmlFor="isPinned" className="flex items-center gap-2 cursor-pointer">
+                                <i className="fa-solid fa-thumbtack text-amber-600" />
+                                <span className="text-amber-800 dark:text-amber-200 font-medium">Pin this post</span>
+                            </label>
+                        </div>
+                    )}
 
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl">
