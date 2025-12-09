@@ -30,6 +30,7 @@ const EditEventPage = lazy(() => import('./pages/events/EditEventPage.jsx'));
 // Clubs pages
 const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage.jsx'));
 const ClubDetailsPage = lazy(() => import('./pages/clubs/ClubDetailsPage.jsx'));
+const CommunityPage = lazy(() => import('./pages/community/CommunityPage.jsx'));
 
 // Services pages
 const TutoringPage = lazy(() => import('./pages/services/TutoringPage.jsx'));
@@ -116,6 +117,16 @@ function App() {
                 <Route path="/events/:id" element={<Layout><EventDetailsPage /></Layout>} />
                 <Route path="/clubs" element={<Layout><ClubsPage /></Layout>} />
                 <Route path="/clubs/:id" element={<Layout><ClubDetailsPage /></Layout>} />
+
+                {/* Community Page - Accessible to university members */}
+                <Route
+                  path="/community"
+                  element={
+                    <ProtectedRoute roles={['STUDENT', 'FACULTY', 'ADMIN', 'MODERATOR']}>
+                      <Layout><CommunityPage /></Layout>
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Services & Tutoring (Phase 3) - Services now on homepage */}
                 <Route path="/tutoring" element={<Layout><TutoringPage /></Layout>} />

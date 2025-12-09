@@ -8,7 +8,7 @@ import { formatDate } from '../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../utils/categoryMappers';
 import { sanitizeText } from '../utils/sanitize';
 
-const EventCard = memo(function EventCard({ event, onClick }) {
+const EventCard = memo(function EventCard({ event, onClick, isSaved, onToggleSave }) {
     const imageUrl = event.imageUrl || '/images/backg.jpg';
 
     const handleClick = useCallback(() => {
@@ -38,6 +38,18 @@ const EventCard = memo(function EventCard({ event, onClick }) {
                 />
                 {/* Subtle gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
+                {/* Bookmark Button - Top Right */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (onToggleSave) onToggleSave(event.id);
+                    }}
+                    className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95"
+                    aria-label={isSaved ? "Unsave event" : "Save event"}
+                >
+                    <i className={`${isSaved ? 'fa-solid text-[#d62e1f]' : 'fa-regular'} fa-bookmark text-lg drop-shadow-md`} />
+                </button>
             </div>
 
             {/* Content Section */}
