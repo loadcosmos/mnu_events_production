@@ -5,14 +5,14 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
-} from '../../ui/dialog';
-import { Button } from '../../ui/button';
-import { Textarea } from '../../ui/textarea';
-import { Label } from '../../ui/label';
-import { useAuth } from '../../../context/AuthContext';
-import postsService from '../../../services/postsService';
-import uploadService from '../../../services/uploadService';
-import ImageUploadCrop from '../../components/ImageUploadCrop';
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
+import { Label } from '../ui/label';
+import { useAuth } from '../../context/AuthContext';
+import postsService from '../../services/postsService';
+import uploadService from '../../services/uploadService';
+import ImageUploadCrop from '../ImageUploadCrop';
 import { toast } from 'sonner';
 
 export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
