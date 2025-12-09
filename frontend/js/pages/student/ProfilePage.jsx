@@ -10,6 +10,7 @@ import analyticsService from '../../services/analyticsService';
 import { toast } from 'sonner';
 import { cn } from '../../lib/utils';
 import GamificationCard from '../../components/Gamification/GamificationCard';
+import { SavedEventsTab, EditInterestsSection, FollowStats } from '../../components/profile';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -288,6 +289,11 @@ export default function ProfilePage() {
                 </span>
               )}
             </div>
+
+            {/* Follow Stats */}
+            <div className="flex justify-center mb-4">
+              <FollowStats userId={currentUser?.id} isOwnProfile={true} />
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -401,6 +407,34 @@ export default function ProfilePage() {
                 </div>
                 <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
               </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Saved Events Section - Students Only */}
+      {currentUser?.role === 'STUDENT' && (
+        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
+              Saved <span className="text-[#d62e1f]">Events</span>
+            </h2>
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
+              <SavedEventsTab />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Interests Section - Students Only */}
+      {currentUser?.role === 'STUDENT' && (
+        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
+              My <span className="text-[#d62e1f]">Interests</span>
+            </h2>
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
+              <EditInterestsSection />
             </div>
           </div>
         </div>

@@ -1,0 +1,92 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import savedEventsService from '../../services/savedEventsService';
+import EventCard from '../../components/EventCard';
+import { toast } from 'sonner';
+
+/**
+ * SavedEventsTab - Displays user's saved/bookmarked events
+ */
+export default function SavedEventsTab() {
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadSavedEvents();
+    }, []);
+
+    const loadSavedEvents = async () => {
+        try {
+            setLoading(true);
+            const response = await savedEventsService.getAll();
+            // Response contains saved events with event data
+            const savedEvents = (response.data || response || []).map(se => se.event).filter(Boolean);
+            setEvents(savedEvents);
+        } catch (error) {
+            console.error('[SavedEventsTab] Failed to load saved events:', error);
+            toast.error('Failed to load saved events');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUnsave = async (eventId) => {
+        try {
+            await savedEventsService.unsave(eventId);
+            setEvents(prev => prev.filter(e => e.id !== eventId));
+            toast.success('Event removed from saved');
+        } catch (error) {
+            console.error('[SavedEventsTab] Failed to unsave event:', error);
+            toast.error('Failed to remove event');
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#d62e1f]" />
+            </div>
+        );
+    }
+
+    if (events.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <i className="fa-regular fa-bookmark text-5xl text-gray-400 dark:text-[#666666] mb-4" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Saved Events</h3>
+                <p className="text-gray-600 dark:text-[#a0a0a0] mb-6">
+                    Bookmark events you're interested in and they'll appear here
+                </p>
+                <Link
+                    to="/events"
+                    className="inline-flex items-center gap-2 px-6 py-3 liquid-glass-red-button text-white font-semibold rounded-2xl"
+                >
+                    Browse Events
+                    <i className="fa-solid fa-arrow-right" />
+                </Link>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-gray-600 dark:text-[#a0a0a0]">
+                    {events.length} saved {events.length === 1 ? 'event' : 'events'}
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {events.map(event => (
+                    <div key={event.id} className="relative">
+                        <EventCard
+                            event={event}
+                            isSaved={true}
+                            onToggleSave={() => handleUnsave(event.id)}
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
