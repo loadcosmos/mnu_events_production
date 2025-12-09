@@ -22,6 +22,7 @@ export default function AdminUsersPage() {
     { value: 'MODERATOR', label: 'Moderator' },
     { value: 'ADMIN', label: 'Admin' },
     { value: 'EXTERNAL_PARTNER', label: 'External Partner' },
+    { value: 'FACULTY', label: 'Faculty' },
   ];
 
   useEffect(() => {
@@ -117,6 +118,7 @@ export default function AdminUsersPage() {
       MODERATOR: 'bg-green-100 text-green-800',
       ADMIN: 'bg-red-100 text-red-800',
       EXTERNAL_PARTNER: 'bg-orange-100 text-orange-800',
+      FACULTY: 'bg-teal-100 text-teal-800',
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
   };

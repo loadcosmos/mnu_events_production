@@ -26,6 +26,10 @@ import { GamificationModule } from './gamification/gamification.module';
 import { HealthModule } from './health/health.module';
 import { CommonModule } from './common/common.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PreferencesModule } from './preferences/preferences.module';
+import { PostsModule } from './posts/posts.module';
+import { SavedEventsModule } from './saved-events/saved-events.module';
+import { FollowsModule } from './follows/follows.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -79,6 +83,10 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     GamificationModule,
     HealthModule,
     CloudinaryModule,
+    PreferencesModule,
+    PostsModule,
+    SavedEventsModule,
+    FollowsModule,
   ],
   providers: [
     {
