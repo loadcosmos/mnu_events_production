@@ -1,12 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, Briefcase, Building2, TrendingUp, PieChart } from 'lucide-react';
+import { GraduationCap, Briefcase, Building2, TrendingUp, PieChart, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function MorePage() {
   const { user } = useAuth();
 
   const menuItems = [
+    {
+      title: 'Community',
+      description: 'Campus feed, announcements, and discussions',
+      icon: <Users className="w-10 h-10" />,
+      path: '/community',
+      color: 'from-red-500 to-orange-500',
+      available: true,
+    },
     {
       title: 'Tutoring',
       description: 'Find a tutor or offer your services',

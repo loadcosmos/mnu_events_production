@@ -266,14 +266,6 @@ export default function Layout({ children }) {
                 asChild
                 className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
               >
-                <Link to="/community">Community</Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="default"
-                asChild
-                className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
-              >
                 <Link to="/marketplace">Marketplace</Link>
               </Button>
               <Button

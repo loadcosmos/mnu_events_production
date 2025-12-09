@@ -9,7 +9,7 @@ import AdBanner from '../components/AdBanner';
 import AdModal from '../components/AdModal';
 
 // Extracted home page components
-import { HeroSlider, EventsHorizontalScroll } from './home';
+import { HeroSlider, EventsHorizontalScroll, NewsFeedSection } from './home';
 
 /**
  * HomePage - Main landing page
@@ -247,6 +247,9 @@ export default function HomePage() {
           onClick={handleAdClick}
         />
       )}
+
+      {/* Latest News Feed */}
+      <NewsFeedSection />
 
       {/* My Upcoming Events - Only for authenticated users */}
       {isAuthenticated() && myUpcomingEvents.length > 0 && (
