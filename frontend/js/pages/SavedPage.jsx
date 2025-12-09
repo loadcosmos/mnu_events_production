@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import savedPostsService from '../services/savedPostsService';
-import savedEventsService from '../services/savedEventsService';
+import { useSavedPosts, useSavedEvents, useUnsavePost, useUnsaveEvent } from '../hooks';
 import EventCard from '../components/EventCard';
 import PostCard from '../components/posts/PostCard';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
@@ -14,46 +13,16 @@ import { toast } from 'sonner';
 export default function SavedPage() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('posts');
-    const [savedPosts, setSavedPosts] = useState([]);
-    const [savedEvents, setSavedEvents] = useState([]);
-    const [loadingPosts, setLoadingPosts] = useState(true);
-    const [loadingEvents, setLoadingEvents] = useState(true);
 
-    useEffect(() => {
-        loadSavedPosts();
-        loadSavedEvents();
-    }, []);
-
-    const loadSavedPosts = async () => {
-        try {
-            setLoadingPosts(true);
-            const response = await savedPostsService.getAll();
-            const posts = (response.data || []).map(sp => sp.post).filter(Boolean);
-            setSavedPosts(posts);
-        } catch (error) {
-            console.error('[SavedPage] Failed to load saved posts:', error);
-        } finally {
-            setLoadingPosts(false);
-        }
-    };
-
-    const loadSavedEvents = async () => {
-        try {
-            setLoadingEvents(true);
-            const response = await savedEventsService.getAll();
-            const events = (response.data || response || []).map(se => se.event).filter(Boolean);
-            setSavedEvents(events);
-        } catch (error) {
-            console.error('[SavedPage] Failed to load saved events:', error);
-        } finally {
-            setLoadingEvents(false);
-        }
-    };
+    // React Query hooks
+    const { data: savedPosts = [], isLoading: loadingPosts } = useSavedPosts();
+    const { data: savedEvents = [], isLoading: loadingEvents } = useSavedEvents();
+    const unsavePostMutation = useUnsavePost();
+    const unsaveEventMutation = useUnsaveEvent();
 
     const handleUnsavePost = async (postId) => {
         try {
-            await savedPostsService.unsave(postId);
-            setSavedPosts(prev => prev.filter(p => p.id !== postId));
+            await unsavePostMutation.mutateAsync(postId);
             toast.success('Post removed from saved');
         } catch (error) {
             toast.error('Failed to remove post');
@@ -62,8 +31,7 @@ export default function SavedPage() {
 
     const handleUnsaveEvent = async (eventId) => {
         try {
-            await savedEventsService.unsave(eventId);
-            setSavedEvents(prev => prev.filter(e => e.id !== eventId));
+            await unsaveEventMutation.mutateAsync(eventId);
             toast.success('Event removed from saved');
         } catch (error) {
             toast.error('Failed to remove event');

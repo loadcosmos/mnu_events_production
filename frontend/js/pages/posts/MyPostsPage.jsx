@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import postsService from '../../services/postsService';
+import { useMyPosts, useDeletePost } from '../../hooks';
 import PostCard from '../../components/posts/PostCard';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs';
 import { toast } from 'sonner';
@@ -12,52 +12,25 @@ import { toast } from 'sonner';
 export default function MyPostsPage() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('published');
-    const [posts, setPosts] = useState({ published: [], pending: [], rejected: [] });
-    const [stats, setStats] = useState({ total: 0, likes: 0, comments: 0 });
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadMyPosts();
-    }, []);
+    // React Query hooks
+    const { data, isLoading: loading, refetch } = useMyPosts();
+    const deletePostMutation = useDeletePost();
 
-    const loadMyPosts = async () => {
-        try {
-            setLoading(true);
-            // Fetch all user's posts
-            const response = await postsService.getMyPosts();
-            const allPosts = response.data || response || [];
-
-            // Categorize by status
-            const published = allPosts.filter(p => p.status === 'APPROVED');
-            const pending = allPosts.filter(p => p.status === 'PENDING');
-            const rejected = allPosts.filter(p => p.status === 'REJECTED');
-
-            setPosts({ published, pending, rejected });
-
-            // Calculate stats
-            const totalLikes = allPosts.reduce((acc, p) => acc + (p.likesCount || 0), 0);
-            const totalComments = allPosts.reduce((acc, p) => acc + (p.commentsCount || 0), 0);
-
-            setStats({
-                total: allPosts.length,
-                likes: totalLikes,
-                comments: totalComments
-            });
-        } catch (error) {
-            console.error('[MyPostsPage] Failed to load posts:', error);
-            toast.error('Failed to load your posts');
-        } finally {
-            setLoading(false);
-        }
+    // Extract data from React Query result
+    const posts = {
+        published: data?.published || [],
+        pending: data?.pending || [],
+        rejected: data?.rejected || []
     };
+    const stats = data?.stats || { total: 0, likes: 0, comments: 0 };
 
     const handleDeletePost = async (postId) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
 
         try {
-            await postsService.delete(postId);
+            await deletePostMutation.mutateAsync(postId);
             toast.success('Post deleted');
-            loadMyPosts(); // Reload
         } catch (error) {
             toast.error('Failed to delete post');
         }

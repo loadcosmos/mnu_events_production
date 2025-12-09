@@ -10,7 +10,7 @@ export class PostsService {
     /**
      * Get posts with visibility rules
      */
-    async findAll(userId: string, userRole: Role, page = 1, limit = 20) {
+    async findAll(userId: string, userRole: Role, page = 1, limit = 20, typeFilter?: PostType[]) {
         const skip = (page - 1) * limit;
 
         // External partners cannot see any posts
@@ -25,22 +25,27 @@ export class PostsService {
             status: PostStatus.APPROVED,
         };
 
-        // Visibility rules based on requester role
-        if (userRole === Role.STUDENT) {
-            // Students see: Student posts, Faculty posts, Announcements
-            where.OR = [
-                { type: PostType.STUDENT_POST },
-                { type: PostType.FACULTY_POST },
-                { type: PostType.ANNOUNCEMENT },
-            ];
-        } else if (userRole === Role.FACULTY) {
-            // Faculty sees: Faculty posts, Announcements (NOT Student posts)
-            where.OR = [
-                { type: PostType.FACULTY_POST },
-                { type: PostType.ANNOUNCEMENT },
-            ];
+        // Apply type filter if provided
+        if (typeFilter && typeFilter.length > 0) {
+            where.type = { in: typeFilter };
+        } else {
+            // Default visibility rules based on requester role
+            if (userRole === Role.STUDENT) {
+                // Students see: Student posts, Faculty posts, Announcements
+                where.OR = [
+                    { type: PostType.STUDENT_POST },
+                    { type: PostType.FACULTY_POST },
+                    { type: PostType.ANNOUNCEMENT },
+                ];
+            } else if (userRole === Role.FACULTY) {
+                // Faculty sees: Faculty posts, Announcements (NOT Student posts)
+                where.OR = [
+                    { type: PostType.FACULTY_POST },
+                    { type: PostType.ANNOUNCEMENT },
+                ];
+            }
+            // Admin/Moderator sees everything (no additional filter needed)
         }
-        // Admin/Moderator sees everything (no additional filter needed)
 
         const [posts, total] = await Promise.all([
             this.prisma.post.findMany({
@@ -196,6 +201,11 @@ export class PostsService {
             status = PostStatus.APPROVED; // Auto-approve admin/moderator posts
         }
 
+        // Validate isPinned - only ADMIN/MODERATOR can pin posts
+        const isPinned = dto.isPinned && (userRole === Role.ADMIN || userRole === Role.MODERATOR)
+            ? dto.isPinned
+            : false;
+
         return this.prisma.post.create({
             data: {
                 authorId: userId,
@@ -203,6 +213,7 @@ export class PostsService {
                 imageUrl: dto.imageUrl,
                 type,
                 status,
+                isPinned,
             },
             include: {
                 author: {

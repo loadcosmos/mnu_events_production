@@ -9,14 +9,14 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
 import { PostsService } from './posts.service';
-import { CreatePostDto, UpdatePostDto, ModeratePostDto, CreateCommentDto } from './dto/posts.dto';
+import { CreatePostDto, UpdatePostDto, ModeratePostDto, CreateCommentDto, GetPostsQueryDto } from './dto/posts.dto';
 
 @ApiTags('Posts')
 @ApiBearerAuth()
@@ -27,21 +27,22 @@ export class PostsController {
 
     @Get()
     @ApiOperation({ summary: 'Get all approved posts' })
-    @ApiQuery({ name: 'page', required: false, type: Number })
-    @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200, description: 'Posts list' })
     async findAll(
         @CurrentUser() user: any,
-        @Query('page') page?: number,
-        @Query('limit') limit?: number,
+        @Query() query: GetPostsQueryDto,
     ) {
-        return this.postsService.findAll(user.id, user.role, page || 1, limit || 20);
+        return this.postsService.findAll(
+            user.id,
+            user.role,
+            query.page || 1,
+            query.limit || 20,
+            query.type
+        );
     }
 
     @Get('me')
     @ApiOperation({ summary: 'Get current user posts' })
-    @ApiQuery({ name: 'page', required: false, type: Number })
-    @ApiQuery({ name: 'limit', required: false, type: Number })
     @ApiResponse({ status: 200, description: 'User posts list' })
     async findMyPosts(
         @CurrentUser() user: any,

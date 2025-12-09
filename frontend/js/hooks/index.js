@@ -1,8 +1,8 @@
 /**
  * React Query hooks barrel export
- * 
+ *
  * Usage:
- * import { useEvents, useEvent, useServices, useClubs } from '@/hooks';
+ * import { useEvents, useEvent, useServices, useClubs, usePosts } from '@/hooks';
  */
 
 // Events hooks
@@ -17,3 +17,9 @@ export * from './useClubs';
 
 // User/Auth hooks
 export * from './useUser';
+
+// Posts/Community hooks
+export * from './usePosts';
+
+// Saved items hooks
+export * from './useSavedItems';

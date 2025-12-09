@@ -17,21 +17,15 @@ export default function NewsFeedSection() {
 
         const loadPosts = async () => {
             try {
-                const response = await postsService.getAll({ page: 1, limit: 10 });
+                // Use backend filtering for ANNOUNCEMENT and FACULTY_POST
+                const response = await postsService.getAll({
+                    page: 1,
+                    limit: 3,
+                    type: ['ANNOUNCEMENT', 'FACULTY_POST']
+                });
                 if (!isCancelled) {
-                    // Filter to show only ANNOUNCEMENT and FACULTY_POST
-                    // Prioritize pinned posts first, then sort by date
-                    const newsPosts = (response.data || [])
-                        .filter(p => p.type === 'ANNOUNCEMENT' || p.type === 'FACULTY_POST')
-                        .sort((a, b) => {
-                            // Pinned posts first
-                            if (a.isPinned && !b.isPinned) return -1;
-                            if (!a.isPinned && b.isPinned) return 1;
-                            // Then by date
-                            return new Date(b.createdAt) - new Date(a.createdAt);
-                        })
-                        .slice(0, 3);
-                    setPosts(newsPosts);
+                    // Backend already filters and sorts (pinned first, then by date)
+                    setPosts(response.data || []);
                 }
             } catch (error) {
                 console.error('[NewsFeedSection] Failed to load posts:', error);
@@ -48,8 +42,37 @@ export default function NewsFeedSection() {
         return (
             <section className="py-8 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d62e1f]" />
+                    {/* Header Skeleton */}
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <div className="h-8 w-48 bg-gray-200 dark:bg-[#1a1a1a] rounded-lg animate-pulse mb-2" />
+                            <div className="h-4 w-64 bg-gray-200 dark:bg-[#1a1a1a] rounded animate-pulse" />
+                        </div>
+                        <div className="h-6 w-20 bg-gray-200 dark:bg-[#1a1a1a] rounded animate-pulse" />
+                    </div>
+
+                    {/* Posts Grid Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="liquid-glass-card rounded-2xl p-4 animate-pulse">
+                                {/* Author skeleton */}
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="h-8 w-8 bg-gray-200 dark:bg-[#2a2a2a] rounded-full" />
+                                    <div className="flex-1">
+                                        <div className="h-4 w-24 bg-gray-200 dark:bg-[#2a2a2a] rounded mb-1" />
+                                        <div className="h-3 w-16 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                    </div>
+                                </div>
+                                {/* Content skeleton */}
+                                <div className="space-y-2 mb-3">
+                                    <div className="h-3 w-full bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                    <div className="h-3 w-5/6 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                    <div className="h-3 w-4/6 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                </div>
+                                {/* Image skeleton */}
+                                <div className="h-32 bg-gray-200 dark:bg-[#2a2a2a] rounded-xl" />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
