@@ -79,11 +79,13 @@
   - Сложность: Low
   - Статус: ✅ Выполнено
 
-- [ ] **8. Infinite scroll для Community/Posts**
-  - Файл: Создать `frontend/js/hooks/useInfinitePosts.js`
-  - Описание: Использовать useInfiniteQuery вместо пагинации
+- [x] **8. Infinite scroll для Community/Posts** ✅
+  - Файл: `frontend/js/pages/community/CommunityPage.jsx`
+  - Использует: `useInfinitePosts` (уже создан в задаче #3)
+  - Реализация: Intersection Observer + автоподгрузка
+  - EventsPage: Уже имел infinite scroll ✅
   - Сложность: Medium
-  - Статус: Ожидает выполнения
+  - Статус: ✅ Выполнено (2025-12-09)
 
 - [ ] **9. Миграция FollowStats на React Query**
   - Файл: `frontend/js/components/profile/FollowStats.jsx`
@@ -165,21 +167,22 @@ _Здесь будут отмечаться завершенные задачи_
 
 - **Всего задач:** 18
 - **High Priority:** 5 (✅ 5/5 выполнено)
-- **Medium Priority:** 5 (✅ 3/5 выполнено)
+- **Medium Priority:** 5 (✅ 4/5 выполнено)
 - **Low Priority:** 8 (🟡 0/8 выполнено)
-- **Выполнено:** 8/18
-- **Прогресс:** 44%
+- **Выполнено:** 9/18
+- **Прогресс:** 50%
 
 ### Выполнено сегодня (2025-12-09)
 1. ✅ Backend фильтрация по типу поста
 2. ✅ Валидация isPinned
-3. ✅ React Query hooks для posts (usePosts.js)
+3. ✅ React Query hooks для posts (usePosts.js + useInfinitePosts)
 4. ✅ Skeleton loading для NewsFeedSection
 5. ✅ Backend фильтрация в NewsFeedSection
 6. ✅ Saved в BottomNavigation
 7. ✅ useSavedItems hooks с optimistic updates
 8. ✅ Миграция SavedPage на React Query
 9. ✅ Миграция MyPostsPage на React Query
+10. ✅ Infinite scroll для CommunityPage
 
 ### Следующие шаги
 - [ ] Infinite scroll для Community
@@ -189,4 +192,4 @@ _Здесь будут отмечаться завершенные задачи_
 
 ---
 
-*Последнее обновление: 2025-12-09 18:35*
+*Последнее обновление: 2025-12-09 20:15*
