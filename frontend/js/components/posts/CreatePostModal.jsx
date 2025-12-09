@@ -38,9 +38,9 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
             // 1. Upload image if exists
             if (imageFile) {
-                // We use generic image upload for posts
-                const uploadResponse = await uploadService.uploadGenericImage(imageFile);
-                imageUrl = uploadResponse.url;
+                // Use generic image upload for posts
+                const uploadResponse = await uploadService.uploadImage(imageFile);
+                imageUrl = uploadResponse.imageUrl;
             }
 
             // 2. Create post
