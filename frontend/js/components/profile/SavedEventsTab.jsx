@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import savedEventsService from '../../services/savedEventsService';
+import { useSavedEvents, useUnsaveEvent } from '../../hooks';
 import EventCard from '../../components/EventCard';
 import { toast } from 'sonner';
 
@@ -8,32 +8,12 @@ import { toast } from 'sonner';
  * SavedEventsTab - Displays user's saved/bookmarked events
  */
 export default function SavedEventsTab() {
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        loadSavedEvents();
-    }, []);
-
-    const loadSavedEvents = async () => {
-        try {
-            setLoading(true);
-            const response = await savedEventsService.getAll();
-            // Response contains saved events with event data
-            const savedEvents = (response.data || response || []).map(se => se.event).filter(Boolean);
-            setEvents(savedEvents);
-        } catch (error) {
-            console.error('[SavedEventsTab] Failed to load saved events:', error);
-            toast.error('Failed to load saved events');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: events = [], isLoading: loading } = useSavedEvents();
+    const unsaveEventMutation = useUnsaveEvent();
 
     const handleUnsave = async (eventId) => {
         try {
-            await savedEventsService.unsave(eventId);
-            setEvents(prev => prev.filter(e => e.id !== eventId));
+            await unsaveEventMutation.mutateAsync(eventId);
             toast.success('Event removed from saved');
         } catch (error) {
             console.error('[SavedEventsTab] Failed to unsave event:', error);

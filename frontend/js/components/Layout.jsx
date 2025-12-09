@@ -140,6 +140,7 @@ export default function Layout({ children }) {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/events', label: 'Events' },
+    { path: '/community', label: 'Community' },
     { path: '/clubs', label: 'Clubs' },
   ];
 

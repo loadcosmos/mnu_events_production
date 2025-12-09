@@ -91,7 +91,7 @@ export default function CommunityPage() {
 
                 {/* Feed */}
                 <div className="space-y-6">
-                    {filteredPosts.length === 0 && !loading ? (
+                    {!isLoading && posts.length === 0 ? (
                         <div className="text-center py-12 text-gray-500">
                             <i className="fa-regular fa-newspaper text-4xl mb-3 opacity-50"></i>
                             <p>No posts yet. Be the first to share something!</p>
