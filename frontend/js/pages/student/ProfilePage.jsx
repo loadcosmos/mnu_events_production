@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs';
 import usersService from '../../services/usersService';
 import registrationsService from '../../services/registrationsService';
 import analyticsService from '../../services/analyticsService';
@@ -17,6 +18,7 @@ export default function ProfilePage() {
   const { user: currentUser, isAuthenticated, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState({
     eventsAttended: 0,
     upcomingEvents: 0,
@@ -316,227 +318,311 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* My Stats Section - Students Only */}
+      {/* Tab Navigation */}
       {currentUser?.role === 'STUDENT' && (
-        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+        <div className="sticky top-0 z-10 bg-gray-50 dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#2a2a2a] px-4 py-3">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              My <span className="text-[#d62e1f]">Stats</span>
-            </h2>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
-                <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
-                  {stats.eventsAttended}
-                </div>
-                <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold transition-colors duration-300">Events Attended</div>
-              </div>
-
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
-                <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
-                  {stats.upcomingEvents}
-                </div>
-                <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold transition-colors duration-300">Upcoming Events</div>
-              </div>
-
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
-                <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
-                  {stats.clubsJoined}
-                </div>
-                <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold transition-colors duration-300">Clubs Joined</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Gamification Section (Students only) */}
-      {currentUser?.role === 'STUDENT' && (
-        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              Gamification <span className="text-[#d62e1f]">Progress</span>
-            </h2>
-
-            <GamificationCard userId={currentUser?.id} />
-          </div>
-        </div>
-      )}
-
-      {/* Quick Links Section - Students Only */}
-      {currentUser?.role === 'STUDENT' && (
-        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              Quick <span className="text-[#d62e1f]">Access</span>
-            </h2>
-
-            <div className="space-y-4">
-              <Link
-                to="/registrations"
-                className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#d62e1f] rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-calendar-check text-white text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
-                      My Registrations
-                    </h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">View and manage your event registrations</p>
-                  </div>
-                </div>
-                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
-              </Link>
-
-              <Link
-                to="/csi-dashboard"
-                className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <i className="fa-solid fa-chart-pie text-white text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
-                      CSI Statistics
-                    </h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">View your CSI activity progress and statistics</p>
-                  </div>
-                </div>
-                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Saved Events Section - Students Only */}
-      {currentUser?.role === 'STUDENT' && (
-        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              Saved <span className="text-[#d62e1f]">Events</span>
-            </h2>
-            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
-              <SavedEventsTab />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Interests Section - Students Only */}
-      {currentUser?.role === 'STUDENT' && (
-        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              My <span className="text-[#d62e1f]">Interests</span>
-            </h2>
-            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
-              <EditInterestsSection />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Settings Section */}
-      <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-            <span className="text-[#d62e1f]">Settings</span>
-          </h2>
-
-          <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] divide-y divide-gray-200 dark:divide-[#2a2a2a] transition-colors duration-300 shadow-lg">
-            {/* Language Setting */}
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <i className="fa-solid fa-language text-[#d62e1f] text-xl" />
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-semibold transition-colors duration-300">Language</h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">Choose your preferred language</p>
-                  </div>
-                </div>
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
-                  className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-[#3a3a3a] focus:border-[#d62e1f] focus:outline-none transition-colors duration-300"
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-gray-100 dark:bg-white/5 p-1">
+                <TabsTrigger
+                  value="overview"
+                  className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
                 >
-                  <option value="ENG">English</option>
-                  <option value="РУС">Русский</option>
-                  <option value="ҚАЗ">Қазақша</option>
-                </select>
+                  <i className="fa-solid fa-user text-sm" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger
+                  value="saved"
+                  className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
+                >
+                  <i className="fa-solid fa-bookmark text-sm" />
+                  Saved
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
+                >
+                  <i className="fa-solid fa-gear text-sm" />
+                  Settings
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Content */}
+      {currentUser?.role === 'STUDENT' ? (
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="mt-0">
+            {/* My Stats Section */}
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
+                  My <span className="text-[#d62e1f]">Stats</span>
+                </h2>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
+                    <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
+                      {stats.eventsAttended}
+                    </div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Events Attended</div>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
+                    <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
+                      {stats.upcomingEvents}
+                    </div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Upcoming Events</div>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
+                    <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
+                      {stats.clubsJoined}
+                    </div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Clubs Joined</div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Notifications Setting */}
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <i className="fa-solid fa-bell text-[#d62e1f] text-xl" />
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-semibold transition-colors duration-300">Notifications</h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">Manage notification preferences</p>
+            {/* Gamification Section */}
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+                  Gamification <span className="text-[#d62e1f]">Progress</span>
+                </h2>
+                <GamificationCard userId={currentUser?.id} />
+              </div>
+            </div>
+
+            {/* Quick Links Section */}
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+                  Quick <span className="text-[#d62e1f]">Access</span>
+                </h2>
+
+                <div className="space-y-4">
+                  <Link
+                    to="/registrations"
+                    className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#d62e1f] rounded-full flex items-center justify-center">
+                        <i className="fa-solid fa-calendar-check text-white text-xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
+                          My Registrations
+                        </h3>
+                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">View and manage your event registrations</p>
+                      </div>
+                    </div>
+                    <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
+                  </Link>
+
+                  <Link
+                    to="/csi-dashboard"
+                    className="flex items-center justify-between p-6 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all group shadow-lg hover:shadow-2xl"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                        <i className="fa-solid fa-chart-pie text-white text-xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
+                          CSI Statistics
+                        </h3>
+                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">View your CSI activity progress and statistics</p>
+                      </div>
+                    </div>
+                    <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Interests Section */}
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+                  My <span className="text-[#d62e1f]">Interests</span>
+                </h2>
+                <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
+                  <EditInterestsSection />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Saved Tab */}
+          <TabsContent value="saved" className="mt-0">
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+                  Saved <span className="text-[#d62e1f]">Events</span>
+                </h2>
+                <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
+                  <SavedEventsTab />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="mt-0">
+            <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+                  <span className="text-[#d62e1f]">Settings</span>
+                </h2>
+
+                <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] divide-y divide-gray-200 dark:divide-[#2a2a2a] shadow-lg">
+                  {/* Language Setting */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <i className="fa-solid fa-language text-[#d62e1f] text-xl" />
+                        <div>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">Language</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Choose your preferred language</p>
+                        </div>
+                      </div>
+                      <select
+                        value={selectedLanguage}
+                        onChange={(e) => setSelectedLanguage(e.target.value)}
+                        className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-[#3a3a3a] focus:border-[#d62e1f] focus:outline-none"
+                      >
+                        <option value="ENG">English</option>
+                        <option value="РУС">Русский</option>
+                        <option value="ҚАЗ">Қазақша</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Notifications Setting */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <i className="fa-solid fa-bell text-[#d62e1f] text-xl" />
+                        <div>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">Notifications</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Manage notification preferences</p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
+                        <i className="fa-solid fa-chevron-right" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Privacy Settings */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <i className="fa-solid fa-shield-halved text-[#d62e1f] text-xl" />
+                        <div>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">Privacy & Security</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Control your privacy settings</p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
+                        <i className="fa-solid fa-chevron-right" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* About & Help */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <i className="fa-solid fa-circle-info text-[#d62e1f] text-xl" />
+                        <div>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">About & Help</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Get help and learn about the app</p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
+                        <i className="fa-solid fa-chevron-right" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Logout */}
+                  <div className="p-6">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-between group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <i className="fa-solid fa-right-from-bracket text-[#d62e1f] text-xl" />
+                        <div className="text-left">
+                          <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">Logout</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Sign out of your account</p>
+                        </div>
+                      </div>
+                      <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
+                    </button>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
-                  <i className="fa-solid fa-chevron-right" />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        /* Non-student users - just show settings */
+        <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
+              <span className="text-[#d62e1f]">Settings</span>
+            </h2>
+
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] divide-y divide-gray-200 dark:divide-[#2a2a2a] shadow-lg">
+              {/* Language Setting */}
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <i className="fa-solid fa-language text-[#d62e1f] text-xl" />
+                    <div>
+                      <h3 className="text-gray-900 dark:text-white font-semibold">Language</h3>
+                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Choose your preferred language</p>
+                    </div>
+                  </div>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-[#3a3a3a] focus:border-[#d62e1f] focus:outline-none"
+                  >
+                    <option value="ENG">English</option>
+                    <option value="РУС">Русский</option>
+                    <option value="ҚАЗ">Қазақша</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Logout */}
+              <div className="p-6">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-4">
+                    <i className="fa-solid fa-right-from-bracket text-[#d62e1f] text-xl" />
+                    <div className="text-left">
+                      <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">Logout</h3>
+                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Sign out of your account</p>
+                    </div>
+                  </div>
+                  <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
                 </button>
               </div>
-            </div>
-
-            {/* Privacy Settings */}
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <i className="fa-solid fa-shield-halved text-[#d62e1f] text-xl" />
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-semibold transition-colors duration-300">Privacy & Security</h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">Control your privacy settings</p>
-                  </div>
-                </div>
-                <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
-                  <i className="fa-solid fa-chevron-right" />
-                </button>
-              </div>
-            </div>
-
-            {/* About & Help */}
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <i className="fa-solid fa-circle-info text-[#d62e1f] text-xl" />
-                  <div>
-                    <h3 className="text-gray-900 dark:text-white font-semibold transition-colors duration-300">About & Help</h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">Get help and learn about the app</p>
-                  </div>
-                </div>
-                <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
-                  <i className="fa-solid fa-chevron-right" />
-                </button>
-              </div>
-            </div>
-
-            {/* Logout */}
-            <div className="p-6">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-4">
-                  <i className="fa-solid fa-right-from-bracket text-[#d62e1f] text-xl" />
-                  <div className="text-left">
-                    <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">Logout</h3>
-                    <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">Sign out of your account</p>
-                  </div>
-                </div>
-                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
-              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Edit Profile Modal */}
       {isEditModalOpen && (

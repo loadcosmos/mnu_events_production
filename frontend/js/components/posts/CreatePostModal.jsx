@@ -19,9 +19,29 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
     const { user } = useAuth();
     const [content, setContent] = useState('');
     const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const [postType, setPostType] = useState('STUDENT_POST');
     const [isPinned, setIsPinned] = useState(false);
+
+    // Generate preview URL when image file changes
+    const handleImageSelect = (file) => {
+        setImageFile(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImageFile(null);
+        setImagePreview(null);
+    };
 
     // Determine allowed types based on role
     // Default is STUDENT_POST (will be handled by backend)
@@ -58,6 +78,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             toast.success(user.role === 'STUDENT' ? 'Post submitted for moderation' : 'Post created successfully');
             setContent('');
             setImageFile(null);
+            setImagePreview(null);
             setPostType('STUDENT_POST');
             setIsPinned(false);
             if (onPostCreated) onPostCreated();
@@ -113,17 +134,35 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
                     <div className="space-y-2">
                         <Label>Add Image (Optional)</Label>
-                        <div className="bg-white/50 dark:bg-black/20 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
-                            <ImageUploadCrop
-                                onUpload={(file) => setImageFile(file)}
-                                aspectRatio={16 / 9}
-                                circularCrop={false}
-                            />
-                        </div>
-                        {imageFile && (
-                            <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                                <i className="fa-solid fa-check-circle mr-1"></i> Image selected
-                            </p>
+
+                        {/* Image Preview */}
+                        {imagePreview ? (
+                            <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    className="w-full h-48 object-cover"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveImage}
+                                    className="absolute top-2 right-2 w-8 h-8 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition-colors"
+                                >
+                                    <i className="fa-solid fa-times"></i>
+                                </button>
+                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/60 text-white text-xs rounded-lg">
+                                    <i className="fa-solid fa-check-circle mr-1"></i>
+                                    Image ready
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-white/50 dark:bg-black/20 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
+                                <ImageUploadCrop
+                                    onUpload={handleImageSelect}
+                                    aspectRatio={16 / 9}
+                                    circularCrop={false}
+                                />
+                            </div>
                         )}
                     </div>
 
