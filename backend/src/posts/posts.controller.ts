@@ -38,6 +38,19 @@ export class PostsController {
         return this.postsService.findAll(user.id, user.role, page || 1, limit || 20);
     }
 
+    @Get('me')
+    @ApiOperation({ summary: 'Get current user posts' })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiResponse({ status: 200, description: 'User posts list' })
+    async findMyPosts(
+        @CurrentUser() user: any,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+    ) {
+        return this.postsService.findByAuthor(user.id, page || 1, limit || 50);
+    }
+
     @Get('moderation')
     @Roles(Role.MODERATOR, Role.ADMIN)
     @ApiOperation({ summary: 'Get pending posts for moderation' })

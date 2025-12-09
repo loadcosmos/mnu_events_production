@@ -31,6 +31,8 @@ const EditEventPage = lazy(() => import('./pages/events/EditEventPage.jsx'));
 const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage.jsx'));
 const ClubDetailsPage = lazy(() => import('./pages/clubs/ClubDetailsPage.jsx'));
 const CommunityPage = lazy(() => import('./pages/community/CommunityPage.jsx'));
+const SavedPage = lazy(() => import('./pages/SavedPage.jsx'));
+const MyPostsPage = lazy(() => import('./pages/posts/MyPostsPage.jsx'));
 
 // Services pages
 const TutoringPage = lazy(() => import('./pages/services/TutoringPage.jsx'));
@@ -218,6 +220,22 @@ function App() {
                   element={
                     <ProtectedRoute roles={['STUDENT']}>
                       <Layout><ProfilePage /></Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/saved"
+                  element={
+                    <ProtectedRoute roles={['STUDENT', 'FACULTY', 'ORGANIZER', 'MODERATOR', 'ADMIN']}>
+                      <Layout><SavedPage /></Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my-posts"
+                  element={
+                    <ProtectedRoute roles={['STUDENT', 'FACULTY', 'ORGANIZER', 'MODERATOR', 'ADMIN']}>
+                      <Layout><MyPostsPage /></Layout>
                     </ProtectedRoute>
                   }
                 />

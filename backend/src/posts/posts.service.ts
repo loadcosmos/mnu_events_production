@@ -137,6 +137,50 @@ export class PostsService {
     }
 
     /**
+     * Get posts by author (for My Posts page)
+     */
+    async findByAuthor(authorId: string, page = 1, limit = 50) {
+        const skip = (page - 1) * limit;
+
+        const [posts, total] = await Promise.all([
+            this.prisma.post.findMany({
+                where: { authorId },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            avatar: true,
+                            role: true,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            likes: true,
+                            comments: true,
+                        },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit,
+            }),
+            this.prisma.post.count({ where: { authorId } }),
+        ]);
+
+        return {
+            data: posts,
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
+
+    /**
      * Create a new post
      */
     async create(userId: string, userRole: Role, dto: CreatePostDto) {

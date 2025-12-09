@@ -29,6 +29,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PreferencesModule } from './preferences/preferences.module';
 import { PostsModule } from './posts/posts.module';
 import { SavedEventsModule } from './saved-events/saved-events.module';
+import { SavedPostsModule } from './saved-posts/saved-posts.module';
 import { FollowsModule } from './follows/follows.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
@@ -86,6 +87,7 @@ import { ValidationPipe } from './common/pipes/validation.pipe';
     PreferencesModule,
     PostsModule,
     SavedEventsModule,
+    SavedPostsModule,
     FollowsModule,
   ],
   providers: [

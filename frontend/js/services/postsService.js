@@ -14,6 +14,14 @@ const postsService = {
     },
 
     /**
+     * Get current user's posts (for My Posts page)
+     * @param {Object} params - Query params (page, limit)
+     */
+    async getMyPosts(params = {}) {
+        return api.get('/posts/me', params);
+    },
+
+    /**
      * Create a new post
      * @param {FormData} formData - Post data (content, image)
      */

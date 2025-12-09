@@ -52,6 +52,7 @@ model User {
   postLikes        PostLike[]      @relation("PostLikes")
   postComments     PostComment[]   @relation("PostComments")
   savedEvents      SavedEvent[]    @relation("SavedEvents")
+  savedPosts       SavedPost[]     @relation("SavedPosts")
   following        UserFollow[]    @relation("Following")
   followers        UserFollow[]    @relation("Followers")
 
@@ -671,6 +672,7 @@ model Post {
   // Relations
   likes         PostLike[]
   comments      PostComment[]
+  savedBy       SavedPost[]
   
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -753,3 +755,18 @@ model UserFollow {
   @@index([followingId])
   @@map("user_follows")
 }
+
+model SavedPost {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("SavedPosts", fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@map("saved_posts")
+}
+
