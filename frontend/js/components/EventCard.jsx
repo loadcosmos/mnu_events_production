@@ -12,8 +12,9 @@ const EventCard = memo(function EventCard({ event, onClick, isSaved, onToggleSav
     const imageUrl = event.imageUrl || '/images/backg.jpg';
 
     const handleClick = useCallback(() => {
-        onClick(event.id);
+        if (onClick) onClick(event.id);
     }, [onClick, event.id]);
+
 
     const handleImageError = useCallback((e) => {
         e.target.src = '/images/event-placeholder.jpg';

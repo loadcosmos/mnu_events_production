@@ -42,8 +42,9 @@ function SavedEventCard({ event, onToggleSave }) {
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onToggleSave();
+                    if (onToggleSave) onToggleSave();
                 }}
+
                 className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-[#d62e1f] hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                 title="Remove from saved"
             >

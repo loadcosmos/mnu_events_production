@@ -1,15 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSavedEvents, useUnsaveEvent } from '../../hooks';
 import EventCard from '../../components/EventCard';
 import { toast } from 'sonner';
+
 
 /**
  * SavedEventsTab - Displays user's saved/bookmarked events
  */
 export default function SavedEventsTab() {
+    const navigate = useNavigate();
     const { data: events = [], isLoading: loading } = useSavedEvents();
     const unsaveEventMutation = useUnsaveEvent();
+
+    const handleEventClick = (eventId) => {
+        navigate(`/events/${eventId}`);
+    };
+
 
     const handleUnsave = async (eventId) => {
         try {
@@ -61,10 +68,12 @@ export default function SavedEventsTab() {
                     <div key={event.id} className="relative">
                         <EventCard
                             event={event}
+                            onClick={handleEventClick}
                             isSaved={true}
                             onToggleSave={() => handleUnsave(event.id)}
                         />
                     </div>
+
                 ))}
             </div>
         </div>
