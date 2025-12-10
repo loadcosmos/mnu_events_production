@@ -6,7 +6,7 @@
 
 **Overall Implementation:** 100% Complete
 **Current Grade:** A+ (98/100) - Production-ready with full social features
-**Last Updated:** 2025-12-09
+**Last Updated:** 2025-12-11
 **Team:** 1 developer
 **Timeline:** 6 weeks (Phases 1-9 COMPLETE)
 
@@ -28,9 +28,16 @@
 
 ---
 
-## 🆕 Recent Changes (2025-12-09)
+## 🆕 Recent Changes (2025-12-11)
 
-### Social Features Implementation (Phase 8-9):
+### UI/UX Polish & Bug Fixes:
+- ✅ **Saved Events Experience**: now open in a modal (popup) instead of navigating to a new page, ensuring a seamless flow consistent with the main feed.
+- ✅ **Create Post UI**: Refined image upload area. Implemented a "minimal" mode for `ImageUploadCrop` with a cleaner design and removed redundant icons/text.
+- ✅ **Image Upload Enhancements**: Added native Drag & Drop support to `ImageUploadCrop` with visual feedback (highlight on drag).
+- ✅ **Vercel Caching Fixed**: Added strict Cache-Control headers to `vercel.json` to prevent serving stale assets.
+- ✅ **Saved Post Unsave**: Fixed issue where unsaving a post from the Saved tab didn't work correctly.
+
+### Social Features Implementation (Phase 8-9) - Completed 2025-12-09:
 - ✅ **Posts System** - Full CRUD with moderation:
   - `GET /api/posts` - List approved posts
   - `POST /api/posts` - Create post
