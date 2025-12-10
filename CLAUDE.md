@@ -301,5 +301,38 @@ railway up
 
 ---
 
-*Last Updated: 2025-12-10 | v5.7 (UI/UX Phase 1 Complete + Mobile Fixes)*
+
+## 🐛 Troubleshooting & Critical Rules
+
+### 1. "s is not a function" (Minified Error)
+**Cause:** Stale Vercel deployment serving old JS bundles, or component passing `undefined` as a function prop.
+**Fixes:**
+- **Force Redeploy:** `vercel --prod --force` to clear Vercel build cache.
+- **Cache Headers:** Ensure `vercel.json` has `no-cache` for `index.html` and `immutable` for `/assets/`.
+- **Code Guard:** ALWAYS check if function exists before calling: `const handleClick = () => onClick && onClick(id);`
+
+### 2. Railway Database Connection Failed
+**Error:** `Connection reset by peer` or `Database not ready`
+**Cause:** Free tier database "sleeps" or crashes.
+**Fix:**
+1. Check Railway Dashboard -> Postgres -> Status.
+2. If crashed, click **Restart** or **Redeploy**.
+3. **Wait 1 min** for DB to recover.
+4. Restart Backend service if it doesn't auto-reconnect.
+
+### 3. Vercel Caching Strategy (Critical)
+We use `vercel.json` to control caching/
+- `index.html`: `no-cache, no-store, must-revalidate` (Always fresh)
+- `/assets/*`: `public, max-age=31536000, immutable` (Cached forever, unique hashes)
+**Do not remove these headers from vercel.json.**
+
+### 4. Safe Coding Practices
+- **Event Handlers:** Never assume `onClick`, `onSave`, etc. are provided. Always default to no-op or check existence.
+- **Mobile First:** Sidebar width must be `max-w-[85vw]` to prevent overflow.
+- **Auto-Imports:** Check paths! `../utils/dateFormatters` vs `../../utils`.
+
+---
+
+*Last Updated: 2025-12-11 | v5.8 (Bug Fixes & Docs)*
+
 
