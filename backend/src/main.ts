@@ -162,6 +162,7 @@ async function bootstrap() {
         '/api/docs',             // Swagger docs
         '/api/advertisements/impression', // Advertisement impression tracking (partial match)
         '/api/users/verify-all/emails',  // Admin bulk email verification (JWT protected)
+        '/api/upload',           // TEMPORARY: Bypass CSRF for uploads (JWT auth still required)
       ];
 
       if (
