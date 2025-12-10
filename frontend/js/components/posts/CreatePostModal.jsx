@@ -53,7 +53,14 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!content.trim()) return;
+        console.log('[CreatePostModal] handleSubmit called');
+        console.log('[CreatePostModal] Content:', content);
+        console.log('[CreatePostModal] Has image:', !!imageFile);
+
+        if (!content.trim()) {
+            console.log('[CreatePostModal] Empty content, returning early');
+            return;
+        }
 
         try {
             setLoading(true);
@@ -61,9 +68,10 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
             // 1. Upload image if exists
             if (imageFile) {
-                // Use generic image upload for posts
+                console.log('[CreatePostModal] Uploading image...');
                 const uploadResponse = await uploadService.uploadImage(imageFile);
                 imageUrl = uploadResponse.imageUrl;
+                console.log('[CreatePostModal] Image uploaded:', imageUrl);
             }
 
             // 2. Create post
@@ -73,8 +81,10 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                 type: canMakeAnnouncement && postType === 'ANNOUNCEMENT' ? 'ANNOUNCEMENT' : undefined,
                 isPinned: canPinPost ? isPinned : undefined
             };
+            console.log('[CreatePostModal] Creating post with data:', postData);
 
-            await postsService.create(postData);
+            const result = await postsService.create(postData);
+            console.log('[CreatePostModal] Post created successfully:', result);
 
             toast.success(user.role === 'STUDENT' ? 'Post submitted for moderation' : 'Post created successfully');
             setContent('');
@@ -85,7 +95,8 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             if (onPostCreated) onPostCreated();
             onClose();
         } catch (error) {
-            console.error('Failed to create post:', error);
+            console.error('[CreatePostModal] Failed to create post:', error);
+            console.error('[CreatePostModal] Error details:', JSON.stringify(error, null, 2));
             toast.error(error.message || 'Failed to create post');
         } finally {
             setLoading(false);
