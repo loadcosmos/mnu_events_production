@@ -2,6 +2,7 @@ import React, { useState, useMemo, useTransition, useDeferredValue, useCallback,
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
 import { useInfiniteEvents } from '../../hooks/useInfiniteEvents';
+import { useRecommendedEvents } from '../../hooks/useEvents';
 import { useSavedEvents, useToggleSaveEvent } from '../../hooks/useSavedItems';
 import { SkeletonCard } from '../../components/ui/skeleton';
 import EventModal from '../../components/EventModal';
@@ -9,13 +10,18 @@ import EventCard from '../../components/EventCard';
 import FilterSheet from '../../components/FilterSheet';
 import { EVENT_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiColors, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function EventsPage() {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
   // React 19 concurrent features for better INP
   const [isPending, startTransition] = useTransition();
+
+  // Tab state - 'all' or 'for-you'
+  const [activeTab, setActiveTab] = useState('all');
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,6 +49,12 @@ export default function EventsPage() {
   const categories = ['ALL', ...Object.values(EVENT_CATEGORIES)];
   const statuses = ['ALL', 'UPCOMING', 'ONGOING', 'COMPLETED'];
   const csiCategories = getAllCsiCategories();
+
+  // Recommended events for "For You" tab (only for students)
+  const isStudent = isAuthenticated() && user?.role === 'STUDENT';
+  const { data: recommendedEvents = [], isLoading: loadingRecommended } = useRecommendedEvents(50, {
+    enabled: isStudent && activeTab === 'for-you',
+  });
 
   // Build query params for React Query (without page/limit - handled by infinite query)
   const queryParams = useMemo(() => {
@@ -184,8 +196,36 @@ export default function EventsPage() {
         </div>
       </div>
 
+      {/* Tab Toggle - Only for students */}
+      {isStudent && (
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'all'
+                ? 'bg-[#d62e1f] text-white shadow-lg'
+                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                }`}
+            >
+              <i className="fa-solid fa-globe mr-2" />
+              All Events
+            </button>
+            <button
+              onClick={() => setActiveTab('for-you')}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'for-you'
+                ? 'bg-[#d62e1f] text-white shadow-lg'
+                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                }`}
+            >
+              <i className="fa-solid fa-star mr-2" />
+              For You
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Desktop: Sticky Search Bar and Filters */}
-      <div className="hidden md:block sticky top-20 z-30 liquid-glass-strong border-b border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+      <div className={`hidden md:block sticky top-20 z-30 liquid-glass-strong border-b border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300 ${activeTab === 'for-you' ? 'opacity-50 pointer-events-none' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
@@ -368,67 +408,117 @@ export default function EventsPage() {
       {/* Events Grid */}
       <div className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          {error && (
-            <div className="mb-8 p-6 rounded-lg bg-white dark:bg-[#1a1a1a] border border-[#d62e1f]/50 transition-colors duration-300">
-              <div className="flex items-center gap-3 text-[#d62e1f]">
-                <i className="fa-solid fa-exclamation-circle text-xl" />
-                <p className="font-semibold">{error}</p>
-              </div>
-            </div>
-          )}
-
-          {loading ? (
-            // Skeleton grid for initial loading
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
-          ) : sortedEvents.length === 0 ? (
-            <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              <i className="fa-regular fa-calendar-xmark text-5xl text-gray-400 dark:text-[#666666] mb-6 transition-colors duration-300"></i>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No events found</h3>
-              <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Try adjusting your search or filters</p>
-            </div>
-          ) : (
+          {/* For You Tab Content */}
+          {activeTab === 'for-you' && isStudent ? (
             <>
-              <div className="mb-6">
-                <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-                  Showing <span className="font-semibold text-gray-900 dark:text-white">{sortedEvents.length}</span>{' '}
-                  {sortedEvents.length === 1 ? 'event' : 'events'}
-                  {hasNextPage && ' (scroll for more)'}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {sortedEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    onClick={openEventModal}
-                    isSaved={savedEventIds.has(event.id)}
-                    onToggleSave={toggleSave}
-                  />
-                ))}
-              </div>
-
-              {/* Load More Trigger - Intersection Observer target */}
-              <div ref={loadMoreRef} className="h-10 mt-8" />
-
-              {/* Loading more skeleton */}
-              {isFetchingNextPage && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <SkeletonCard key={`loading-${i}`} />
+              {loadingRecommended ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <SkeletonCard key={i} />
                   ))}
+                </div>
+              ) : recommendedEvents.length === 0 ? (
+                <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                  <i className="fa-solid fa-star text-5xl text-yellow-500 mb-6" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No recommendations yet</h3>
+                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300 mb-4">Complete your profile preferences to get personalized event recommendations</p>
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="px-6 py-3 bg-[#d62e1f] text-white rounded-xl font-semibold hover:bg-[#b82419] transition-colors"
+                  >
+                    <i className="fa-solid fa-user-cog mr-2" />
+                    Update Preferences
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
+                      <i className="fa-solid fa-star text-yellow-500 mr-2" />
+                      Showing <span className="font-semibold text-gray-900 dark:text-white">{recommendedEvents.length}</span>{' '}
+                      personalized recommendations based on your preferences
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recommendedEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        onClick={openEventModal}
+                        isSaved={savedEventIds.has(event.id)}
+                        onToggleSave={toggleSave}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            /* All Events Tab Content */
+            <>
+              {error && (
+                <div className="mb-8 p-6 rounded-lg bg-white dark:bg-[#1a1a1a] border border-[#d62e1f]/50 transition-colors duration-300">
+                  <div className="flex items-center gap-3 text-[#d62e1f]">
+                    <i className="fa-solid fa-exclamation-circle text-xl" />
+                    <p className="font-semibold">{error}</p>
+                  </div>
                 </div>
               )}
 
-              {/* End of list indicator */}
-              {!hasNextPage && sortedEvents.length > 0 && (
-                <div className="text-center py-8 text-gray-500 dark:text-[#666666]">
-                  <p className="text-sm">You've seen all events</p>
+              {loading ? (
+                // Skeleton grid for initial loading
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <SkeletonCard key={i} />
+                  ))}
                 </div>
+              ) : sortedEvents.length === 0 ? (
+                <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                  <i className="fa-regular fa-calendar-xmark text-5xl text-gray-400 dark:text-[#666666] mb-6 transition-colors duration-300"></i>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No events found</h3>
+                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Try adjusting your search or filters</p>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
+                      Showing <span className="font-semibold text-gray-900 dark:text-white">{sortedEvents.length}</span>{' '}
+                      {sortedEvents.length === 1 ? 'event' : 'events'}
+                      {hasNextPage && ' (scroll for more)'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sortedEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        onClick={openEventModal}
+                        isSaved={savedEventIds.has(event.id)}
+                        onToggleSave={toggleSave}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Load More Trigger - Intersection Observer target */}
+                  <div ref={loadMoreRef} className="h-10 mt-8" />
+
+                  {/* Loading more skeleton */}
+                  {isFetchingNextPage && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <SkeletonCard key={`loading-${i}`} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* End of list indicator */}
+                  {!hasNextPage && sortedEvents.length > 0 && (
+                    <div className="text-center py-8 text-gray-500 dark:text-[#666666]">
+                      <p className="text-sm">You've seen all events</p>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

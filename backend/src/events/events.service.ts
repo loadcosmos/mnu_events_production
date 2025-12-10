@@ -173,7 +173,7 @@ export class EventsService {
     if (filterDto?.search) {
       // SECURITY FIX: Sanitize search input to prevent ReDoS and resource exhaustion
       const sanitizedSearch = sanitizeSearchQuery(filterDto.search);
-      
+
       if (sanitizedSearch) {
         // Note: mode: 'insensitive' only works with String fields, not Text fields
         // description is @db.Text, so we can't use mode: 'insensitive' for it
@@ -405,6 +405,117 @@ export class EventsService {
     ]);
 
     return createPaginatedResponse(events, total, validatedPage, take);
+  }
+
+  /**
+   * Get recommended events based on user preferences
+   * Scoring algorithm:
+   * - Category match: +3 points
+   * - CSI tag match: +2 points per tag
+   * - Day match: +1 point
+   * - Time slot match: +1 point
+   * - Popularity boost: +0.1 per registration (max +2)
+   */
+  async getRecommendedEvents(userId: string, limit: number = 12) {
+    // 1. Get user preferences
+    const preferences = await this.prisma.userPreference.findUnique({
+      where: { userId }
+    });
+
+    if (!preferences || !preferences.onboardingCompleted) {
+      // Fallback: return popular upcoming events
+      return this.prisma.event.findMany({
+        where: {
+          status: 'UPCOMING',
+          startDate: { gte: new Date() }
+        },
+        orderBy: [
+          { registrations: { _count: 'desc' } },
+          { createdAt: 'desc' }
+        ],
+        take: limit,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true
+            }
+          },
+          _count: {
+            select: { registrations: true }
+          }
+        }
+      });
+    }
+
+    // 2. Get all upcoming published events
+    const events = await this.prisma.event.findMany({
+      where: {
+        status: 'UPCOMING',
+        startDate: { gte: new Date() }
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
+        _count: {
+          select: { registrations: true }
+        }
+      }
+    });
+
+    // 3. Score each event based on preferences
+    const scoredEvents = events.map(event => {
+      let score = 0;
+
+      // Category match: +3 points
+      if (preferences.preferredCategories.includes(event.category)) {
+        score += 3;
+      }
+
+      // CSI tag match: +2 points per tag
+      const eventCsiTags = event.csiTags || [];
+      const matchingCsiTags = eventCsiTags.filter(tag =>
+        preferences.preferredCsiTags.includes(tag)
+      );
+      score += matchingCsiTags.length * 2;
+
+      // Day match: +1 point
+      const eventDay = new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+      if (preferences.availableDays.includes(eventDay)) {
+        score += 1;
+      }
+
+      // Time slot match: +1 point
+      const eventHour = new Date(event.startDate).getHours();
+      const eventTimeSlot =
+        eventHour < 12 ? 'MORNING' :
+          eventHour < 17 ? 'AFTERNOON' : 'EVENING';
+      if (preferences.preferredTimeSlot?.toUpperCase() === eventTimeSlot) {
+        score += 1;
+      }
+
+      // Popularity boost: +0.1 per registration (max +2)
+      const popularityScore = Math.min(event._count.registrations * 0.1, 2);
+      score += popularityScore;
+
+      return { event, score };
+    });
+
+    // 4. Sort by score and return top N
+    const topEvents = scoredEvents
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(item => item.event);
+
+    return topEvents;
   }
 
   async getEventStatistics(eventId: string, userId: string, userRole: Role) {

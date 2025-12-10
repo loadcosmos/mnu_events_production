@@ -135,6 +135,21 @@ const eventsService = {
       throw error;
     }
   },
+
+  /**
+   * Get recommended events based on user preferences
+   * @param {number} limit - Number of recommendations to return
+   * @returns {Promise<Array>} - List of recommended events
+   */
+  async getRecommended(limit = 12) {
+    try {
+      const response = await api.get(`/events/recommendations?limit=${limit}`);
+      return response;
+    } catch (error) {
+      console.error('[EventsService] Get recommended events failed:', error);
+      throw error;
+    }
+  },
 };
 
 export default eventsService;

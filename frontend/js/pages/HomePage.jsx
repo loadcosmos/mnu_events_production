@@ -7,6 +7,7 @@ import adsService from '../services/adsService';
 import EventModal from '../components/EventModal';
 import AdBanner from '../components/AdBanner';
 import AdModal from '../components/AdModal';
+import { useRecommendedEvents } from '../hooks';
 
 // Extracted home page components
 import { HeroSlider, EventsHorizontalScroll, NewsFeedSection } from './home';
@@ -49,6 +50,11 @@ export default function HomePage() {
   });
   const [selectedAd, setSelectedAd] = useState(null);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
+
+  // Recommended events for authenticated students
+  const { data: recommendedEvents = [], isLoading: loadingRecommended } = useRecommendedEvents(6, {
+    enabled: isAuthenticated() && user?.role === 'STUDENT',
+  });
 
   // Event modal handlers
   const openEventModal = (eventId) => {
@@ -273,6 +279,21 @@ export default function HomePage() {
           position="NATIVE_FEED"
           onImpression={handleAdImpression}
           onClick={handleAdClick}
+        />
+      )}
+
+      {/* Recommended For You - Only for authenticated students */}
+      {isAuthenticated() && user?.role === 'STUDENT' && recommendedEvents.length > 0 && (
+        <EventsHorizontalScroll
+          title="⭐ Recommended"
+          titleHighlight="For You"
+          subtitle="Based on your interests and preferences"
+          events={recommendedEvents}
+          loading={loadingRecommended}
+          onEventClick={openEventModal}
+          viewAllLink="/events"
+          emptyMessage="No recommendations yet"
+          emptyDescription="Complete your profile to get personalized recommendations!"
         />
       )}
 

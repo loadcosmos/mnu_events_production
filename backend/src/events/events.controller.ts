@@ -26,7 +26,7 @@ import { Role } from '@prisma/client';
 @ApiTags('Events')
 @Controller('events')
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+  constructor(private readonly eventsService: EventsService) { }
 
   @Post()
   @ApiBearerAuth()
@@ -96,6 +96,20 @@ export class EventsController {
       page ? parseInt(page) : 1,
       limit ? parseInt(limit) : 10,
     );
+  }
+
+  @Get('recommendations')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get recommended events based on user preferences' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of recommendations to return (default: 12)' })
+  @ApiResponse({ status: 200, description: 'Recommended events retrieved' })
+  getRecommendations(
+    @CurrentUser() user: any,
+    @Query('limit') limit?: string,
+  ) {
+    const limitNum = limit ? parseInt(limit, 10) : 12;
+    return this.eventsService.getRecommendedEvents(user.id, limitNum);
   }
 
   @Get(':id')

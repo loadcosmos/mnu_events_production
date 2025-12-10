@@ -15,6 +15,7 @@ export const eventKeys = {
     detail: (id) => [...eventKeys.details(), id],
     myEvents: () => [...eventKeys.all, 'my-events'],
     statistics: (id) => [...eventKeys.all, 'statistics', id],
+    recommended: (limit) => [...eventKeys.all, 'recommended', limit],
 };
 
 /**
@@ -66,6 +67,21 @@ export function useEventStatistics(eventId, options = {}) {
         queryKey: eventKeys.statistics(eventId),
         queryFn: () => eventsService.getEventStatistics(eventId),
         enabled: !!eventId,
+        ...options,
+    });
+}
+
+/**
+ * Hook to fetch recommended events based on user preferences
+ * @param {number} limit - Number of recommendations to return
+ * @param {Object} options - Additional React Query options
+ */
+export function useRecommendedEvents(limit = 12, options = {}) {
+    return useQuery({
+        queryKey: eventKeys.recommended(limit),
+        queryFn: () => eventsService.getRecommended(limit),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
         ...options,
     });
 }
