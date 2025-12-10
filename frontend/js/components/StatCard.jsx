@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent } from './ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
  * Stat Card Component
  * Displays a statistic with icon and optional trend
  */
-export default function StatCard({
+const StatCard = memo(function StatCard({
   title,
   value,
   icon: Icon,
@@ -26,9 +26,8 @@ export default function StatCard({
               {value}
             </h3>
             {trend && (
-              <div className={`flex items-center gap-1 text-sm font-medium ${
-                trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-              }`}>
+              <div className={`flex items-center gap-1 text-sm font-medium ${trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                }`}>
                 {trendUp ? (
                   <TrendingUp className="h-4 w-4" />
                 ) : (
@@ -47,4 +46,6 @@ export default function StatCard({
       </CardContent>
     </Card>
   );
-}
+});
+
+export default StatCard;

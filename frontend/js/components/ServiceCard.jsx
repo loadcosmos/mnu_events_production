@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Star, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const categoryColors = {
   OTHER: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
 };
 
-export default function ServiceCard({ service }) {
+const ServiceCard = memo(function ServiceCard({ service }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -156,4 +156,6 @@ export default function ServiceCard({ service }) {
       </div>
     </div>
   );
-}
+});
+
+export default ServiceCard;

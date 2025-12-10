@@ -29,10 +29,28 @@ async function bootstrap() {
     const corsOrigin = configService.get('cors.origin');
     logger.log(`CORS Origin: ${corsOrigin}`, 'Bootstrap');
 
-    // Parse CORS origins (support comma-separated string or array)
-    const allowedOrigins = typeof corsOrigin === 'string'
-      ? corsOrigin.split(',').map(o => o.trim())
-      : Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
+    // Parse CORS origins safely
+    const allowedOrigins: string[] = [];
+
+    if (typeof corsOrigin === 'string') {
+      allowedOrigins.push(...corsOrigin.split(',').map(o => o.trim()).filter(o => !!o));
+    } else if (Array.isArray(corsOrigin)) {
+      allowedOrigins.push(...corsOrigin.filter(o => !!o).map(o => String(o).trim()));
+    } else if (corsOrigin) {
+      allowedOrigins.push(String(corsOrigin).trim());
+    }
+
+    // Explicitly add Vercel production domain if not present
+    const productionDomain = 'https://mnu-events-production.vercel.app';
+    if (!allowedOrigins.includes(productionDomain)) {
+      allowedOrigins.push(productionDomain);
+      // Also allow www subdomain just in case
+      allowedOrigins.push('https://www.mnu-events-production.vercel.app');
+      // And the deployment preview wildcards
+      allowedOrigins.push('https://mnu-events-production-*.vercel.app');
+    }
+
+    logger.log(`Allowed Origins: ${JSON.stringify(allowedOrigins)}`, 'Bootstrap');
 
     // Helper function to check if origin matches (supports wildcards)
     const isOriginAllowed = (origin: string): boolean => {

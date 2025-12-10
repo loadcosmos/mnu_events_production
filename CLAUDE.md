@@ -7,9 +7,13 @@
 | **Backend** | NestJS 10 + Prisma + PostgreSQL | REST API with JWT auth |
 | **Frontend** | React 19 + Vite 7 + Tailwind + React Query | SPA with glassmorphism UI |
 | **Auth** | JWT + RBAC | Roles: STUDENT, ORGANIZER, MODERATOR, ADMIN, EXTERNAL_PARTNER |
-| **Deploy** | Railway (backend) + Vercel (frontend) | Separate CI/CD pipelines |
+| **Deploy** | **Railway** (Backend+DB) + **Vercel** (Frontend) | **Primary Environment**. Local dev may use remote DB. |
 
 **Architecture Goal:** University events platform with moderation, monetization, and gamification systems.
+
+**⚠️ IMPORTANT:**
+- **Logs:** `Connection reset by peer` in Postgres logs usually means the Railway DB (Free/Hobby tier) is sleeping or restarting. Check Railway Dashboard.
+- **Local Dev:** Ensure `.env` points to the correct Railway URL if testing against the live backend.
 
 ---
 
@@ -149,9 +153,33 @@ async someMethod() { ... }
 
 ---
 
-## Recent Changes (2025-12-10)
+## Recent Changes (2025-12-11)
 
-### UI/UX Improvement Plan - Phase 1 Complete ✅
+### Performance Optimizations ⚡ NEW
+
+**Backend (Redis + Prisma):**
+- ✅ **Recommendations caching:** `GET /events/recommendations` cached in Redis (10 min TTL)
+- ✅ **Trending events:** `GET /events/trending` cached in Redis (5 min TTL)
+- ✅ **N+1 fix in moderation:** `getQueue()` now batches DB queries (N → 3 queries max)
+- ✅ **Prisma logging:** Slow queries (>100ms) logged in dev mode
+- ✅ **Cache invalidation:** Preferences update clears user's recommendations cache
+
+**Frontend (React):**
+- ✅ **memo():** `PostCard`, `ServiceCard`, `EventCard`, `SavedEventCard`, `BottomNavigation`, `EventModal`
+- ✅ **React Query:** staleTime=5min, gcTime=10min, automatic deduplication
+- ✅ **useTransition:** Filters on EventsPage for non-blocking UI
+- ✅ **useDeferredValue:** Search debouncing
+
+**Cache Keys (Redis):**
+```
+recommendations:{userId}:{limit}  # 10 min TTL
+events:trending:{limit}            # 5 min TTL
+blacklist:{token}                  # JWT expiration TTL
+```
+
+---
+
+## UI/UX Improvement Plan - Phase 2 Complete ✅
 **Reference:** `COMPREHENSIVE_UI_UX_PLAN.md`
 
 #### CreatePostModal Enhancements

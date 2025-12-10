@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import GamificationBadge from './GamificationBadge';
 import LevelProgressBar from './LevelProgressBar';
@@ -155,5 +155,4 @@ GamificationCard.propTypes = {
     userId: PropTypes.string,
 };
 
-export default GamificationCard;
-
+export default memo(GamificationCard);

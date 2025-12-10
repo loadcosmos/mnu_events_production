@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import postsService from '../../services/postsService';
 import { toast } from 'sonner';
 
-export default function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
+function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
     const { user } = useAuth();
     const [liked, setLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likesCount);
@@ -255,3 +255,5 @@ export default function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSa
         </Card>
     );
 }
+
+export default memo(PostCard);

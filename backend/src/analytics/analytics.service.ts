@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, Logger } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma/prisma.service';
 import { DashboardStatsDto } from './dto/dashboard-stats.dto';
 import { OrganizerStatsDto } from './dto/organizer-stats.dto';
@@ -8,12 +10,28 @@ import { Role } from '@prisma/client';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(AnalyticsService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) { }
 
   /**
    * Get dashboard statistics (ADMIN only)
+   * Cached for 10 minutes to reduce DB load
    */
   async getDashboardStats(): Promise<DashboardStatsDto> {
+    const cacheKey = 'analytics:dashboard';
+
+    // Check cache first
+    const cached = await this.cacheManager.get<DashboardStatsDto>(cacheKey);
+    if (cached) {
+      this.logger.debug('Dashboard stats cache HIT');
+      return cached;
+    }
+    this.logger.debug('Dashboard stats cache MISS');
+
     const [
       totalEvents,
       totalUsers,
@@ -77,7 +95,7 @@ export class AnalyticsService {
 
     const revenueByMonth = await this.getRevenueByMonth(sixMonthsAgo);
 
-    return {
+    const result: DashboardStatsDto = {
       totalEvents,
       totalUsers,
       totalRevenue,
@@ -92,6 +110,12 @@ export class AnalyticsService {
         totalParticipants: event._count.registrations + event._count.tickets,
       })),
     };
+
+    // Cache for 10 minutes (600000 ms)
+    await this.cacheManager.set(cacheKey, result, 600000);
+    this.logger.debug('Dashboard stats cached');
+
+    return result;
   }
 
   /**
@@ -352,7 +376,7 @@ export class AnalyticsService {
 
     const totalTicketRevenue = ticketRevenue._sum.price?.toNumber() || 0;
     const platformFees = platformFeesData._sum.platformFee?.toNumber() || 0;
-    
+
     // Ad revenue tracking: Phase 2 feature
     // Will be implemented when advertisement payment integration is completed
     // This requires tracking advertisement impressions, clicks, and conversions

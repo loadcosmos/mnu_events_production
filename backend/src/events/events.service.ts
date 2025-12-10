@@ -4,7 +4,10 @@ import {
   ForbiddenException,
   BadRequestException,
   Logger,
+  Inject,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma/prisma.service';
 import { ModerationService } from '../moderation/moderation.service';
 import { PartnersService } from '../partners/partners.service';
@@ -29,6 +32,7 @@ export class EventsService {
     private prisma: PrismaService,
     private moderationService: ModerationService,
     private partnersService: PartnersService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) { }
 
   async create(createEventDto: CreateEventDto, userId: string, userRole: Role) {
@@ -251,6 +255,54 @@ export class EventsService {
     }
   }
 
+  /**
+   * Get trending/popular events with Redis caching
+   * Used on HomePage for quick loading
+   */
+  async getTrendingEvents(limit: number = 6) {
+    const cacheKey = `events:trending:${limit}`;
+
+    // Check cache first
+    const cachedResult = await this.cacheManager.get(cacheKey);
+    if (cachedResult) {
+      this.logger.debug('Trending events cache HIT');
+      return cachedResult;
+    }
+    this.logger.debug('Trending events cache MISS');
+
+    // Fetch from DB: upcoming events sorted by registration count
+    const events = await this.prisma.event.findMany({
+      where: {
+        status: 'UPCOMING',
+        startDate: { gte: new Date() },
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: { registrations: true },
+        },
+      },
+      orderBy: [
+        { registrations: { _count: 'desc' } },
+        { createdAt: 'desc' },
+      ],
+      take: limit,
+    });
+
+    // Cache for 5 minutes (300000 ms)
+    await this.cacheManager.set(cacheKey, events, 300000);
+    this.logger.debug('Trending events cached');
+
+    return events;
+  }
+
   async findOne(id: string) {
     const event = await this.prisma.event.findUnique({
       where: { id },
@@ -417,6 +469,15 @@ export class EventsService {
    * - Popularity boost: +0.1 per registration (max +2)
    */
   async getRecommendedEvents(userId: string, limit: number = 12) {
+    // Check Redis cache first
+    const cacheKey = `recommendations:${userId}:${limit}`;
+    const cachedResult = await this.cacheManager.get(cacheKey);
+    if (cachedResult) {
+      this.logger.debug(`Recommendations cache HIT for user ${userId}`);
+      return cachedResult;
+    }
+    this.logger.debug(`Recommendations cache MISS for user ${userId}`);
+
     // 1. Get user preferences
     const preferences = await this.prisma.userPreference.findUnique({
       where: { userId }
@@ -514,6 +575,10 @@ export class EventsService {
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map(item => item.event);
+
+    // Cache results for 10 minutes (600000 ms)
+    await this.cacheManager.set(cacheKey, topEvents, 600000);
+    this.logger.debug(`Recommendations cached for user ${userId}`);
 
     return topEvents;
   }

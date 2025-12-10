@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 
 @Injectable()
 export class PreferencesService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    ) { }
 
     /**
      * Get user preferences, create if not exists
@@ -25,6 +30,17 @@ export class PreferencesService {
     }
 
     /**
+     * Invalidate recommendations cache for a user
+     * We invalidate all possible limit variants (6, 12, 50 are common values)
+     */
+    private async invalidateRecommendationsCache(userId: string) {
+        const limits = [6, 12, 50]; // Common limit values used in frontend
+        for (const limit of limits) {
+            await this.cacheManager.del(`recommendations:${userId}:${limit}`);
+        }
+    }
+
+    /**
      * Update user preferences
      */
     async update(userId: string, dto: UpdatePreferencesDto) {
@@ -33,21 +49,27 @@ export class PreferencesService {
             where: { userId },
         });
 
+        let result;
         if (!existing) {
             // Create with provided data
-            return this.prisma.userPreference.create({
+            result = await this.prisma.userPreference.create({
                 data: {
                     userId,
                     ...dto,
                 },
             });
+        } else {
+            // Update existing
+            result = await this.prisma.userPreference.update({
+                where: { userId },
+                data: dto,
+            });
         }
 
-        // Update existing
-        return this.prisma.userPreference.update({
-            where: { userId },
-            data: dto,
-        });
+        // Invalidate recommendations cache so user gets fresh recommendations
+        await this.invalidateRecommendationsCache(userId);
+
+        return result;
     }
 
     /**
@@ -62,7 +84,7 @@ export class PreferencesService {
             throw new NotFoundException('Preferences not found');
         }
 
-        return this.prisma.userPreference.update({
+        const result = await this.prisma.userPreference.update({
             where: { userId },
             data: {
                 preferredCategories: [],
@@ -74,6 +96,11 @@ export class PreferencesService {
                 onboardingStep: 1,
             },
         });
+
+        // Invalidate recommendations cache
+        await this.invalidateRecommendationsCache(userId);
+
+        return result;
     }
 
     /**

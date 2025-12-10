@@ -98,6 +98,16 @@ export class EventsController {
     );
   }
 
+  @Get('trending')
+  @Public()
+  @ApiOperation({ summary: 'Get trending/popular events (cached)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of events to return (default: 6)' })
+  @ApiResponse({ status: 200, description: 'Trending events retrieved' })
+  getTrending(@Query('limit') limit?: string) {
+    const limitNum = limit ? parseInt(limit, 10) : 6;
+    return this.eventsService.getTrendingEvents(limitNum);
+  }
+
   @Get('recommendations')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

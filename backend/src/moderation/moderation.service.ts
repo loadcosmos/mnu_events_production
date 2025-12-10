@@ -44,28 +44,60 @@ export class ModerationService {
             },
         });
 
-        // Fetch details for each item
-        const itemsWithDetails = await Promise.all(
-            queueItems.map(async (item) => {
-                let details = null;
-                try {
-                    switch (item.itemType) {
-                        case ModerationType.SERVICE:
-                            details = await this.prisma.service.findUnique({ where: { id: item.itemId } });
-                            break;
-                        case ModerationType.EVENT:
-                            details = await this.prisma.event.findUnique({ where: { id: item.itemId } });
-                            break;
-                        case ModerationType.ADVERTISEMENT:
-                            details = await this.prisma.advertisement.findUnique({ where: { id: item.itemId } });
-                            break;
-                    }
-                } catch (error) {
-                    this.logger.error(`Failed to fetch details for item ${item.itemId}`, error);
-                }
-                return { ...item, details };
-            }),
-        );
+        // OPTIMIZATION: Batch fetch details instead of N+1 queries
+        // Group items by type
+        const serviceIds: string[] = [];
+        const eventIds: string[] = [];
+        const adIds: string[] = [];
+
+        queueItems.forEach(item => {
+            switch (item.itemType) {
+                case ModerationType.SERVICE:
+                    serviceIds.push(item.itemId);
+                    break;
+                case ModerationType.EVENT:
+                    eventIds.push(item.itemId);
+                    break;
+                case ModerationType.ADVERTISEMENT:
+                    adIds.push(item.itemId);
+                    break;
+            }
+        });
+
+        // Fetch all details in parallel (max 3 queries instead of N)
+        const [services, events, ads] = await Promise.all([
+            serviceIds.length > 0
+                ? this.prisma.service.findMany({ where: { id: { in: serviceIds } } })
+                : Promise.resolve([]),
+            eventIds.length > 0
+                ? this.prisma.event.findMany({ where: { id: { in: eventIds } } })
+                : Promise.resolve([]),
+            adIds.length > 0
+                ? this.prisma.advertisement.findMany({ where: { id: { in: adIds } } })
+                : Promise.resolve([]),
+        ]);
+
+        // Create lookup maps for O(1) access
+        const serviceMap = new Map(services.map(s => [s.id, s]));
+        const eventMap = new Map(events.map(e => [e.id, e]));
+        const adMap = new Map(ads.map(a => [a.id, a]));
+
+        // Attach details to each queue item
+        const itemsWithDetails = queueItems.map(item => {
+            let details = null;
+            switch (item.itemType) {
+                case ModerationType.SERVICE:
+                    details = serviceMap.get(item.itemId) || null;
+                    break;
+                case ModerationType.EVENT:
+                    details = eventMap.get(item.itemId) || null;
+                    break;
+                case ModerationType.ADVERTISEMENT:
+                    details = adMap.get(item.itemId) || null;
+                    break;
+            }
+            return { ...item, details };
+        });
 
         return itemsWithDetails;
     }
@@ -114,15 +146,18 @@ export class ModerationService {
     }
 
     async getStats() {
-        const pending = await this.prisma.moderationQueue.count({
-            where: { status: ModerationStatus.PENDING },
-        });
-        const approved = await this.prisma.moderationQueue.count({
-            where: { status: ModerationStatus.APPROVED },
-        });
-        const rejected = await this.prisma.moderationQueue.count({
-            where: { status: ModerationStatus.REJECTED },
-        });
+        // OPTIMIZATION: Parallel queries instead of sequential
+        const [pending, approved, rejected] = await Promise.all([
+            this.prisma.moderationQueue.count({
+                where: { status: ModerationStatus.PENDING },
+            }),
+            this.prisma.moderationQueue.count({
+                where: { status: ModerationStatus.APPROVED },
+            }),
+            this.prisma.moderationQueue.count({
+                where: { status: ModerationStatus.REJECTED },
+            }),
+        ]);
 
         return { pending, approved, rejected };
     }
