@@ -11,7 +11,12 @@
 - ✅ SavedEventCard: Rewritten to ultra-compact single-line (40% code reduction)
 - ✅ Performance: Mobile CSS optimizations, React.memo applied
 - ✅ Profile dropdown: Already using "Profile" (verified)
-- ✅ **Bug Fixes:** SavedEventCard links now work (e.stopPropagation added)
+- ✅ **Bug Fixes:**
+    - SavedEventCard links now work (e.stopPropagation added)
+    - EventCard & EventSavedCard crash fixed (null check for onClick)
+    - PostCard UI updated to support Unsave action within Saved Tab
+    - Vercel cache issue resolved (cache-control headers)
+
 - ✅ **ImageUploadCrop:** Simplified UI - removed preview box and "Upload Image" text for drag-n-drop mode
 - **Time:** <1.5 hours implementation time (including bug fixes)
 - **Files Modified:** 5 files (CreatePostModal, SavedEventCard, ImageUploadCrop, globals.css, plan docs)

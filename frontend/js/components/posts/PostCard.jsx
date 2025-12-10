@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import postsService from '../../services/postsService';
 import { toast } from 'sonner';
 
-export default function PostCard({ post, onDelete, onUpdate }) {
+export default function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
     const { user } = useAuth();
     const [liked, setLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likesCount);
@@ -122,16 +122,35 @@ export default function PostCard({ post, onDelete, onUpdate }) {
                         </div>
                     </div>
 
-                    {canDelete && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={handleDelete}
-                            className="text-gray-400 hover:text-red-500 rounded-full h-8 w-8"
-                        >
-                            <i className="fa-solid fa-trash-alt text-sm" />
-                        </Button>
-                    )}
+                    <div className="flex gap-2">
+                        {/* Unsave Button for Saved Page */}
+                        {isSaved && onToggleSave && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleSave();
+                                }}
+                                className="text-[#d62e1f] hover:bg-red-50 dark:hover:bg-red-950/30 rounded-full h-8 w-8"
+                                title="Remove from saved"
+                            >
+                                <i className="fa-solid fa-bookmark text-sm" />
+                            </Button>
+                        )}
+
+                        {/* Delete Button for Author/Admin */}
+                        {!isSaved && canDelete && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleDelete}
+                                className="text-gray-400 hover:text-red-500 rounded-full h-8 w-8"
+                            >
+                                <i className="fa-solid fa-trash-alt text-sm" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content */}
