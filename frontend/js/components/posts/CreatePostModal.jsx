@@ -189,13 +189,25 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                 )}
                             </div>
                         ) : (
-                            <div className="rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-white/20 hover:border-[#d62e1f] dark:hover:border-[#d62e1f] transition-all duration-200 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black/20 dark:to-black/30 hover:from-red-50/50 dark:hover:from-red-950/20">
+                            <div className="relative h-40 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-white/20 hover:border-[#d62e1f] dark:hover:border-[#d62e1f] transition-all duration-200 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black/20 dark:to-black/30 hover:from-red-50/50 dark:hover:from-red-950/20 group">
+                                {/* Custom Minimal UI Placeholder */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-white/5 flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                                        <i className="fa-solid fa-plus text-xl text-[#d62e1f]" />
+                                    </div>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                        Click to upload or drag & drop
+                                    </p>
+                                </div>
+
                                 <ImageUploadCrop
                                     onUpload={handleImageSelect}
                                     aspectRatio={16 / 9}
                                     circularCrop={false}
+                                    minimal={true}
                                 />
                             </div>
+
                         )}
                     </div>
 

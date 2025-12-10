@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
  * Shows thumbnail + title + date + unsave button in one row
  * Space savings: 60-70% compared to full EventCard
  */
-function SavedEventCard({ event, onToggleSave }) {
+function SavedEventCard({ event, onToggleSave, onClick }) {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const options = { month: 'short', day: 'numeric' };
@@ -16,7 +16,16 @@ function SavedEventCard({ event, onToggleSave }) {
     return (
         <div className="group flex items-center gap-3 p-3 bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] dark:hover:border-[#d62e1f] transition-all">
             {/* Thumbnail */}
-            <Link to={`/events/${event.id}`} className="flex-shrink-0">
+            <Link
+                to={`/events/${event.id}`}
+                onClick={(e) => {
+                    if (onClick) {
+                        e.preventDefault();
+                        onClick();
+                    }
+                }}
+                className="flex-shrink-0"
+            >
                 <img
                     src={event.imageUrl || '/placeholder-event.jpg'}
                     alt={event.title}
@@ -26,7 +35,16 @@ function SavedEventCard({ event, onToggleSave }) {
             </Link>
 
             {/* Content - Single Line */}
-            <Link to={`/events/${event.id}`} className="flex-1 min-w-0">
+            <Link
+                to={`/events/${event.id}`}
+                onClick={(e) => {
+                    if (onClick) {
+                        e.preventDefault();
+                        onClick();
+                    }
+                }}
+                className="flex-1 min-w-0"
+            >
                 <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
                         {event.title}
@@ -36,6 +54,7 @@ function SavedEventCard({ event, onToggleSave }) {
                     </span>
                 </div>
             </Link>
+
 
             {/* Unsave Button */}
             <button

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSavedEvents, useUnsaveEvent } from '../../hooks';
 import EventCard from '../../components/EventCard';
+import EventModal from '../../components/EventModal';
 import { toast } from 'sonner';
 
 
@@ -13,8 +14,13 @@ export default function SavedEventsTab() {
     const { data: events = [], isLoading: loading } = useSavedEvents();
     const unsaveEventMutation = useUnsaveEvent();
 
+    // UI state for Modal
+    const [modalEventId, setModalEventId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const handleEventClick = (eventId) => {
-        navigate(`/events/${eventId}`);
+        setModalEventId(eventId);
+        setIsModalOpen(true);
     };
 
 
@@ -76,6 +82,12 @@ export default function SavedEventsTab() {
 
                 ))}
             </div>
+
+            <EventModal
+                eventId={modalEventId}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

@@ -35,6 +35,7 @@ export default function ImageUploadCrop({
     disabled = false,
     loading = false,
     className,
+    minimal = false,
 }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -210,18 +211,25 @@ export default function ImageUploadCrop({
                 <label
                     className={cn(
                         'cursor-pointer flex flex-col items-center justify-center w-full h-40 transition-colors',
-                        disabled && 'opacity-50 cursor-not-allowed'
+                        disabled && 'opacity-50 cursor-not-allowed',
+                        minimal && 'h-full absolute inset-0' // Fill container in minimal mode
                     )}
                 >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <i className="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 dark:text-gray-600 mb-3" />
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            JPEG, PNG, WebP, GIF (max {maxSizeMB}MB)
-                        </p>
-                    </div>
+                    {minimal ? (
+                        // Minimal UI - Invisible clickable area that fills parent
+                        // Parent (CreatePostModal) provides the visual styling
+                        <div className="sr-only">Upload Image</div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i className="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 dark:text-gray-600 mb-3" />
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                JPEG, PNG, WebP, GIF (max {maxSizeMB}MB)
+                            </p>
+                        </div>
+                    )}
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -232,6 +240,7 @@ export default function ImageUploadCrop({
                     />
                 </label>
             ) : (
+
                 /* Full mode with preview and button */
                 <>
                     <label className="block text-sm font-medium text-gray-900 dark:text-white">

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSavedPosts, useSavedEvents, useUnsavePost, useUnsaveEvent } from '../hooks';
 import SavedEventCard from '../components/SavedEventCard';
 import PostCard from '../components/posts/PostCard';
+import EventModal from '../components/EventModal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { toast } from 'sonner';
 
@@ -13,6 +14,10 @@ import { toast } from 'sonner';
 export default function SavedPage() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('posts');
+
+    // UI state for Modal
+    const [modalEventId, setModalEventId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // React Query hooks
     const { data: savedPosts = [], isLoading: loadingPosts } = useSavedPosts();
@@ -36,6 +41,11 @@ export default function SavedPage() {
         } catch (error) {
             toast.error('Failed to remove event');
         }
+    };
+
+    const openEventModal = (eventId) => {
+        setModalEventId(eventId);
+        setIsModalOpen(true);
     };
 
     return (
@@ -131,6 +141,7 @@ export default function SavedPage() {
                                         event={event}
                                         isSaved={true}
                                         onToggleSave={() => handleUnsaveEvent(event.id)}
+                                        onClick={() => openEventModal(event.id)}
                                     />
                                 ))}
                             </div>
@@ -138,6 +149,12 @@ export default function SavedPage() {
                     </TabsContent>
                 </Tabs>
             </div>
+
+            <EventModal
+                eventId={modalEventId}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

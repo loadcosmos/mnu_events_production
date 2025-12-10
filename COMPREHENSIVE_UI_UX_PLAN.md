@@ -16,6 +16,8 @@
     - EventCard & EventSavedCard crash fixed (null check for onClick)
     - PostCard UI updated to support Unsave action within Saved Tab
     - Vercel cache issue resolved (cache-control headers)
+    - **UI Polish:** CreatePostModal now uses minimal upload UI (no duplicate icons)
+    - **UX Fix:** Saved Events now open in a Modal (popup) instead of new page, consistent with Events Feed
 
 - ✅ **ImageUploadCrop:** Simplified UI - removed preview box and "Upload Image" text for drag-n-drop mode
 - **Time:** <1.5 hours implementation time (including bug fixes)
