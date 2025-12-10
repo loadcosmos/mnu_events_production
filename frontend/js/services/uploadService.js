@@ -53,8 +53,26 @@ const uploadService = {
      * @returns {Promise<{imageUrl: string, publicId: string}>}
      */
     async uploadImage(file) {
+        console.log('[UploadService] Uploading generic image:', {
+            fileName: file?.name,
+            fileSize: file?.size,
+            fileType: file?.type,
+            isFile: file instanceof File,
+            isBlob: file instanceof Blob,
+        });
+
+        if (!file) {
+            throw new Error('No file provided');
+        }
+
         const formData = new FormData();
         formData.append('image', file);
+
+        console.log('[UploadService] FormData created, entries:', Array.from(formData.entries()).map(([key, value]) => ({
+            key,
+            value: value instanceof File ? `File: ${value.name}` : value
+        })));
+
         return api.post('/upload/image', formData, { timeout: 60000 });
     },
 };

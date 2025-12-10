@@ -73,6 +73,16 @@ apiClient.interceptors.request.use(
       }
     }
 
+    // Fix Content-Type for FormData uploads
+    // When sending FormData, browser automatically sets Content-Type with boundary
+    // We must remove the default application/json header
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+      if (import.meta.env.DEV) {
+        console.log('[API Request] Detected FormData - removed Content-Type to let browser set it automatically');
+      }
+    }
+
     // No longer need to manually add Authorization header
     // JWT is sent automatically via httpOnly cookies
 

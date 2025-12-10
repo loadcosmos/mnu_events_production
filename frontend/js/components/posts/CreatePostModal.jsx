@@ -24,8 +24,9 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
     const [postType, setPostType] = useState('STUDENT_POST');
     const [isPinned, setIsPinned] = useState(false);
 
-    // Generate preview URL when image file changes
-    const handleImageSelect = (file) => {
+    // Handle cropped image selection (store locally, don't upload yet)
+    const handleImageSelect = async (file) => {
+        console.log('[CreatePostModal] Image selected:', file.name, file.size, 'bytes');
         setImageFile(file);
         if (file) {
             const reader = new FileReader();
