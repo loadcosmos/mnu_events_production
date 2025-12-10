@@ -42,6 +42,7 @@ export default function ImageUploadCrop({
     const [crop, setCrop] = useState();
     const [completedCrop, setCompletedCrop] = useState(null);
     const [showCropModal, setShowCropModal] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
     const imgRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -59,8 +60,7 @@ export default function ImageUploadCrop({
         }
     };
 
-    const handleFileSelect = (e) => {
-        const file = e.target.files?.[0];
+    const validateAndProcessFile = (file) => {
         if (!file) return;
 
         // Validate file type
@@ -80,6 +80,36 @@ export default function ImageUploadCrop({
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
         setShowCropModal(true);
+    };
+
+    const handleFileSelect = (e) => {
+        validateAndProcessFile(e.target.files?.[0]);
+    };
+
+    const onDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!disabled && !loading) {
+            setIsDragging(true);
+        }
+    };
+
+    const onDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const onDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        if (disabled || loading) return;
+
+        const file = e.dataTransfer.files?.[0];
+        if (file) {
+            validateAndProcessFile(file);
+        }
     };
 
     const onImageLoad = useCallback((e) => {
@@ -209,21 +239,35 @@ export default function ImageUploadCrop({
             {/* Simplified drag-n-drop mode when no label provided OR minimal mode requested */}
             {!label || minimal ? (
                 <label
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onDrop={onDrop}
                     className={cn(
-                        'cursor-pointer flex flex-col items-center justify-center transition-colors',
+                        'cursor-pointer flex flex-col items-center justify-center transition-all duration-200',
                         disabled && 'opacity-50 cursor-not-allowed',
-                        minimal ? 'w-full h-full absolute inset-0' : 'w-full h-40'
+                        minimal ? 'w-full h-full absolute inset-0' : 'w-full h-40',
+                        isDragging && 'bg-[#d62e1f]/10 border-[#d62e1f] z-10' // Highlight on drag
                     )}
                 >
                     {minimal ? (
                         // Minimal UI - Invisible clickable area that fills parent
-                        // Parent (CreatePostModal) provides the visual styling
-                        <div className="sr-only">Upload Image</div>
+                        // But shows "Drop Here" when dragging
+                        <div className={cn("flex flex-col items-center justify-center w-full h-full transition-opacity duration-200", isDragging ? 'opacity-100' : 'opacity-0')}>
+                            {isDragging && (
+                                <div className="bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-xl px-6 py-3 shadow-lg">
+                                    <p className="text-[#d62e1f] font-bold flex items-center gap-2">
+                                        <i className="fa-solid fa-cloud-arrow-up animate-bounce"></i>
+                                        Drop to Upload
+                                    </p>
+                                </div>
+                            )}
+                            <span className="sr-only">Upload Image</span>
+                        </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <i className="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 dark:text-gray-600 mb-3" />
+                            <i className={cn("fa-solid fa-cloud-arrow-up text-4xl mb-3 transition-colors", isDragging ? "text-[#d62e1f]" : "text-gray-400 dark:text-gray-600")} />
                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                <span className="font-semibold">Click to upload</span> or drag and drop
+                                <span className="font-semibold">{isDragging ? 'Drop to upload' : 'Click to upload'}</span> {isDragging ? '' : 'or drag and drop'}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                                 JPEG, PNG, WebP, GIF (max {maxSizeMB}MB)

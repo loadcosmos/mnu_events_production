@@ -19,7 +19,7 @@
     - **UI Polish:** CreatePostModal now uses minimal upload UI (no duplicate icons)
     - **UX Fix:** Saved Events now open in a Modal (popup) instead of new page, consistent with Events Feed
 
-- ✅ **ImageUploadCrop:** Simplified UI - removed preview box and "Upload Image" text for drag-n-drop mode
+- ✅ **ImageUploadCrop:** Native Drag & Drop support (onDrop/onDragOver) + simplified UI
 - **Time:** <1.5 hours implementation time (including bug fixes)
 - **Files Modified:** 5 files (CreatePostModal, SavedEventCard, ImageUploadCrop, globals.css, plan docs)
 
