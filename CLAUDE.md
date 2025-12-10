@@ -172,8 +172,13 @@ async someMethod() { ... }
 
 #### Files Modified
 - `frontend/js/components/posts/CreatePostModal.jsx` - Character counter + file size badge + drag-n-drop styling
-- `frontend/js/components/SavedEventCard.jsx` - Complete rewrite to single-line layout + memo
+- `frontend/js/components/SavedEventCard.jsx` - Complete rewrite to single-line layout + memo + click fix
+- `frontend/js/components/ImageUploadCrop.jsx` - Simplified drag-n-drop mode (no preview box, no "Upload Image" text)
 - `frontend/css/globals.css` - Mobile performance optimizations
+
+#### Bug Fixes (Phase 1)
+- ✅ **SavedEventCard links** - Fixed click handling with `e.stopPropagation()` on unsave button
+- ✅ **ImageUploadCrop UI** - Removed cluttered preview box and text when used in drag-n-drop mode (CreatePostModal)
 
 ---
 

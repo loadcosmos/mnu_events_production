@@ -11,8 +11,10 @@
 - ✅ SavedEventCard: Rewritten to ultra-compact single-line (40% code reduction)
 - ✅ Performance: Mobile CSS optimizations, React.memo applied
 - ✅ Profile dropdown: Already using "Profile" (verified)
-- **Time:** <1 hour implementation time
-- **Files Modified:** 4 files (CreatePostModal, SavedEventCard, globals.css, plan docs)
+- ✅ **Bug Fixes:** SavedEventCard links now work (e.stopPropagation added)
+- ✅ **ImageUploadCrop:** Simplified UI - removed preview box and "Upload Image" text for drag-n-drop mode
+- **Time:** <1.5 hours implementation time (including bug fixes)
+- **Files Modified:** 5 files (CreatePostModal, SavedEventCard, ImageUploadCrop, globals.css, plan docs)
 
 ---
 
