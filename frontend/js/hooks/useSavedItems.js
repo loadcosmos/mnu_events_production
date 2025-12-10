@@ -39,7 +39,9 @@ export const useSavedEvents = (params = {}) => {
         staleTime: 5 * 60 * 1000,
         select: (data) => {
             const items = data.data || data || [];
-            return items.map(se => se.event).filter(Boolean);
+            // Backend returns events directly (already unwrapped from savedEvent)
+            // Handle both cases: direct event objects OR wrapped {event: {...}}
+            return items.map(item => item?.event || item).filter(Boolean);
         }
     });
 };
