@@ -206,13 +206,13 @@ export default function ImageUploadCrop({
 
     return (
         <div className={cn('space-y-2', className)}>
-            {/* Simplified drag-n-drop mode when no label provided */}
-            {!label ? (
+            {/* Simplified drag-n-drop mode when no label provided OR minimal mode requested */}
+            {!label || minimal ? (
                 <label
                     className={cn(
-                        'cursor-pointer flex flex-col items-center justify-center w-full h-40 transition-colors',
+                        'cursor-pointer flex flex-col items-center justify-center transition-colors',
                         disabled && 'opacity-50 cursor-not-allowed',
-                        minimal && 'h-full absolute inset-0' // Fill container in minimal mode
+                        minimal ? 'w-full h-full absolute inset-0' : 'w-full h-40'
                     )}
                 >
                     {minimal ? (
