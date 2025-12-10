@@ -57,8 +57,9 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
         console.log('[CreatePostModal] Content:', content);
         console.log('[CreatePostModal] Has image:', !!imageFile);
 
-        if (!content.trim()) {
-            console.log('[CreatePostModal] Empty content, returning early');
+        // Allow post if there's content OR an image
+        if (!content.trim() && !imageFile) {
+            console.log('[CreatePostModal] No content and no image, returning early');
             return;
         }
 
@@ -201,7 +202,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                         </Button>
                         <Button
                             type="submit"
-                            disabled={loading || !content.trim()}
+                            disabled={loading || (!content.trim() && !imageFile)}
                             className="liquid-glass-red-button text-white rounded-xl"
                         >
                             {loading ? (

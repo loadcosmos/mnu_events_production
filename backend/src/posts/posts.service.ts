@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto, UpdatePostDto, ModeratePostDto, CreateCommentDto } from './dto/posts.dto';
 import { Role, PostType, PostStatus, Prisma } from '@prisma/client';
@@ -189,6 +189,11 @@ export class PostsService {
      * Create a new post
      */
     async create(userId: string, userRole: Role, dto: CreatePostDto) {
+        // Validate that at least content or imageUrl is provided
+        if (!dto.content?.trim() && !dto.imageUrl) {
+            throw new BadRequestException('Post must have either content or an image');
+        }
+
         // Determine post type based on user role
         let type = dto.type || PostType.STUDENT_POST;
         let status: PostStatus = PostStatus.PENDING;
@@ -209,7 +214,7 @@ export class PostsService {
         return this.prisma.post.create({
             data: {
                 authorId: userId,
-                content: dto.content,
+                content: dto.content || '',
                 imageUrl: dto.imageUrl,
                 type,
                 status,

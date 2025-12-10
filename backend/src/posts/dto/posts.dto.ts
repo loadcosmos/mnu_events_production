@@ -4,13 +4,13 @@ import { PostType } from '@prisma/client';
 import { Type } from 'class-transformer';
 
 export class CreatePostDto {
-    @ApiProperty({ description: 'Post content', example: 'Hello everyone!' })
+    @ApiProperty({ description: 'Post content (optional if image provided)', example: 'Hello everyone!', required: false })
+    @IsOptional()
     @IsString()
-    @MinLength(1)
     @MaxLength(5000)
-    content: string;
+    content?: string;
 
-    @ApiProperty({ description: 'Image URL (optional)', required: false })
+    @ApiProperty({ description: 'Image URL (optional if content provided)', required: false })
     @IsOptional()
     @IsString()
     imageUrl?: string;
