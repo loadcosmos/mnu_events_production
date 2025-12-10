@@ -103,6 +103,32 @@
   }
 }
 
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Reduce backdrop-filter blur on mobile for better FPS */
+  .liquid-glass,
+  .liquid-glass-strong {
+    backdrop-filter: blur(4px) saturate(120%);
+  }
+
+  /* Prevent layout shift with image dimensions */
+  img[loading="lazy"] {
+    content-visibility: auto;
+  }
+}
+
+/* Smooth scrolling performance */
+.scroll-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce paint on hover animations */
+.hover-scale {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
 /* Scrollbar Styles - Theme Aware */
 ::-webkit-scrollbar {
   width: 8px;

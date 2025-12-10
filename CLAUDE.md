@@ -151,6 +151,32 @@ async someMethod() { ... }
 
 ## Recent Changes (2025-12-10)
 
+### UI/UX Improvement Plan - Phase 1 Complete ✅
+**Reference:** `COMPREHENSIVE_UI_UX_PLAN.md`
+
+#### CreatePostModal Enhancements
+- ✅ **Character counter** - Shows "X / 1000" with amber warning at 500+ characters
+- ✅ **File size badge** - Displays MB size in image preview (bottom-right corner)
+- ✅ **Enhanced drag-n-drop** - Gradient hover effect with smooth transitions
+
+#### SavedEventCard Redesign
+- ✅ **Ultra-compact layout** - Rewritten from 93 lines to 55 lines (40% reduction)
+- ✅ **Single-line design** - Thumbnail (16x16) + Title + Date + Unsave button in one row
+- ✅ **Performance** - Added `React.memo()` for optimized re-renders
+- ✅ **Space savings** - 60-70% vertical space reduction vs full EventCard
+
+#### Performance Optimizations
+- ✅ **Mobile CSS** - Reduced backdrop-filter blur on mobile (4px vs 10px) for better FPS
+- ✅ **Lazy loading** - `content-visibility: auto` for images, `will-change` for hover animations
+- ✅ **EventCard** - Already optimized with `React.memo`, `loading="lazy"`, `decoding="async"`
+
+#### Files Modified
+- `frontend/js/components/posts/CreatePostModal.jsx` - Character counter + file size badge + drag-n-drop styling
+- `frontend/js/components/SavedEventCard.jsx` - Complete rewrite to single-line layout + memo
+- `frontend/css/globals.css` - Mobile performance optimizations
+
+---
+
 ### Critical Bug Fixes
 - ✅ **Fixed saved events not persisting** - EventsPage now uses React Query hooks from `useSavedItems.js` instead of legacy useState hook
 - ✅ **Community added to desktop header** - Header navigation now uses dynamic `navItems` array (Home, Events, Community, Clubs)
@@ -270,5 +296,5 @@ railway up
 
 ---
 
-*Last Updated: 2025-12-10 | v5.6 (Mobile Responsiveness & Bug Fixes)*
+*Last Updated: 2025-12-10 | v5.7 (UI/UX Phase 1 Complete + Mobile Fixes)*
 

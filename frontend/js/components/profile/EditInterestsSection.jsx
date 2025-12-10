@@ -49,6 +49,11 @@ export default function EditInterestsSection({ onSave }) {
         availableDays: [],
         preferredTimeSlot: ''
     });
+    const [originalPreferences, setOriginalPreferences] = useState(null);
+
+    // Check if there are unsaved changes
+    const hasChanges = originalPreferences !== null &&
+        JSON.stringify(preferences) !== originalPreferences;
 
     useEffect(() => {
         loadPreferences();
@@ -58,12 +63,14 @@ export default function EditInterestsSection({ onSave }) {
         try {
             setLoading(true);
             const data = await preferencesService.getMyPreferences();
-            setPreferences({
+            const prefs = {
                 preferredCategories: data.preferredCategories || [],
                 preferredCsiTags: data.preferredCsiTags || [],
                 availableDays: data.availableDays || [],
                 preferredTimeSlot: data.preferredTimeSlot || ''
-            });
+            };
+            setPreferences(prefs);
+            setOriginalPreferences(JSON.stringify(prefs));
         } catch (error) {
             console.error('[EditInterestsSection] Failed to load preferences:', error);
             // Preferences may not exist yet, that's ok
@@ -103,6 +110,7 @@ export default function EditInterestsSection({ onSave }) {
         try {
             setSaving(true);
             await preferencesService.updateMyPreferences(preferences);
+            setOriginalPreferences(JSON.stringify(preferences));
             toast.success('Preferences saved!');
             if (onSave) onSave();
         } catch (error) {
@@ -135,8 +143,8 @@ export default function EditInterestsSection({ onSave }) {
                             key={category}
                             onClick={() => toggleCategory(category)}
                             className={`cursor-pointer transition-all ${preferences.preferredCategories.includes(category)
-                                    ? 'bg-[#d62e1f] text-white hover:bg-[#b82419]'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-[#d62e1f] text-white hover:bg-[#b82419]'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             {category.charAt(0) + category.slice(1).toLowerCase()}
@@ -157,8 +165,8 @@ export default function EditInterestsSection({ onSave }) {
                             key={tag}
                             onClick={() => toggleCsiTag(tag)}
                             className={`cursor-pointer transition-all ${preferences.preferredCsiTags.includes(tag)
-                                    ? 'bg-purple-600 text-white hover:bg-purple-700'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-purple-600 text-white hover:bg-purple-700'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             #{tag}
@@ -179,8 +187,8 @@ export default function EditInterestsSection({ onSave }) {
                             key={day}
                             onClick={() => toggleDay(day)}
                             className={`cursor-pointer transition-all ${preferences.availableDays.includes(day)
-                                    ? 'bg-green-600 text-white hover:bg-green-700'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             {day.slice(0, 3)}
@@ -201,8 +209,8 @@ export default function EditInterestsSection({ onSave }) {
                             key={slot}
                             onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
                             className={`cursor-pointer transition-all px-4 py-2 ${preferences.preferredTimeSlot === slot
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             {slot.charAt(0).toUpperCase() + slot.slice(1)}
@@ -211,26 +219,32 @@ export default function EditInterestsSection({ onSave }) {
                 </div>
             </div>
 
-            {/* Save Button */}
-            <div className="pt-4 border-t border-gray-200 dark:border-[#2a2a2a]">
-                <Button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="w-full liquid-glass-red-button text-white rounded-xl"
-                >
-                    {saving ? (
-                        <>
-                            <i className="fa-solid fa-spinner fa-spin mr-2" />
-                            Saving...
-                        </>
-                    ) : (
-                        <>
-                            <i className="fa-solid fa-check mr-2" />
-                            Save Preferences
-                        </>
-                    )}
-                </Button>
-            </div>
+            {/* Save Button - Only show when there are changes */}
+            {hasChanges && (
+                <div className="pt-4 border-t border-gray-200 dark:border-[#2a2a2a]">
+                    <div className="flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400 text-sm">
+                        <i className="fa-solid fa-circle-exclamation" />
+                        <span>You have unsaved changes</span>
+                    </div>
+                    <Button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="w-full liquid-glass-red-button text-white rounded-xl"
+                    >
+                        {saving ? (
+                            <>
+                                <i className="fa-solid fa-spinner fa-spin mr-2" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <i className="fa-solid fa-check mr-2" />
+                                Save Changes
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

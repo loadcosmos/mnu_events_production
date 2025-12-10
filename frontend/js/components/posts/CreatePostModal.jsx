@@ -133,24 +133,39 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                         </div>
                     )}
 
+                    {/* Content/Description - FIRST */}
                     <div className="space-y-2">
-                        <Label htmlFor="content">What's on your mind?</Label>
+                        <Label htmlFor="content">
+                            <i className="fa-solid fa-pen-to-square mr-2 text-[#d62e1f]" />
+                            Description
+                        </Label>
                         <Textarea
                             id="content"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder="Share something with the community..."
-                            className="min-h-[120px] rounded-xl bg-white/50 dark:bg-black/20 border-gray-200 dark:border-white/10"
-                            required
+                            placeholder="What would you like to share with the community?"
+                            className="min-h-[100px] rounded-xl bg-white/50 dark:bg-black/20 border-gray-200 dark:border-white/10 focus:ring-[#d62e1f] focus:border-[#d62e1f]"
                         />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
+                            <span>You can post with just an image or just text</span>
+                            {content && (
+                                <span className={content.length > 500 ? 'text-amber-600 font-semibold' : 'text-gray-600 dark:text-gray-400'}>
+                                    {content.length} / 1000
+                                </span>
+                            )}
+                        </p>
                     </div>
 
+                    {/* Media Upload - SECOND (Drag & Drop) */}
                     <div className="space-y-2">
-                        <Label>Add Image (Optional)</Label>
+                        <Label>
+                            <i className="fa-solid fa-image mr-2 text-[#d62e1f]" />
+                            Add Media
+                        </Label>
 
                         {/* Image Preview */}
                         {imagePreview ? (
-                            <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
+                            <div className="relative rounded-xl overflow-hidden border-2 border-[#d62e1f]/30 bg-[#d62e1f]/5">
                                 <img
                                     src={imagePreview}
                                     alt="Preview"
@@ -163,13 +178,18 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                 >
                                     <i className="fa-solid fa-times"></i>
                                 </button>
-                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/60 text-white text-xs rounded-lg">
-                                    <i className="fa-solid fa-check-circle mr-1"></i>
-                                    Image ready
+                                <div className="absolute bottom-2 left-2 px-3 py-1.5 bg-green-600 text-white text-xs rounded-lg flex items-center gap-1">
+                                    <i className="fa-solid fa-check-circle"></i>
+                                    Ready to upload
                                 </div>
+                                {imageFile && (
+                                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded-lg">
+                                        {(imageFile.size / 1024 / 1024).toFixed(2)} MB
+                                    </div>
+                                )}
                             </div>
                         ) : (
-                            <div className="bg-white/50 dark:bg-black/20 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
+                            <div className="rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-white/20 hover:border-[#d62e1f] dark:hover:border-[#d62e1f] transition-all duration-200 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black/20 dark:to-black/30 hover:from-red-50/50 dark:hover:from-red-950/20">
                                 <ImageUploadCrop
                                     onUpload={handleImageSelect}
                                     aspectRatio={16 / 9}

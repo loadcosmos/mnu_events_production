@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSavedPosts, useSavedEvents, useUnsavePost, useUnsaveEvent } from '../hooks';
-import EventCard from '../components/EventCard';
+import SavedEventCard from '../components/SavedEventCard';
 import PostCard from '../components/posts/PostCard';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { toast } from 'sonner';
@@ -124,9 +124,9 @@ export default function SavedPage() {
                                 </Link>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
                                 {savedEvents.map(event => (
-                                    <EventCard
+                                    <SavedEventCard
                                         key={event.id}
                                         event={event}
                                         isSaved={true}

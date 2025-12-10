@@ -325,9 +325,20 @@ export default function Layout({ children }) {
                             onClick={() => setProfileOpen(false)}
                             className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
                           >
-                            <i className="fa-solid fa-user-edit w-4 text-center" />
-                            Edit Profile
+                            <i className="fa-solid fa-user w-4 text-center" />
+                            Profile
                           </Link>
+                          {/* Theme Toggle in dropdown */}
+                          <button
+                            onClick={() => {
+                              toggleTheme();
+                              setProfileOpen(false);
+                            }}
+                            className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
+                          >
+                            <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'} w-4 text-center`} />
+                            {isDark ? 'Light Mode' : 'Dark Mode'}
+                          </button>
                           <div className="my-1 h-px bg-gray-300/30 dark:bg-white/10" />
                           <button
                             onClick={() => {
