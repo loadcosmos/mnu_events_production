@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { moderationService } from '../../services/moderationService';
+import postsService from '../../services/postsService';
 
 export default function ModeratorDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -15,9 +16,12 @@ export default function ModeratorDashboardPage() {
     total: 0,
   });
   const [recentItems, setRecentItems] = useState([]);
+  const [pendingPosts, setPendingPosts] = useState([]);
+  const [postsLoading, setPostsLoading] = useState(true);
 
   useEffect(() => {
     loadStatistics();
+    loadPendingPosts();
   }, []);
 
   const loadStatistics = async () => {
@@ -37,6 +41,36 @@ export default function ModeratorDashboardPage() {
       setError(err.message || 'Failed to load statistics');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPendingPosts = async () => {
+    try {
+      setPostsLoading(true);
+      const data = await postsService.getPendingPosts();
+      setPendingPosts(data.data || []);
+    } catch (err) {
+      console.error('[ModeratorDashboard] Load pending posts failed:', err);
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+  const handleApprovePost = async (postId) => {
+    try {
+      await postsService.moderatePost(postId, { status: 'APPROVED' });
+      loadPendingPosts();
+    } catch (err) {
+      console.error('Failed to approve post:', err);
+    }
+  };
+
+  const handleRejectPost = async (postId) => {
+    try {
+      await postsService.moderatePost(postId, { status: 'REJECTED' });
+      loadPendingPosts();
+    } catch (err) {
+      console.error('Failed to reject post:', err);
     }
   };
 
@@ -173,6 +207,92 @@ export default function ModeratorDashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Pending Posts Section */}
+      <Card className="liquid-glass-card rounded-2xl transition-all duration-300 mb-6">
+        <CardHeader className="border-b border-gray-200 dark:border-[#2a2a2a]">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                <i className="fa-solid fa-newspaper text-pink-500 mr-2" />
+                Pending Posts
+              </CardTitle>
+              <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">
+                Student posts awaiting moderation
+              </CardDescription>
+            </div>
+            <Badge className="bg-pink-600 text-white">{pendingPosts.length}</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {postsLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d62e1f]"></div>
+            </div>
+          ) : pendingPosts.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <i className="fa-solid fa-check-circle text-3xl text-green-500 mb-3"></i>
+              <p>No pending posts to review</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pendingPosts.slice(0, 5).map((post) => (
+                <div
+                  key={post.id}
+                  className="p-4 border border-gray-200 dark:border-[#2a2a2a] rounded-xl bg-white dark:bg-[#1a1a1a] hover:border-pink-500 transition-all"
+                >
+                  <div className="flex items-start gap-4">
+                    {post.imageUrl && (
+                      <img
+                        src={post.imageUrl}
+                        alt="Post"
+                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {post.author?.firstName} {post.author?.lastName}
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {post.author?.role}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-2 mb-3">
+                        {post.content || '(image only)'}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleApprovePost(post.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white text-xs"
+                        >
+                          <i className="fa-solid fa-check mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleRejectPost(post.id)}
+                          className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs"
+                        >
+                          <i className="fa-solid fa-times mr-1" />
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {pendingPosts.length > 5 && (
+                <p className="text-center text-sm text-gray-500">
+                  +{pendingPosts.length - 5} more pending posts
+                </p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Recent Pending Items */}
       {recentItems.length > 0 && (
         <Card className="liquid-glass-card rounded-2xl transition-all duration-300">
@@ -201,8 +321,8 @@ export default function ModeratorDashboardPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${item.itemType === 'SERVICE' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                            item.itemType === 'EVENT' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
-                              'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                          item.itemType === 'EVENT' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                            'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                           }`}>
                           {item.itemType}
                         </span>

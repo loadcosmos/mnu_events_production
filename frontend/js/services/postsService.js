@@ -22,6 +22,23 @@ const postsService = {
     },
 
     /**
+     * Get pending posts for moderation (Moderator/Admin only)
+     * @param {Object} params - Query params (page, limit)
+     */
+    async getPendingPosts(params = {}) {
+        return api.get('/posts/moderation', params);
+    },
+
+    /**
+     * Moderate a post (approve/reject)
+     * @param {string} id - Post ID
+     * @param {Object} data - { status: 'APPROVED' | 'REJECTED' }
+     */
+    async moderatePost(id, data) {
+        return api.patch(`/posts/${id}/moderate`, data);
+    },
+
+    /**
      * Create a new post
      * @param {FormData} formData - Post data (content, image)
      */
