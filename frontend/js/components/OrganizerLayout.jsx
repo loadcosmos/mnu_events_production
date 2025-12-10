@@ -84,11 +84,11 @@ export default function OrganizerLayout({ children }) {
         />
       )}
 
-      {/* Left Sidebar */}
+      {/* Left Sidebar - responsive width on mobile */}
       <aside className={cn(
         "liquid-glass-strong text-white transition-all duration-300 z-50",
         isMobile
-          ? `fixed inset-y-0 left-0 w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+          ? `fixed inset-y-0 left-0 w-[85vw] max-w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
           : `fixed left-0 top-0 m-4 rounded-3xl h-[calc(100vh-2rem)] ${sidebarOpen ? 'w-64' : 'w-20'}`
       )}>
         <div className="flex flex-col h-full">

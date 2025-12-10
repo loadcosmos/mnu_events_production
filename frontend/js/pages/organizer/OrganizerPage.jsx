@@ -175,18 +175,18 @@ export default function OrganizerPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      {/* Header - responsive */}
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Dashboard</h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
             Welcome back, <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{user?.firstName || user?.email}</span>
           </p>
         </div>
         <Button
           asChild
           variant="outline"
-          className="rounded-xl border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5"
+          className="rounded-xl border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5 w-full md:w-auto"
         >
           <Link to="/organizer/analytics">
             <i className="fa-solid fa-chart-line mr-2" />
@@ -248,8 +248,8 @@ export default function OrganizerPage() {
             </Button>
           </div>
 
-          {/* Tabs for filtering */}
-          <div className="flex gap-2 mt-4">
+          {/* Tabs for filtering - scrollable on mobile */}
+          <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
             <Button
               variant={activeTab === 'all' ? 'default' : 'outline'}
               size="sm"

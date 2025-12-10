@@ -251,32 +251,19 @@ export default function Layout({ children }) {
 
           {/* Right side - Navigation and Auth */}
           <div className="flex flex-1 items-center justify-end gap-4">
-            {/* Desktop Only: Navigation */}
+            {/* Desktop Only: Navigation - uses navItems for consistency */}
             <nav className="hidden md:flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="default"
-                asChild
-                className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
-              >
-                <Link to="/events">Events</Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="default"
-                asChild
-                className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
-              >
-                <Link to="/marketplace">Marketplace</Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="default"
-                asChild
-                className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
-              >
-                <Link to="/clubs">Clubs</Link>
-              </Button>
+              {navItems.map((item) => (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  size="default"
+                  asChild
+                  className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
+                >
+                  <Link to={item.path}>{item.label}</Link>
+                </Button>
+              ))}
             </nav>
 
             {/* Auth buttons (Desktop only) */}

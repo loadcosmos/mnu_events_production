@@ -124,22 +124,22 @@ export default function PartnerDashboardPage() {
 
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - responsive layout */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Building2 className="w-8 h-8 text-blue-400" />
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <Building2 className="w-7 h-7 md:w-8 md:h-8 text-blue-400" />
             Partner Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">{profile.companyName}</p>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">{profile.companyName}</p>
         </div>
         {canCreateEvent?.allowed ? (
-          <Button onClick={() => navigate('/partner/create-event')} size="lg">
+          <Button onClick={() => navigate('/partner/create-event')} size="lg" className="w-full md:w-auto">
             <Plus className="w-5 h-5 mr-2" />
             Create Event
           </Button>
         ) : (
-          <Button onClick={handleBuySlots} variant="outline" size="lg">
+          <Button onClick={handleBuySlots} variant="outline" size="lg" className="w-full md:w-auto">
             <Plus className="w-5 h-5 mr-2" />
             Buy Event Slots
           </Button>
@@ -167,8 +167,8 @@ export default function PartnerDashboardPage() {
         </Card>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats Cards - responsive grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Revenue */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2">
@@ -246,8 +246,8 @@ export default function PartnerDashboardPage() {
         </Card>
       </div>
 
-      {/* Profile & Contact Info */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Profile & Contact Info - responsive grid */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Company Info */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader>
@@ -324,7 +324,7 @@ export default function PartnerDashboardPage() {
         <CardHeader>
           <CardTitle>Contact Details</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-3">
+        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
             <Phone className="w-5 h-5 text-blue-400" />
             <div>

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useTransition, useDeferredValue, useCallback,
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/ui/input';
 import { useInfiniteEvents } from '../../hooks/useInfiniteEvents';
-import { useSavedEvents } from '../../hooks/useSavedEvents';
+import { useSavedEvents, useToggleSaveEvent } from '../../hooks/useSavedItems';
 import { SkeletonCard } from '../../components/ui/skeleton';
 import EventModal from '../../components/EventModal';
 import EventCard from '../../components/EventCard';
@@ -146,7 +146,21 @@ export default function EventsPage() {
     [events]
   );
 
-  const { savedEventIds, toggleSave } = useSavedEvents();
+  // React Query hooks for saved events
+  const { data: savedEventsData = [] } = useSavedEvents();
+  const toggleSaveMutation = useToggleSaveEvent();
+
+  // Create Set of saved event IDs for O(1) lookup
+  const savedEventIds = useMemo(() =>
+    new Set(savedEventsData.map(event => event?.id).filter(Boolean)),
+    [savedEventsData]
+  );
+
+  // Toggle save handler
+  const toggleSave = useCallback((eventId) => {
+    const isSaved = savedEventIds.has(eventId);
+    toggleSaveMutation.mutate(eventId, isSaved);
+  }, [savedEventIds, toggleSaveMutation]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">

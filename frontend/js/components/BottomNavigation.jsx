@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
  * Bottom Navigation Bar for mobile devices
  * Sticky navigation at the bottom with key links
+ * Memoized for performance optimization
  */
-const BottomNavigation = () => {
+const BottomNavigation = memo(function BottomNavigation() {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -79,8 +80,8 @@ const BottomNavigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative flex flex-col items-center justify-center px-4 py-2 rounded-2xl transition-all duration-300 ${active
-                  ? 'liquid-glass text-[#d62e1f] scale-105'
+                className={`relative flex flex-col items-center justify-center px-3 sm:px-4 py-2 rounded-2xl transition-all duration-300 ${active
+                  ? 'liquid-glass text-[#d62e1f]'
                   : 'text-gray-600 dark:text-[#a0a0a0] hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/30 dark:hover:bg-white/5'
                   }`}
                 aria-current={active ? 'page' : undefined}
@@ -94,6 +95,6 @@ const BottomNavigation = () => {
       </div>
     </nav>
   );
-};
+});
 
 export default BottomNavigation;

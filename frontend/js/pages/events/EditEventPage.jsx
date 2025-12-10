@@ -234,7 +234,14 @@ export default function EditEventPage() {
         description: 'Your event has been updated.',
       });
 
-      navigate(`/events/${id}`);
+      // Redirect based on user role - organizers go back to their dashboard
+      if (user?.role === 'ORGANIZER') {
+        navigate('/organizer', { state: { scrollToEvents: true } });
+      } else if (user?.role === 'EXTERNAL_PARTNER') {
+        navigate('/partner', { state: { scrollToEvents: true } });
+      } else {
+        navigate(`/events/${id}`);
+      }
     } catch (err) {
       console.error('[EditEventPage] Update event failed:', err);
       const errorMessage = err.response?.data?.message

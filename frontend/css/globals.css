@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  /* Prevent unwanted zoom on mobile while allowing accessibility zoom */
+  html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
 
   /* Light Theme - MNU Events */
   :root {

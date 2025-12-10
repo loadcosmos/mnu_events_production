@@ -149,6 +149,43 @@ async someMethod() { ... }
 
 ---
 
+## Recent Changes (2025-12-10)
+
+### Critical Bug Fixes
+- ✅ **Fixed saved events not persisting** - EventsPage now uses React Query hooks from `useSavedItems.js` instead of legacy useState hook
+- ✅ **Community added to desktop header** - Header navigation now uses dynamic `navItems` array (Home, Events, Community, Clubs)
+- ✅ **Fixed organizer navigation** - After create/edit event, organizers redirect to `/organizer` dashboard instead of public event page
+
+### Mobile Responsiveness Improvements
+- ✅ **PartnerDashboardPage** - Added `grid-cols-1` for mobile, responsive header with `flex-col md:flex-row`
+- ✅ **OrganizerPage** - Smaller header font on mobile, scrollable tabs with `overflow-x-auto`
+- ✅ **All sidebar layouts** (Admin, Organizer, Moderator, Partner) - Sidebar width `w-[85vw] max-w-64` prevents overflow on narrow screens
+- ✅ **BottomNavigation** - Removed `scale-105` effect, added `React.memo()` for performance
+
+### Performance & UX
+- ✅ **Prevented unwanted zoom** - Added `touch-action: manipulation` in globals.css
+- ✅ **Memoized BottomNavigation** - Wrapped with `React.memo()` to prevent unnecessary re-renders
+- ✅ **Deleted duplicate hook** - Removed legacy `useSavedEvents.js` (useState-based), kept only `useSavedItems.js` (React Query)
+
+### Files Modified (2025-12-10)
+- `frontend/js/pages/events/EventsPage.jsx` - React Query for saved events
+- `frontend/js/pages/events/CreateEventPage.jsx` - Fixed redirect logic
+- `frontend/js/pages/events/EditEventPage.jsx` - Fixed redirect logic
+- `frontend/js/components/Layout.jsx` - Dynamic navigation with navItems
+- `frontend/js/components/BottomNavigation.jsx` - memo() + removed scale
+- `frontend/js/components/AdminLayout.jsx` - Responsive sidebar
+- `frontend/js/components/OrganizerLayout.jsx` - Responsive sidebar
+- `frontend/js/components/ModeratorLayout.jsx` - Responsive sidebar
+- `frontend/js/components/PartnerLayout.jsx` - Responsive sidebar
+- `frontend/js/pages/partner/PartnerDashboardPage.jsx` - Mobile grid fixes
+- `frontend/js/pages/organizer/OrganizerPage.jsx` - Mobile header + tabs
+- `frontend/css/globals.css` - touch-action: manipulation
+
+### Files Deleted (2025-12-10)
+- `frontend/js/hooks/useSavedEvents.js` - Duplicate, replaced by useSavedItems.js
+
+---
+
 ## Recent Changes (2025-12-09)
 
 ### IMPROVEMENT_PLAN.md - 100% Complete 🎉
@@ -233,5 +270,5 @@ railway up
 
 ---
 
-*Last Updated: 2025-12-09 | v5.5 (Improvement Plan 100% Complete)*
+*Last Updated: 2025-12-10 | v5.6 (Mobile Responsiveness & Bug Fixes)*
 

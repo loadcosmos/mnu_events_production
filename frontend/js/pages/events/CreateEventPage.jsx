@@ -187,14 +187,16 @@ export default function CreateEventPage() {
         });
       }
 
-      if (eventId) {
+      // Redirect based on user role - organizers go back to their dashboard
+      if (user?.role === 'ORGANIZER') {
+        navigate('/organizer', { state: { scrollToEvents: true } });
+      } else if (user?.role === 'EXTERNAL_PARTNER') {
+        navigate('/partner', { state: { scrollToEvents: true } });
+      } else if (eventId) {
+        // Admin/Moderator/others - show the created event
         navigate(`/events/${eventId}`);
       } else {
-        if (user?.role === 'EXTERNAL_PARTNER') {
-          navigate('/partner');
-        } else {
-          navigate('/organizer');
-        }
+        navigate('/events');
       }
     } catch (err) {
       console.error('[CreateEventPage] Create event failed:', err);
