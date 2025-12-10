@@ -61,19 +61,7 @@ const fetchCsrfToken = async () => {
 // Request Interceptor - adds CSRF token for state-changing requests
 apiClient.interceptors.request.use(
   async (config) => {
-    // For state-changing methods, add CSRF token
-    if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase())) {
-      // Get CSRF token if not already fetched
-      if (!csrfToken) {
-        await fetchCsrfToken();
-      }
-
-      if (csrfToken) {
-        config.headers['x-csrf-token'] = csrfToken;
-      }
-    }
-
-    // Fix Content-Type for FormData uploads
+    // Fix Content-Type for FormData uploads FIRST
     // When sending FormData, browser automatically sets Content-Type with boundary
     // We must remove the default application/json header
     if (config.data instanceof FormData) {
@@ -83,12 +71,30 @@ apiClient.interceptors.request.use(
       }
     }
 
+    // For state-changing methods, add CSRF token AFTER fixing Content-Type
+    if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase())) {
+      // Get CSRF token if not already fetched
+      if (!csrfToken) {
+        await fetchCsrfToken();
+      }
+
+      if (csrfToken) {
+        config.headers['x-csrf-token'] = csrfToken;
+        if (import.meta.env.DEV) {
+          console.log('[API Request] Added CSRF token:', csrfToken.substring(0, 10) + '...');
+        }
+      } else {
+        console.warn('[API Request] No CSRF token available for state-changing request');
+      }
+    }
+
     // No longer need to manually add Authorization header
     // JWT is sent automatically via httpOnly cookies
 
     // Logging requests in dev mode
     if (import.meta.env.DEV) {
       console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config.data);
+      console.log('[API Request] Headers:', config.headers);
     }
 
     return config;
