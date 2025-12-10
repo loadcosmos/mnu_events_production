@@ -308,6 +308,7 @@ export default function ImageUploadCrop({
                         {/* Actions */}
                         <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-[#2a2a2a]">
                             <Button
+                                type="button"
                                 variant="outline"
                                 onClick={handleCancelCrop}
                                 className="dark:border-[#3a3a3a] dark:text-white"
@@ -315,6 +316,7 @@ export default function ImageUploadCrop({
                                 Cancel
                             </Button>
                             <Button
+                                type="button"
                                 onClick={handleConfirmCrop}
                                 className="bg-[#d62e1f] hover:bg-[#b91c1c] text-white"
                             >
