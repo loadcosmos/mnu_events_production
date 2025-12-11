@@ -381,76 +381,78 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
               )}
 
               {/* Action Button */}
-              <div className="pt-4">
-                {isRegistered && myRegistration ? (
-                  <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300">
-                    <p className="text-base font-semibold text-green-800 dark:text-green-400 transition-colors duration-300 flex items-center gap-2">
-                      <i className="fa-solid fa-check-circle" />
-                      ✓ {t('events.youAreRegistered')}
-                    </p>
-                    {myRegistration.status === 'WAITLIST' && (
-                      <p className="text-sm text-green-600 dark:text-green-500 mt-1 transition-colors duration-300">
-                        {t('events.youAreOnWaitlist')}
+              {(!user || user.role !== 'FACULTY') && (
+                <div className="pt-4">
+                  {isRegistered && myRegistration ? (
+                    <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300">
+                      <p className="text-base font-semibold text-green-800 dark:text-green-400 transition-colors duration-300 flex items-center gap-2">
+                        <i className="fa-solid fa-check-circle" />
+                        ✓ {t('events.youAreRegistered')}
                       </p>
-                    )}
+                      {myRegistration.status === 'WAITLIST' && (
+                        <p className="text-sm text-green-600 dark:text-green-500 mt-1 transition-colors duration-300">
+                          {t('events.youAreOnWaitlist')}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => {
+                          onClose();
+                          navigate('/registrations');
+                        }}
+                        className="mt-3 w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        {t('events.viewMyRegistrations')}
+                      </button>
+                    </div>
+                  ) : event.isPaid ? (
                     <button
-                      onClick={() => {
-                        onClose();
-                        navigate('/registrations');
-                      }}
-                      className="mt-3 w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                      onClick={handleBuyTicket}
+                      disabled={registering || !user || event.availableSeats <= 0}
+                      className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
                     >
-                      {t('events.viewMyRegistrations')}
+                      {registering ? (
+                        <>
+                          <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
+                          {t('common.processing')}
+                        </>
+                      ) : event.availableSeats <= 0 ? (
+                        <>
+                          <i className="fa-solid fa-ban mr-2 text-lg" />
+                          {t('events.soldOut')}
+                        </>
+                      ) : user ? (
+                        <>
+                          <i className="fa-solid fa-credit-card mr-2 text-lg" />
+                          {t('events.buyTicket')} - {event.price}₸
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-sign-in mr-2 text-lg" />
+                          {t('auth.loginToBuyTicket')}
+                        </>
+                      )}
                     </button>
-                  </div>
-                ) : event.isPaid ? (
-                  <button
-                    onClick={handleBuyTicket}
-                    disabled={registering || !user || event.availableSeats <= 0}
-                    className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
-                  >
-                    {registering ? (
-                      <>
-                        <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
-                        {t('common.processing')}
-                      </>
-                    ) : event.availableSeats <= 0 ? (
-                      <>
-                        <i className="fa-solid fa-ban mr-2 text-lg" />
-                        {t('events.soldOut')}
-                      </>
-                    ) : user ? (
-                      <>
-                        <i className="fa-solid fa-credit-card mr-2 text-lg" />
-                        {t('events.buyTicket')} - {event.price}₸
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa-solid fa-sign-in mr-2 text-lg" />
-                        {t('auth.loginToBuyTicket')}
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleRegister}
-                    disabled={registering || !user}
-                    className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
-                  >
-                    {registering ? (
-                      <>
-                        <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
-                        {t('events.registering')}
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa-solid fa-ticket mr-2 text-lg" />
-                        {user ? t('events.registerForEvent') : t('auth.loginToRegister')}
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+                  ) : (
+                    <button
+                      onClick={handleRegister}
+                      disabled={registering || !user}
+                      className="w-full px-6 py-4 liquid-glass-red-button text-white rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
+                    >
+                      {registering ? (
+                        <>
+                          <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
+                          {t('events.registering')}
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-ticket mr-2 text-lg" />
+                          {user ? t('events.registerForEvent') : t('auth.loginToRegister')}
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </>
         ) : null}

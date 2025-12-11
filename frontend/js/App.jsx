@@ -220,7 +220,7 @@ function App() {
                 <Route
                   path="/profile"
                   element={
-                    <ProtectedRoute roles={['STUDENT']}>
+                    <ProtectedRoute roles={['STUDENT', 'FACULTY']}>
                       <Layout><ProfilePage /></Layout>
                     </ProtectedRoute>
                   }

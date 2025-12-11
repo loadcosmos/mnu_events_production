@@ -516,7 +516,6 @@ export default function EventDetailsPage() {
                           onClick={handleRegister}
                           disabled={registering || isFull || !isAuthenticated()}
                         >
-                        >
                           {registering
                             ? t('events.registering')
                             : !isAuthenticated()
@@ -628,8 +627,8 @@ export default function EventDetailsPage() {
                   </div>
                 )}
 
-                {/* Сообщение для организаторов чужих событий и админов */}
-                {!isPast && isAuthenticated() && user?.role !== 'STUDENT' &&
+                {/* Сообщение для организаторов чужих событий и админов (скрыто для FACULTY) */}
+                {!isPast && isAuthenticated() && user?.role !== 'STUDENT' && user?.role !== 'FACULTY' &&
                   !(user?.role === 'ORGANIZER' && (event.creatorId === user.id || event.creator?.id === user.id)) && (
                     <div className="p-4 rounded-md bg-gray-50 border border-gray-200 mt-4">
                       <p className="text-sm md:text-base text-muted-foreground text-center">
