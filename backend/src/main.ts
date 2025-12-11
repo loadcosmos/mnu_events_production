@@ -209,6 +209,8 @@ async function bootstrap() {
 
     // Store generateCsrfToken for use in controllers (access underlying Express instance)
     const expressApp = app.getHttpAdapter().getInstance();
+    // Enable trust proxy for Railway load balancer (crucial for Secure cookies and protocol detection)
+    expressApp.set('trust proxy', 1);
     expressApp.csrfTokenGenerator = generateCsrfToken;
 
     logger.log('CSRF protection configured', 'Bootstrap');
