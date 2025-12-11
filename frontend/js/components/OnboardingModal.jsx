@@ -5,51 +5,16 @@ import { Badge } from './ui/badge';
 import preferencesService from '../services/preferencesService';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-
-const EVENT_CATEGORIES = [
-    'ACADEMIC', 'SPORTS', 'CULTURAL', 'TECH', 'SOCIAL', 'CAREER', 'OTHER'
-];
-
-const CSI_TAGS = [
-    'CREATIVITY', 'SERVICE', 'INTELLIGENCE'
-];
-
-const DAYS_OF_WEEK = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-
-const formatDay = (day) => {
-    const dayNames = {
-        'MONDAY': 'Mon',
-        'TUESDAY': 'Tue',
-        'WEDNESDAY': 'Wed',
-        'THURSDAY': 'Thu',
-        'FRIDAY': 'Fri',
-        'SATURDAY': 'Sat',
-        'SUNDAY': 'Sun'
-    };
-    return dayNames[day] || day;
-};
-
-const formatCategory = (category) => {
-    const categoryNames = {
-        'ACADEMIC': '📚 Academic',
-        'SPORTS': '⚽ Sports',
-        'CULTURAL': '🎭 Cultural',
-        'TECH': '💻 Tech',
-        'SOCIAL': '🎉 Social',
-        'CAREER': '💼 Career',
-        'OTHER': '✨ Other'
-    };
-    return categoryNames[category] || category;
-};
-
-const formatCsiTag = (tag) => {
-    const tagNames = {
-        'CREATIVITY': '🎨 Creativity',
-        'SERVICE': '🤝 Service',
-        'INTELLIGENCE': '🧠 Intelligence'
-    };
-    return tagNames[tag] || tag;
-};
+import {
+    EVENT_CATEGORIES,
+    CSI_TAGS,
+    DAYS_OF_WEEK,
+    TIME_SLOTS,
+    formatCategory,
+    formatCsiTag,
+    formatDay,
+    formatTimeSlot
+} from '../constants/preferences';
 
 export default function OnboardingModal({ isOpen, onComplete }) {
     const [step, setStep] = useState(0);
@@ -156,11 +121,9 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     <div>
                         <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Preferred Time</h4>
                         <div className="flex gap-3 justify-center">
-                            {[
-                                { slot: 'MORNING', label: '🌅 Morning', sublabel: '8am - 12pm' },
-                                { slot: 'AFTERNOON', label: '☀️ Afternoon', sublabel: '12pm - 5pm' },
-                                { slot: 'EVENING', label: '🌙 Evening', sublabel: '5pm - 10pm' }
-                            ].map(({ slot, label, sublabel }) => (
+                            {Object.values(TIME_SLOTS).map(slot => {
+                                const { label, sublabel } = formatTimeSlot(slot);
+                                return (
                                 <div
                                     key={slot}
                                     onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
@@ -174,7 +137,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                                         {sublabel}
                                     </p>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

@@ -134,6 +134,9 @@ apiClient.interceptors.response.use(
           // Clear CSRF token
           csrfToken = null;
 
+          // Clear user data from localStorage
+          localStorage.removeItem('user');
+
           // Check if this is just an auth check (e.g., /auth/profile on initial load)
           // Don't redirect if user is already on public pages or if it's an auth check request
           const isAuthCheckRequest = error.config?.url?.includes('/auth/profile') ||

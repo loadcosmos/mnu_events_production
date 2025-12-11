@@ -3,39 +3,15 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import preferencesService from '../../services/preferencesService';
 import { toast } from 'sonner';
-
-// Available categories (matching backend EventCategory enum)
-const EVENT_CATEGORIES = [
-    'ACADEMIC',
-    'SPORTS',
-    'CULTURAL',
-    'SOCIAL',
-    'CAREER',
-    'VOLUNTEER',
-    'WORKSHOP',
-    'CONCERT',
-    'EXHIBITION',
-    'COMPETITION',
-    'CONFERENCE',
-    'OTHER'
-];
-
-// Common CSI tags
-const CSI_TAGS = [
-    'universiade',
-    'culture',
-    'sport',
-    'social',
-    'professional',
-    'leadership',
-    'community',
-    'innovation',
-    'research',
-    'creative'
-];
-
-// Days of week
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+import {
+    EVENT_CATEGORIES,
+    CSI_TAGS,
+    DAYS_OF_WEEK,
+    TIME_SLOTS,
+    formatCategory,
+    formatCsiTag,
+    formatDay
+} from '../../constants/preferences';
 
 /**
  * EditInterestsSection - Modal content for editing user interests/preferences
@@ -147,7 +123,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {category.charAt(0) + category.slice(1).toLowerCase()}
+                            {formatCategory(category)}
                         </Badge>
                     ))}
                 </div>
@@ -169,7 +145,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            #{tag}
+                            {formatCsiTag(tag)}
                         </Badge>
                     ))}
                 </div>
@@ -191,7 +167,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {day.slice(0, 3)}
+                            {formatDay(day)}
                         </Badge>
                     ))}
                 </div>
@@ -204,7 +180,7 @@ export default function EditInterestsSection({ onSave }) {
                     Preferred Time
                 </h4>
                 <div className="flex gap-2">
-                    {['morning', 'afternoon', 'evening'].map(slot => (
+                    {Object.values(TIME_SLOTS).map(slot => (
                         <Badge
                             key={slot}
                             onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
@@ -213,7 +189,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {slot.charAt(0).toUpperCase() + slot.slice(1)}
+                            {slot.charAt(0) + slot.slice(1).toLowerCase()}
                         </Badge>
                     ))}
                 </div>
