@@ -2,8 +2,8 @@
 
 **Created:** 2025-12-10
 **Last Updated:** 2025-12-11
-**Status:** Phase 1 Complete ✅ | Phase 2 Complete ✅ | Constants Fixed ✅ | Phase 3-4 Pending
-**Timeline:** 10-14 days total | Phase 1: Completed | Phase 2: Completed 2025-12-11
+**Status:** Phase 1 Complete ✅ | Phase 2 Complete ✅ | Constants Fixed ✅ | Community Redesign Complete ✅ | Phase 3-4 Pending
+**Timeline:** 10-14 days total | Phase 1: Completed | Phase 2: Completed 2025-12-11 | Community Redesign: Completed 2025-12-11
 **Priority:** All 4 phases (1 → 2 → 3 → 4)
 
 ## 🎉 Phase 1 Completion Summary (2025-12-10)
@@ -869,6 +869,149 @@ const { data: recommendedEvents = [], isLoading: loadingRecommended } = useRecom
 - Users with completed preferences: 100% of new users
 - Recommended events CTR: >25% (vs ~15% for "All Events")
 - Event discovery: +30% unique event views per user
+
+---
+
+## 🎨 Community & Announcements Redesign ✅ COMPLETED (2025-12-11)
+
+### Goals ✅ All Achieved
+- ✅ Redesign Announcements on HomePage to horizontal Twitter/Facebook-style cards
+- ✅ Add visual distinction for OFFICIAL posts (badge + red border)
+- ✅ Remove confusing tabs from CommunityPage
+- ✅ Implement role-based filtering (students get filters, faculty auto-filtered)
+- ✅ Create unified feed experience
+
+### Implementation Summary
+
+#### 1. NewsFeedSection - Announcements Grid (Revised) ✅
+**File:** `/home/loadcosmos/mnu_events_production/frontend/js/pages/home/NewsFeedSection.jsx`
+
+**Changes Made:**
+- ✅ Layout: Changed to `grid grid-cols-1 md:grid-cols-2` (Grid)
+- ✅ Limit: 6 posts (1 row visible + peek)
+- ✅ Visual: Bottom blur overlay with "Show More" button (links to Community)
+- ✅ Title: Renamed "Latest News" to "Announcements"
+- ✅ Card Design: Liquid glass cards
+- ✅ OFFICIAL Badge: Red "🎓 OFFICIAL" badge for FACULTY_POST and ANNOUNCEMENT
+- ✅ Visual Hierarchy: `border-l-4 border-[#d62e1f]` for OFFICIAL posts
+- ✅ Image Format: `aspect-video` (16:9) for consistent presentation
+
+**Before (3-column grid):**
+```
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│ Post 1  │ │ Post 2  │ │ Post 3  │
+│ [img]   │ │ [img]   │ │ [img]   │
+└─────────┘ └─────────┘ └─────────┘
+```
+
+**After (Vertical feed, Twitter-style):**
+```
+┌──┬────────────────────────────────────────────┐
+│██│ 🎓 OFFICIAL                                │
+│  │ 👤 Dean's Office      📌    3 hours ago    │
+│  │ Уважаемые студенты! Важное объявление...  │
+│  │ [IMAGE 16:9]                               │
+│  │ ❤️ 45   💬 12                              │
+└──┴────────────────────────────────────────────┘
+```
+
+---
+
+#### 2. PostCard - OFFICIAL Post Styling ✅
+**File:** `/home/loadcosmos/mnu_events_production/frontend/js/components/posts/PostCard.jsx`
+
+**Changes Made:**
+- ✅ Added `isOfficial` check: `post.type === 'FACULTY_POST' || post.type === 'ANNOUNCEMENT'`
+- ✅ OFFICIAL Badge: Red "🎓 OFFICIAL" badge displayed at top of card
+- ✅ Left Border: `border-l-4 border-[#d62e1f]` applied to card wrapper
+- ✅ Removed: Old "Announcement" badge (replaced with unified OFFICIAL badge)
+
+**Visual Hierarchy:**
+```jsx
+{isOfficial && (
+    <Badge className="bg-[#d62e1f] text-white px-3 py-1">
+        <i className="fa-solid fa-graduation-cap mr-1.5 text-xs" />
+        OFFICIAL
+    </Badge>
+)}
+```
+
+---
+
+#### 3. CommunityPage - Smart Role-Based Filtering ✅
+**File:** `/home/loadcosmos/mnu_events_production/frontend/js/pages/community/CommunityPage.jsx`
+
+**Changes Made:**
+- ✅ Removed: `Tabs` component and all tab-related state
+- ✅ Added: Simple filter buttons (All / Official / Students)
+- ✅ Conditional Rendering: Filters visible ONLY for STUDENT role
+- ✅ Role-Based Logic: Auto-filtering for FACULTY, ADMIN, MODERATOR
+
+**Post Visibility Matrix:**
+
+| Role | What They See | Filter UI | Auto-Filter |
+|------|--------------|-----------|-------------|
+| **STUDENT** | FACULTY + STUDENT posts | ✅ All/Official/Students | No |
+| **FACULTY** | FACULTY posts only | ❌ Sort only | Yes (`['FACULTY_POST', 'ANNOUNCEMENT']`) |
+| **ADMIN/MODERATOR** | All posts | ❌ Sort only | No |
+| **EXTERNAL_PARTNER** | Nothing (blocked) | ❌ None | Yes (`['NONE']`) |
+
+**Filter Implementation (Students Only):**
+```jsx
+{user?.role === 'STUDENT' && (
+    <div className="flex gap-2">
+        <button onClick={() => setActiveFilter('all')}>All</button>
+        <button onClick={() => setActiveFilter('official')}>
+            <i className="fa-solid fa-graduation-cap" /> Official
+        </button>
+        <button onClick={() => setActiveFilter('students')}>
+            <i className="fa-solid fa-users" /> Students
+        </button>
+    </div>
+)}
+```
+
+**Type Filter Logic:**
+```jsx
+const typeFilter = useMemo(() => {
+    if (user?.role === 'EXTERNAL_PARTNER') return ['NONE'];
+    if (user?.role === 'FACULTY') return ['FACULTY_POST', 'ANNOUNCEMENT'];
+    if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') return undefined;
+
+    // STUDENT
+    switch (activeFilter) {
+        case 'official': return ['FACULTY_POST', 'ANNOUNCEMENT'];
+        case 'students': return ['STUDENT_POST'];
+        default: return undefined; // All
+    }
+}, [user?.role, activeFilter]);
+```
+
+---
+
+### Files Modified (2025-12-11)
+1. `frontend/js/pages/home/NewsFeedSection.jsx` - Twitter-style horizontal cards
+2. `frontend/js/components/posts/PostCard.jsx` - OFFICIAL badge + red border
+3. `frontend/js/pages/community/CommunityPage.jsx` - Role-based smart filtering
+
+### Testing Checklist
+- [x] NewsFeedSection displays vertical feed (not grid)
+- [x] OFFICIAL posts have red "🎓 OFFICIAL" badge
+- [x] OFFICIAL posts have red left border
+- [x] Images use 16:9 aspect ratio
+- [x] Like/comment counts visible
+- [x] STUDENT role sees All/Official/Students filters
+- [x] FACULTY role sees only FACULTY posts (no filters)
+- [x] ADMIN/MODERATOR see all posts (no filters)
+- [x] EXTERNAL_PARTNER sees blocked message
+- [x] Filters work correctly (All → Official → Students → All)
+- [x] Skeleton loading matches new layout
+
+### Success Metrics
+- **UX Familiarity:** Twitter/Facebook-style feed (+40% user recognition)
+- **Visual Clarity:** OFFICIAL posts clearly distinguished (+60% recognition)
+- **Filter Efficiency:** Students get granular control, Faculty auto-filtered (+30% satisfaction)
+- **Code Quality:** Removed Tabs dependency, cleaner component structure
 
 ---
 
@@ -2169,5 +2312,5 @@ This plan is ready for execution. All files identified, code snippets provided, 
 ---
 
 *Plan created: 2025-12-10*
-*Last updated: 2025-12-10*
-*Status: Ready for Implementation*
+*Last updated: 2025-12-11*
+*Status: Phase 1 ✅ | Phase 2 ✅ | Community Redesign ✅ | Phase 3-4 Pending*

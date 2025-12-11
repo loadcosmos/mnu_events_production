@@ -155,7 +155,61 @@ async someMethod() { ... }
 
 ## Recent Changes (2025-12-11)
 
-### Critical Bug Fixes (Session & Preferences) 🔧 LATEST
+### Community & Announcements UI Redesign 🎨 LATEST (2025-12-11)
+
+**Problem:** Community page used confusing tabs, Announcements on homepage were too compact (3-column grid), OFFICIAL posts not visually distinguished.
+
+**Solution:** Complete UI/UX overhaul following Twitter/Facebook patterns:
+
+#### 1. NewsFeedSection - Announcements Grid
+**File:** `frontend/js/pages/home/NewsFeedSection.jsx`
+- ✅ **Layout:** Changed to 2-column Grid with bottom blur effect ("Show More" peek)
+- ✅ **Title:** Renamed "Latest News" to "Announcements"
+- ✅ **OFFICIAL Badge:** Red "🎓 OFFICIAL" badge for Faculty updates
+- ✅ **Visuals:** Liquid glass cards, hover effects, smooth gradients
+- ✅ **Limit:** Showing 6 posts (1 row fully visible, others blurred)
+
+**Result:**
+```
+[Announcement 1]  [Announcement 2]
+[    ...       ]  [    ...       ]
+          Show More ->
+```
+
+#### 2. PostCard - OFFICIAL Post Styling
+**File:** `frontend/js/components/posts/PostCard.jsx`
+- ✅ **OFFICIAL Badge:** Red "🎓 OFFICIAL" badge for FACULTY_POST/ANNOUNCEMENT
+- ✅ **Left Border:** `border-l-4 border-[#d62e1f]` for visual distinction
+- ✅ **Removed:** Old "Announcement" badge (replaced with unified OFFICIAL badge)
+
+#### 3. CommunityPage - Smart Filters by Role
+**File:** `frontend/js/pages/community/CommunityPage.jsx`
+- ✅ **Removed Tabs:** Replaced `Tabs` component with simple filter buttons
+- ✅ **Role-based Filters:** Filter buttons visible ONLY for STUDENT role
+- ✅ **Filter Options:** All / Official (🎓) / Students (👥)
+- ✅ **Post Visibility Logic:**
+
+| Role | Sees | Filters |
+|------|------|---------|
+| **STUDENT** | FACULTY + STUDENT posts | ✅ Yes (All/Official/Students) |
+| **FACULTY** | FACULTY posts only | ❌ No (auto-filtered) |
+| **ADMIN/MODERATOR** | All posts | ❌ No (sort only) |
+| **EXTERNAL_PARTNER** | Nothing (🔒 blocked) | ❌ No |
+
+**Files Modified:**
+- `frontend/js/pages/home/NewsFeedSection.jsx` - Twitter-style horizontal cards
+- `frontend/js/components/posts/PostCard.jsx` - OFFICIAL badge + red border
+- `frontend/js/pages/community/CommunityPage.jsx` - Role-based filtering
+
+**Benefits:**
+- 📱 **Better UX:** Twitter/Facebook-style feed more familiar to users
+- 🎯 **Role Clarity:** OFFICIAL posts clearly distinguished with badge + border
+- 🔍 **Smart Filters:** Students get granular control, Faculty auto-filtered
+- 🚀 **Performance:** Same React Query caching, now with better UI
+
+---
+
+### Critical Bug Fixes (Session & Preferences) 🔧
 
 **Problem 1: Session expiry doesn't update UI**
 - ✅ **Auto-logout fix:** When JWT expires (401 Unauthorized), user data now cleared from localStorage

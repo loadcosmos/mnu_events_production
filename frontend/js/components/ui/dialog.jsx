@@ -4,9 +4,9 @@ import { cn } from "../../lib/utils"
 const Dialog = ({ children, open, onOpenChange }) => {
     if (!open) return null;
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center sm:items-center">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center sm:items-center">
             <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity animate-in fade-in"
+                className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity animate-in fade-in"
                 onClick={() => onOpenChange(false)}
             />
             {children}
@@ -18,7 +18,7 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
     <div
         ref={ref}
         className={cn(
-            "fixed z-50 grid w-full gap-4 border bg-background p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-lg md:w-full",
+            "fixed z-[100] grid w-full gap-4 border bg-background p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-2xl md:w-full",
             "bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#2a2a2a]",
             className
         )}
