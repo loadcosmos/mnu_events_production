@@ -27,7 +27,7 @@ export class ServicesService {
     private prisma: PrismaService,
     private subscriptionsService: SubscriptionsService,
     private moderationService: ModerationService,
-  ) {}
+  ) { }
 
   /**
    * Get all services with filters
@@ -121,6 +121,18 @@ export class ServicesService {
             faculty: true,
           },
         },
+        reviews: {
+          include: {
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+                avatar: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        }
       },
     });
 
@@ -141,10 +153,9 @@ export class ServicesService {
 
     if (!canCreate) {
       throw new BadRequestException(
-        `You have reached your service listing limit (${limit}). ${
-          !isPremium
-            ? 'Upgrade to Premium to create up to 10 listings.'
-            : ''
+        `You have reached your service listing limit (${limit}). ${!isPremium
+          ? 'Upgrade to Premium to create up to 10 listings.'
+          : ''
         }`,
       );
     }
@@ -308,6 +319,14 @@ export class ServicesService {
       ...service,
       price: Number(service.price),
       rating: service.rating ? Number(service.rating) : null,
+      reviews: service.reviews ? service.reviews.map(r => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.comment,
+        date: r.createdAt,
+        author: r.author ? `${r.author.firstName} ${r.author.lastName}` : 'Anonymous',
+        authorAvatar: r.author?.avatar
+      })) : []
     };
   }
 }

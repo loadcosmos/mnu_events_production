@@ -39,6 +39,7 @@ const TutoringPage = lazy(() => import('./pages/services/TutoringPage.jsx'));
 const ServiceDetailsPage = lazy(() => import('./pages/services/ServiceDetailsPage.jsx'));
 const CreateServicePage = lazy(() => import('./pages/services/CreateServicePage.jsx'));
 const MarketplacePage = lazy(() => import('./pages/services/MarketplacePage.jsx'));
+const ProviderProfilePage = lazy(() => import('./pages/services/ProviderProfilePage.jsx'));
 
 // Admin Advertisements
 const AdminAdvertisementsPage = lazy(() => import('./pages/admin/AdminAdvertisementsPage.jsx'));
@@ -135,6 +136,7 @@ function App() {
                 <Route path="/marketplace" element={<Layout><MarketplacePage /></Layout>} />
                 <Route path="/more" element={<Layout><MorePage /></Layout>} />
                 <Route path="/services/:id" element={<Layout><ServiceDetailsPage /></Layout>} />
+                <Route path="/services/provider/:id" element={<Layout><ProviderProfilePage /></Layout>} />
                 <Route path="/premium" element={<Layout><PremiumPage /></Layout>} />
                 <Route
                   path="/services/create"

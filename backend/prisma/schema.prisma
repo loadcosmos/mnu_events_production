@@ -40,6 +40,7 @@ model User {
   tickets          Ticket[]
   checkIns         CheckIn[]
   services         Service[]
+  serviceReviews   ServiceReview[]
   moderatedItems   ModerationQueue[]
   subscriptions    Subscription[]
   achievements     Achievement[]
@@ -331,6 +332,7 @@ model Service {
 
   // Relations
   provider User @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  reviews  ServiceReview[]
 
   @@index([providerId])
   @@index([type])
@@ -338,6 +340,22 @@ model Service {
   @@index([isActive])
   @@index([rating])
   @@map("services")
+}
+
+model ServiceReview {
+  id        String   @id @default(uuid())
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  rating    Int      
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serviceId])
+  @@index([authorId])
+  @@map("service_reviews")
 }
 
 enum ServiceType {
