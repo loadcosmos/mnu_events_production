@@ -68,7 +68,7 @@ const BottomNavigation = memo(function BottomNavigation() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-4 left-4 right-4 z-50"
+      className="lg:hidden fixed bottom-4 left-4 right-4 z-50"
       role="navigation"
       aria-label="Mobile bottom navigation"
     >

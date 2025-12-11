@@ -14,6 +14,7 @@
 **⚠️ IMPORTANT:**
 - **Logs:** `Connection reset by peer` in Postgres logs usually means the Railway DB (Free/Hobby tier) is sleeping or restarting. Check Railway Dashboard.
 - **Local Dev:** Ensure `.env` points to the correct Railway URL if testing against the live backend.
+- **🚨 CRITICAL SAFETY RULE:** **NEVER** run `prisma migrate reset` or any destructive database command on the remote Railway/Production database without explicit, written confirmation from the user. This action deletes all data, including manual user accounts and content. Always check if Important Data exists before seeding.
 
 ---
 

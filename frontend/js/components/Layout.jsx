@@ -162,7 +162,7 @@ export default function Layout({ children }) {
   };
 
   const navItems = [
-    { path: '/', label: 'Home' },
+    { path: '/marketplace', label: 'Marketplace' },
     { path: '/events', label: 'Events' },
     { path: '/community', label: 'Community' },
     { path: '/clubs', label: 'Clubs' },
@@ -201,7 +201,7 @@ export default function Layout({ children }) {
         >
           <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
             {/* Left side - Language selector & Theme toggle (Desktop only) */}
-            <div className="hidden md:flex flex-1 items-center justify-start gap-2 max-w-[250px]">
+            <div className="hidden lg:flex flex-1 items-center justify-start gap-2 max-w-[250px]">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -253,7 +253,7 @@ export default function Layout({ children }) {
               </div>
             </div>
             {/* Mobile left spacer - with theme toggle */}
-            <div className="md:hidden flex items-center gap-2 flex-1">
+            <div className="lg:hidden flex items-center gap-2 flex-1">
               <Button
                 variant="ghost"
                 size="icon"
@@ -285,7 +285,7 @@ export default function Layout({ children }) {
             {/* Right side - Navigation and Auth */}
             <div className="flex flex-1 items-center justify-end gap-4">
               {/* Desktop Only: Navigation - uses navItems for consistency */}
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden lg:flex items-center gap-1">
                 {navItems.map((item) => (
                   <Button
                     key={item.path}
@@ -300,7 +300,7 @@ export default function Layout({ children }) {
               </nav>
 
               {/* Auth buttons (Desktop only) */}
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-3">
                 {isAuthenticated() ? (
                   <>
                     {/* Gamification Badge for Students */}
@@ -401,7 +401,7 @@ export default function Layout({ children }) {
                 )}
               </div>
               {/* Mobile right spacer */}
-              <div className="md:hidden flex-1"></div>
+              <div className="lg:hidden flex-1"></div>
             </div>
           </div>
         </header>
@@ -409,7 +409,7 @@ export default function Layout({ children }) {
         <main className="pt-20">{children}</main>
 
         {/* Footer */}
-        <footer className="hidden md:block mt-16 border-t border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/30 backdrop-blur-lg">
+        <footer className="hidden lg:block mt-16 border-t border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/30 backdrop-blur-lg">
           <div className="container mx-auto px-4 py-8">
             <div className="grid gap-8 md:grid-cols-3">
               {/* About */}
