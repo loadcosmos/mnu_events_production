@@ -23,8 +23,6 @@ async function main() {
   console.log('🌱 Starting database seed...');
 
   // Clean database
-  // Note: deleting valid entities in reverse dependency order
-  await prisma.serviceReview.deleteMany({}).catch(() => { }); // Catch if table doesn't exist yet
   await prisma.checkIn.deleteMany({});
   await prisma.ticket.deleteMany({});
   await prisma.advertisement.deleteMany({});
@@ -33,7 +31,6 @@ async function main() {
   await prisma.event.deleteMany({});
   await prisma.clubMembership.deleteMany({});
   await prisma.club.deleteMany({});
-  await prisma.externalPartner.deleteMany({});
   await prisma.user.deleteMany({});
 
   console.log('✅ Database cleaned');
@@ -41,7 +38,6 @@ async function main() {
   // Create users
   const hashedPassword = await bcrypt.hash('Password123!', 10);
 
-  // 1. Core Platform Users
   const admin = await prisma.user.create({
     data: {
       email: 'admin@kazguu.kz',
@@ -114,66 +110,7 @@ async function main() {
     },
   });
 
-  // 2. Real Service Providers (New additions)
-  const aikerim = await prisma.user.create({
-    data: {
-      email: 'aikerim.tutor@kazguu.kz',
-      password: hashedPassword,
-      firstName: 'Aikerim',
-      lastName: 'Sadvakasova',
-      role: Role.STUDENT,
-      emailVerified: true,
-      faculty: 'Economics',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-      level: 'ACTIVE',
-      points: 250
-    },
-  });
-
-  const alikhan = await prisma.user.create({
-    data: {
-      email: 'alikhan.english@kazguu.kz',
-      password: hashedPassword,
-      firstName: 'Alikhan',
-      lastName: 'Nurmagambetov',
-      role: Role.STUDENT,
-      emailVerified: true,
-      faculty: 'Translation Studies',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-      level: 'LEADER',
-      points: 600
-    },
-  });
-
-  const dina = await prisma.user.create({
-    data: {
-      email: 'dina.design@kazguu.kz',
-      password: hashedPassword,
-      firstName: 'Dina',
-      lastName: 'Kamaliyeva',
-      role: Role.STUDENT,
-      emailVerified: true,
-      faculty: 'Information Technology',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-      level: 'NEWCOMER',
-      points: 80
-    },
-  });
-
-  const reviewer = await prisma.user.create({
-    data: {
-      email: 'reviewer.student@kazguu.kz',
-      password: hashedPassword,
-      firstName: 'Sanzhar',
-      lastName: 'Kudaibergenov',
-      role: Role.STUDENT,
-      emailVerified: true,
-      faculty: 'Law',
-      avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    }
-  });
-
-  console.log('✅ Users created (Core + Real Providers)');
+  console.log('✅ Users created');
 
   // Create external partners
   const partner1User = await prisma.user.create({
@@ -257,8 +194,9 @@ async function main() {
   const events = [];
 
   // Используем текущий год для событий в декабре
+  // Если сейчас ноябрь 2025, события будут в декабре 2025
   const currentYear = new Date().getFullYear();
-  const eventYear = currentYear;
+  const eventYear = currentYear; // Используем текущий год для событий в декабре
 
   const event1 = await prisma.event.create({
     data: {
@@ -629,8 +567,16 @@ async function main() {
       timestamp: Date.now(),
     };
 
-    // Use a default secret for seeding if not present
-    const secret = process.env.PAYMENT_SECRET || 'default-seed-secret';
+    // SECURITY FIX: Never use default secrets - require PAYMENT_SECRET to be set
+    // This prevents QR code forgery attacks
+    if (!process.env.PAYMENT_SECRET) {
+      throw new Error(
+        'PAYMENT_SECRET environment variable is required for seed data. ' +
+        'This secret is used to sign QR codes and must be set in your .env file.'
+      );
+    }
+
+    const secret = process.env.PAYMENT_SECRET;
     const signature = crypto
       .createHmac('sha256', secret)
       .update(JSON.stringify(qrPayload))
@@ -653,6 +599,7 @@ async function main() {
       return qrCodeDataUrl;
     } catch (error) {
       console.error('Error generating QR code:', error);
+      // Fallback to a minimal valid base64 PNG (1x1 transparent pixel)
       return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
     }
   };
@@ -713,6 +660,7 @@ async function main() {
   });
 
   // Create partner event tickets with commission tracking
+  // Partner 1 (IT Academy): 15,000₸ event, 10% commission = 1,500₸ commission, 13,500₸ to partner
   const partnerTicket1Id = 'ticket-seed-' + Date.now() + '-partner1';
   const partnerQrCode1 = await generateTicketQRCode(partnerTicket1Id, partnerEvent1.id, student1.id);
 
@@ -722,20 +670,22 @@ async function main() {
       eventId: partnerEvent1.id,
       userId: student1.id,
       price: 15000,
-      platformFee: 0,
+      platformFee: 0, // No platform fee for external events
       status: TicketStatus.PAID,
       paymentMethod: 'kaspi',
       transactionId: 'KASPI_TXN_' + Date.now() + '_P1',
       qrCode: partnerQrCode1,
       purchasedAt: new Date(),
-      commissionRate: 0.10,
-      commissionAmount: 1500,
-      partnerAmount: 13500,
+      // Commission fields
+      commissionRate: 0.10, // 10%
+      commissionAmount: 1500, // 15,000 * 0.10
+      partnerAmount: 13500, // 15,000 - 1,500
       ticketCode: 'TICKET-SEED001',
       commissionPaidByPartner: false,
     },
   });
 
+  // Partner 2 (Coffee House): 2,500₸ event, 8% custom commission = 200₸ commission, 2,300₸ to partner
   const partnerTicket2Id = 'ticket-seed-' + Date.now() + '-partner2';
   const partnerQrCode2 = await generateTicketQRCode(partnerTicket2Id, partnerEvent2.id, student2.id);
 
@@ -751,14 +701,16 @@ async function main() {
       transactionId: 'KASPI_TXN_' + Date.now() + '_P2',
       qrCode: partnerQrCode2,
       purchasedAt: new Date(),
-      commissionRate: 0.08,
-      commissionAmount: 200,
-      partnerAmount: 2300,
+      // Commission fields
+      commissionRate: 0.08, // 8% custom rate
+      commissionAmount: 200, // 2,500 * 0.08
+      partnerAmount: 2300, // 2,500 - 200
       ticketCode: 'TICKET-SEED002',
       commissionPaidByPartner: false,
     },
   });
 
+  // One more ticket for partner event 1
   const partnerTicket3Id = 'ticket-seed-' + Date.now() + '-partner3';
   const partnerQrCode3 = await generateTicketQRCode(partnerTicket3Id, partnerEvent1.id, student3.id);
 
@@ -774,11 +726,12 @@ async function main() {
       transactionId: 'KASPI_TXN_' + Date.now() + '_P3',
       qrCode: partnerQrCode3,
       purchasedAt: new Date(),
+      // Commission fields
       commissionRate: 0.10,
       commissionAmount: 1500,
       partnerAmount: 13500,
       ticketCode: 'TICKET-SEED003',
-      commissionPaidByPartner: true,
+      commissionPaidByPartner: true, // This one is already paid
       commissionPaidAt: new Date(),
     },
   });
@@ -806,116 +759,208 @@ async function main() {
 
   console.log('✅ Check-ins created');
 
-  // Create REAL SERVICES (Services were replaced here)
-
-  // Aikerim's Service
+  // Create services
   const service1 = await prisma.service.create({
     data: {
-      providerId: aikerim.id,
-      type: ServiceType.TUTORING,
-      title: 'Calculus & Linear Algebra Tutoring',
-      description: `Struggling with Math? I can help you master Calculus I, II and Linear Algebra. 
-      I have a GPA of 4.0 in all math courses and 2 years of tutoring experience.`,
-      category: ServiceCategory.MATH,
-      price: 3000,
-      priceType: PriceType.HOURLY,
-      rating: 5.0,
-      reviewCount: 1,
+      providerId: student1.id,
+      type: ServiceType.GENERAL,
+      title: 'Professional Logo Design',
+      description:
+        'Custom logo design for your business or personal brand. Includes 3 concepts and unlimited revisions.',
+      category: ServiceCategory.DESIGN,
+      price: 15000,
+      priceType: PriceType.FIXED,
+      imageUrl: 'https://images.unsplash.com/photo-1626785774625-0b1c2c4eab67',
+      rating: 4.8,
+      reviewCount: 12,
       isActive: true,
-      imageUrl: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    }
+    },
   });
 
-  // Alikhan's Service
   const service2 = await prisma.service.create({
     data: {
-      providerId: alikhan.id,
-      type: ServiceType.TUTORING,
-      title: 'IELTS Preparation - Speaking & Writing',
-      description: `Get your target Band score! I scored 8.5 overall.`,
-      category: ServiceCategory.ENGLISH,
-      price: 3500,
-      priceType: PriceType.HOURLY,
-      rating: 0,
-      reviewCount: 0,
+      providerId: student2.id,
+      type: ServiceType.GENERAL,
+      title: 'Event Photography & Videography',
+      description:
+        'Professional photography and video services for events, parties, and special occasions.',
+      category: ServiceCategory.PHOTO_VIDEO,
+      price: 25000,
+      priceType: PriceType.PER_SESSION,
+      imageUrl: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d',
+      rating: 4.9,
+      reviewCount: 18,
       isActive: true,
-      imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    }
+    },
   });
 
-  // Dina's Service
   const service3 = await prisma.service.create({
     data: {
-      providerId: dina.id,
+      providerId: student3.id,
       type: ServiceType.GENERAL,
-      title: 'Modern PPT Presentation Design',
-      description: `I create clean, modern, and engaging slides for your projects/defense.`,
-      category: ServiceCategory.DESIGN,
-      price: 5000,
-      priceType: PriceType.PER_SESSION,
-      rating: 0,
-      reviewCount: 0,
+      title: 'Web Development & IT Consulting',
+      description:
+        'Full-stack web development, app development, and IT consulting services.',
+      category: ServiceCategory.IT,
+      price: 8000,
+      priceType: PriceType.HOURLY,
+      imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+      rating: 4.7,
+      reviewCount: 9,
       isActive: true,
-      imageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    }
+    },
   });
 
-  // Create Review
-  await prisma.serviceReview.create({
+  const tutoring1 = await prisma.service.create({
     data: {
-      serviceId: service1.id,
-      authorId: reviewer.id,
-      rating: 5,
-      comment: "Aikerim saved my Calculus grade! She explains everything so clearly. Highly prepared."
-    }
+      providerId: organizer.id,
+      type: ServiceType.TUTORING,
+      title: 'Math Tutoring - Calculus & Algebra',
+      description:
+        'Expert math tutoring for university students. Specializing in Calculus I, II, Linear Algebra.',
+      category: ServiceCategory.MATH,
+      price: 5000,
+      priceType: PriceType.HOURLY,
+      imageUrl: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb',
+      rating: 5.0,
+      reviewCount: 24,
+      isActive: true,
+    },
   });
-  console.log('✅ Created Real Services and Reviews');
 
+  const tutoring2 = await prisma.service.create({
+    data: {
+      providerId: student1.id,
+      type: ServiceType.TUTORING,
+      title: 'English Language Tutoring - IELTS Prep',
+      description:
+        'IELTS preparation and general English language tutoring. Native-level fluency.',
+      category: ServiceCategory.ENGLISH,
+      price: 4000,
+      priceType: PriceType.HOURLY,
+      imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d',
+      rating: 4.9,
+      reviewCount: 15,
+      isActive: true,
+    },
+  });
 
-  // Create advertisements
-  const adEndDate = new Date();
-  adEndDate.setDate(adEndDate.getDate() + 30); // Valid for 30 days
+  const tutoring3 = await prisma.service.create({
+    data: {
+      providerId: student2.id,
+      type: ServiceType.TUTORING,
+      title: 'Programming Tutoring - Python, JavaScript',
+      description:
+        'Learn programming from scratch or advance your skills. Python, JavaScript, React, Node.js.',
+      category: ServiceCategory.PROGRAMMING,
+      price: 6000,
+      priceType: PriceType.HOURLY,
+      imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
+      rating: 4.8,
+      reviewCount: 20,
+      isActive: true,
+    },
+  });
+
+  console.log('✅ Services created');
+
+  // Create advertisements with current dates
   const now = new Date();
+  const adEndDate = new Date(now);
+  adEndDate.setDate(adEndDate.getDate() + 30); // Active for 30 days
 
-  await prisma.advertisement.create({
+  const ad1 = await prisma.advertisement.create({
     data: {
-      title: 'Coffee House Promo',
-      description: 'Get 20% off your morning coffee! Show your student ID.',
-      companyName: 'Coffee House Central',
-      contactEmail: 'promo@coffeehouse.kz',
-      contactPhone: '+7 701 987 65 43',
-      imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
-      linkUrl: 'https://www.instagram.com/coffeehouse.almaty',
-      position: AdPosition.SIDEBAR,
+      title: 'Kaspi Bank Student Card',
+      imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3',
+      linkUrl: 'https://kaspi.kz',
+      position: AdPosition.TOP_BANNER,
       paymentStatus: PaymentStatus.PAID,
       isActive: true,
       startDate: now,
       endDate: adEndDate,
       impressions: 1250,
-      clicks: 84,
+      clicks: 85,
     },
   });
 
-  await prisma.advertisement.create({
+  const ad2 = await prisma.advertisement.create({
     data: {
-      title: 'IT Academy Bootcamp',
-      description: 'Learn to code in 3 months. Job guarantee or money back.',
-      companyName: 'IT Academy',
-      contactEmail: 'admissions@itacademy.kz',
-      contactPhone: '+7 777 123 45 67',
-      imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998',
-      linkUrl: 'https://itacademy.kz',
+      title: 'Tech Internship Program',
+      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c',
+      linkUrl: null,
+      position: AdPosition.HERO_SLIDE,
+      paymentStatus: PaymentStatus.PAID,
+      isActive: true,
+      startDate: now,
+      endDate: adEndDate,
+      impressions: 3200,
+      clicks: 240,
+    },
+  });
+
+  const ad3 = await prisma.advertisement.create({
+    data: {
+      title: 'Coffee Shop - Student Discount',
+      imageUrl: 'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+      linkUrl: null,
       position: AdPosition.NATIVE_FEED,
       paymentStatus: PaymentStatus.PAID,
       isActive: true,
       startDate: now,
       endDate: adEndDate,
-      impressions: 2500,
-      clicks: 142,
+      impressions: 950,
+      clicks: 67,
     },
   });
 
-  console.log('✅ Advertisements created');
+  // Add more HERO_SLIDE ads for testing carousel
+  const ad5 = await prisma.advertisement.create({
+    data: {
+      title: 'Kaspi Bank - Кредит наличными до 10 млн ₸! Получите деньги за 1 день',
+      imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3',
+      linkUrl: 'https://kaspi.kz/shop/kredit',
+      position: AdPosition.HERO_SLIDE,
+      paymentStatus: PaymentStatus.PAID,
+      isActive: true,
+      startDate: now,
+      endDate: adEndDate,
+      impressions: 2500,
+      clicks: 180,
+    },
+  });
+
+  const ad6 = await prisma.advertisement.create({
+    data: {
+      title: 'IT Academy - Стань программистом за 6 месяцев! Гарантия трудоустройства',
+      imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
+      linkUrl: 'https://itacademy.kz',
+      position: AdPosition.HERO_SLIDE,
+      paymentStatus: PaymentStatus.PAID,
+      isActive: true,
+      startDate: now,
+      endDate: adEndDate,
+      impressions: 1800,
+      clicks: 120,
+    },
+  });
+
+  const ad7 = await prisma.advertisement.create({
+    data: {
+      title: `Coffee House - Скидка 30% для студентов! Покажите студенческий и получите скидку на все меню`,
+      imageUrl: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31',
+      linkUrl: 'https://www.instagram.com/coffeehouse.almaty',
+      position: AdPosition.HERO_SLIDE,
+      paymentStatus: PaymentStatus.PAID,
+      isActive: true,
+      startDate: now,
+      endDate: adEndDate,
+      impressions: 1600,
+      clicks: 95,
+    },
+  });
+
+  console.log('✅ Advertisements created (including 4 HERO_SLIDE ads)')
 
   // Create clubs
   const club1 = await prisma.club.create({
@@ -938,7 +983,45 @@ async function main() {
     },
   });
 
-  console.log('✅ Clubs created');
+  const club3 = await prisma.club.create({
+    data: {
+      name: 'Photography Club',
+      description: 'Capture moments and tell stories through photography. We organize photo walks, exhibitions, and workshops.',
+      category: ClubCategory.ARTS,
+      imageUrl: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d',
+      organizerId: organizer.id,
+    },
+  });
+
+  const club4 = await prisma.club.create({
+    data: {
+      name: 'Football Team',
+      description: 'Join our university football team! We practice regularly and compete in inter-university tournaments.',
+      category: ClubCategory.SPORTS,
+      imageUrl: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55',
+      organizerId: admin.id,
+    },
+  });
+
+  const club5 = await prisma.club.create({
+    data: {
+      name: 'Volunteer Network',
+      description: 'Make a difference in your community. We organize volunteer activities, charity events, and community service projects.',
+      category: ClubCategory.SERVICE,
+      imageUrl: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a',
+      organizerId: organizer.id,
+    },
+  });
+
+  const club6 = await prisma.club.create({
+    data: {
+      name: 'Cultural Exchange',
+      description: 'Celebrate diversity and learn about different cultures. We organize cultural nights, language exchange sessions, and international food festivals.',
+      category: ClubCategory.CULTURAL,
+      imageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3',
+      organizerId: admin.id,
+    },
+  });
 
   // Add members to clubs
   await prisma.clubMembership.create({
@@ -949,22 +1032,107 @@ async function main() {
     },
   });
 
-  // IMPORTANT: Log all credentials
+  await prisma.clubMembership.create({
+    data: {
+      userId: student2.id,
+      clubId: club1.id,
+      role: 'MEMBER',
+    },
+  });
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: student1.id,
+      clubId: club2.id,
+      role: 'MEMBER',
+    },
+  });
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: student3.id,
+      clubId: club3.id,
+      role: 'MEMBER',
+    },
+  });
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: student2.id,
+      clubId: club4.id,
+      role: 'MEMBER',
+    },
+  });
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: student1.id,
+      clubId: club5.id,
+      role: 'MEMBER',
+    },
+  });
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: student3.id,
+      clubId: club6.id,
+      role: 'MEMBER',
+    },
+  });
+
+  console.log('✅ Clubs created');
+
   console.log(`
   ╔══════════════════════════════════════════════════════════════╗
+  ║                                                              ║
   ║   🌱 Database seeded successfully!                           ║
   ║                                                              ║
-  ║   CORE ACCOUNTS:                                             ║
-  ║   Admin:        admin@kazguu.kz                              ║
-  ║   Organizer:    organizer@kazguu.kz                          ║
-  ║   Student 1:    student1@kazguu.kz                           ║
-  ║   (Default Pwd: Password123!)                                ║
+  ║   Test Accounts:                                             ║
+  ║   ────────────────────────────────────────────────────────   ║
+  ║   Admin:      admin@kazguu.kz                                ║
+  ║   Organizer:  organizer@kazguu.kz                            ║
+  ║   Moderator:  moderator@kazguu.kz                            ║
+  ║   Student 1:  student1@kazguu.kz                             ║
+  ║   Student 2:  student2@kazguu.kz                             ║
+  ║   Student 3:  student3@kazguu.kz                             ║
+  ║   Partner 1:  partner1@itacademy.kz (IT Academy)             ║
+  ║   Partner 2:  partner2@coffeehouse.kz (Coffee House)         ║
   ║                                                              ║
-  ║   REAL SERVICE PROVIDERS (For Marketplace Testing):          ║
-  ║   Aikerim:      aikerim.tutor@kazguu.kz (Math Tutor)         ║
-  ║   Alikhan:      alikhan.english@kazguu.kz (English)          ║
-  ║   Dina:         dina.design@kazguu.kz (Design)               ║
-  ║   Sanzhar:      reviewer.student@kazguu.kz (Reviewer)        ║
+  ║   Password for all: Password123!                             ║
+  ║                                                              ║
+  ║   Created:                                                   ║
+  ║   - 8 Users (1 Admin, 1 Organizer, 1 Moderator,             ║
+  ║              3 Students, 2 External Partners)                ║
+  ║   - 15 Events (10 free + 2 paid + 2 partner + 1 lecture)     ║
+  ║   - 7 Free Registrations                                     ║
+  ║   - 6 Paid Tickets (3 platform + 3 partner events)           ║
+  ║   - 2 Check-ins (student scan mode)                          ║
+  ║   - 6 Services (3 general + 3 tutoring)                      ║
+  ║   - 4 Advertisements (various positions)                     ║
+  ║   - 6 Clubs (various categories)                             ║
+  ║   - 7 Club Memberships                                       ║
+  ║                                                              ║
+  ║   🤝 External Partners System Ready:                         ║
+  ║   - 2 External partners with different commission rates      ║
+  ║   - Partner 1: IT Academy (10% commission, 2 paid slots)     ║
+  ║   - Partner 2: Coffee House (8% custom rate, 0 paid slots)   ║
+  ║   - 2 Partner events created and linked                      ║
+  ║   - 3 Tickets with commission tracking:                      ║
+  ║     • IT Academy event: 15,000₸ (1,500₸ commission)          ║
+  ║     • Coffee House event: 2,500₸ (200₸ commission)           ║
+  ║   - Platform settings configured                             ║
+  ║                                                              ║
+  ║   💰 Monetization Features Ready:                            ║
+  ║   - Paid events with tickets                                 ║
+  ║   - Commission system for external partners                  ║
+  ║   - QR check-in (2 modes)                                    ║
+  ║   - Services marketplace                                     ║
+  ║   - Advertisement system                                     ║
+  ║                                                              ║
+  ║   🛡️ Moderation System Ready:                                ║
+  ║   - Content moderation queue                                 ║
+  ║   - Moderator role with access to /moderator dashboard       ║
+  ║   - Validation filters for spam prevention                   ║
   ║                                                              ║
   ╚══════════════════════════════════════════════════════════════╝
   `);
