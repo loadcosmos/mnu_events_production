@@ -175,4 +175,3 @@ export const getRelativeTime = (date) => {
     return String(date);
   }
 };
-```
