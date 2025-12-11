@@ -51,26 +51,33 @@ export default function NewsFeedSection() {
                         <div className="h-6 w-20 bg-gray-200 dark:bg-[#1a1a1a] rounded animate-pulse" />
                     </div>
 
-                    {/* Posts Grid Skeleton */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Posts Feed Skeleton - Horizontal Cards */}
+                    <div className="space-y-4 max-w-3xl mx-auto">
                         {[1, 2, 3].map(i => (
                             <div key={i} className="liquid-glass-card rounded-2xl p-4 animate-pulse">
+                                {/* Badge skeleton */}
+                                <div className="h-6 w-24 bg-gray-200 dark:bg-[#2a2a2a] rounded mb-3" />
                                 {/* Author skeleton */}
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="h-8 w-8 bg-gray-200 dark:bg-[#2a2a2a] rounded-full" />
+                                    <div className="h-10 w-10 bg-gray-200 dark:bg-[#2a2a2a] rounded-full" />
                                     <div className="flex-1">
-                                        <div className="h-4 w-24 bg-gray-200 dark:bg-[#2a2a2a] rounded mb-1" />
-                                        <div className="h-3 w-16 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                        <div className="h-4 w-32 bg-gray-200 dark:bg-[#2a2a2a] rounded mb-1.5" />
+                                        <div className="h-3 w-20 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
                                     </div>
                                 </div>
                                 {/* Content skeleton */}
                                 <div className="space-y-2 mb-3">
                                     <div className="h-3 w-full bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                    <div className="h-3 w-11/12 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
                                     <div className="h-3 w-5/6 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
-                                    <div className="h-3 w-4/6 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
                                 </div>
-                                {/* Image skeleton */}
-                                <div className="h-32 bg-gray-200 dark:bg-[#2a2a2a] rounded-xl" />
+                                {/* Image skeleton - 16:9 aspect ratio */}
+                                <div className="w-full aspect-video bg-gray-200 dark:bg-[#2a2a2a] rounded-xl mb-3" />
+                                {/* Actions skeleton */}
+                                <div className="flex items-center gap-4">
+                                    <div className="h-4 w-12 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                    <div className="h-4 w-12 bg-gray-200 dark:bg-[#2a2a2a] rounded" />
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -105,57 +112,81 @@ export default function NewsFeedSection() {
                     </Link>
                 </div>
 
-                {/* Posts Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {posts.map(post => (
+                {/* Posts Feed - Horizontal Cards */}
+                <div className="space-y-0 max-w-3xl mx-auto">
+                    {posts.map((post, index) => (
                         <Link
                             key={post.id}
                             to="/community"
-                            className="liquid-glass-card rounded-2xl p-4 hover:shadow-lg transition-all duration-300 block group"
+                            className={`
+                                liquid-glass-card rounded-2xl p-4 hover:shadow-lg transition-all duration-300 block group
+                                ${post.type === 'FACULTY_POST' || post.type === 'ANNOUNCEMENT' ? 'border-l-4 border-[#d62e1f]' : ''}
+                                ${index < posts.length - 1 ? 'mb-4' : ''}
+                            `}
                         >
-                            {/* Author */}
-                            <div className="flex items-center gap-3 mb-3">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src={post.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author.id}`} />
-                                    <AvatarFallback>{post.author.firstName?.[0] || '?'}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                        {post.author.firstName} {post.author.lastName}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                                    </p>
+                            {/* OFFICIAL Badge for FACULTY posts */}
+                            {(post.type === 'FACULTY_POST' || post.type === 'ANNOUNCEMENT') && (
+                                <div className="mb-2">
+                                    <Badge className="bg-[#d62e1f] text-white px-3 py-1">
+                                        <i className="fa-solid fa-graduation-cap mr-1.5 text-xs" />
+                                        OFFICIAL
+                                    </Badge>
+                                </div>
+                            )}
+
+                            {/* Header - Author + Time + Pin */}
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <Avatar className="h-10 w-10 border-2 border-white dark:border-[#2a2a2a] shadow-sm">
+                                        <AvatarImage src={post.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author.id}`} />
+                                        <AvatarFallback>{post.author.firstName?.[0] || '?'}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                            {post.author.firstName} {post.author.lastName}
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                                        </p>
+                                    </div>
                                 </div>
                                 {post.isPinned && (
-                                    <Badge className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5">
+                                    <Badge className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 ml-2 shrink-0">
                                         <i className="fa-solid fa-thumbtack mr-1 text-[10px]" />
                                         Pinned
                                     </Badge>
                                 )}
-                                {post.type === 'ANNOUNCEMENT' && (
-                                    <Badge className="bg-red-100 text-red-800 text-xs px-2 py-0.5">
-                                        <i className="fa-solid fa-bullhorn mr-1 text-[10px]" />
-                                        Announcement
-                                    </Badge>
-                                )}
                             </div>
 
-                            {/* Content Preview */}
-                            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                                {post.content}
-                            </p>
+                            {/* Content */}
+                            <div className="mb-3">
+                                <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-4 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                                    {post.content}
+                                </p>
+                            </div>
 
-                            {/* Image Thumbnail */}
+                            {/* Image - 16:9 aspect ratio */}
                             {post.imageUrl && (
-                                <div className="rounded-xl overflow-hidden h-32 bg-gray-100 dark:bg-[#1a1a1a]">
+                                <div className="rounded-xl overflow-hidden bg-gray-100 dark:bg-[#1a1a1a] mb-3">
                                     <img
                                         src={post.imageUrl}
                                         alt=""
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                 </div>
                             )}
+
+                            {/* Actions - Likes + Comments */}
+                            <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                                <div className="flex items-center gap-1.5">
+                                    <i className="fa-regular fa-heart text-base" />
+                                    <span className="font-medium">{post.likesCount || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <i className="fa-regular fa-comment text-base" />
+                                    <span className="font-medium">{post.commentsCount || 0}</span>
+                                </div>
+                            </div>
                         </Link>
                     ))}
                 </div>

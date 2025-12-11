@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs';
 import PostCard from '../../components/posts/PostCard';
 import CreatePostModal from '../../components/posts/CreatePostModal';
 import { useInfinitePosts } from '../../hooks';
@@ -24,28 +23,41 @@ function useDebounce(value, delay) {
 
 export default function CommunityPage() {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeFilter, setActiveFilter] = useState('all');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('newest');
-    const [showFilters, setShowFilters] = useState(false);
     const loadMoreRef = useRef(null);
 
     const debouncedSearch = useDebounce(searchQuery, 300);
 
-    // Determine type filter based on active tab
+    // Determine type filter based on role and active filter
     const typeFilter = useMemo(() => {
-        switch (activeTab) {
-            case 'announcements':
-                return ['ANNOUNCEMENT'];
-            case 'faculty':
-                return ['FACULTY_POST'];
+        // EXTERNAL_PARTNER sees nothing
+        if (user?.role === 'EXTERNAL_PARTNER') {
+            return ['NONE']; // Will return empty results
+        }
+
+        // FACULTY sees only FACULTY_POST and ANNOUNCEMENT
+        if (user?.role === 'FACULTY') {
+            return ['FACULTY_POST', 'ANNOUNCEMENT'];
+        }
+
+        // ADMIN/MODERATOR see everything
+        if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') {
+            return undefined; // All posts
+        }
+
+        // STUDENT: filter based on activeFilter
+        switch (activeFilter) {
+            case 'official':
+                return ['FACULTY_POST', 'ANNOUNCEMENT'];
             case 'students':
                 return ['STUDENT_POST'];
-            default:
-                return undefined;
+            default: // 'all'
+                return undefined; // All posts
         }
-    }, [activeTab]);
+    }, [user?.role, activeFilter]);
 
     // React Query infinite scroll
     const {
@@ -137,89 +149,87 @@ export default function CommunityPage() {
                     )}
                 </div>
 
-                {/* Filter Toggle & Sort */}
-                <div className="flex items-center justify-between mb-4">
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
-                            showFilters
-                                ? 'bg-[#d62e1f] text-white'
-                                : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                        }`}
-                    >
-                        <i className="fa-solid fa-filter text-sm" />
-                        Filters
-                        {activeTab !== 'all' && (
-                            <span className="w-2 h-2 bg-white rounded-full" />
-                        )}
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Sort:</span>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="px-3 py-2 bg-gray-100 dark:bg-white/5 border-0 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50"
-                        >
-                            <option value="newest">Newest</option>
-                            <option value="popular">Popular</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Filter Tabs */}
-                {showFilters && (
-                    <div className="mb-6 animate-in slide-in-from-top-2 fade-in duration-200">
-                        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-                            <TabsList className="grid w-full grid-cols-4 rounded-2xl bg-gray-100 dark:bg-white/5 p-1">
-                                <TabsTrigger value="all" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all text-xs md:text-sm">
+                {/* Filters & Sort - Only for STUDENT */}
+                {user?.role === 'STUDENT' && (
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setActiveFilter('all')}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                                        activeFilter === 'all'
+                                            ? 'bg-[#d62e1f] text-white shadow-sm'
+                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                    }`}
+                                >
                                     All
-                                </TabsTrigger>
-                                <TabsTrigger value="students" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all text-xs md:text-sm">
+                                </button>
+                                <button
+                                    onClick={() => setActiveFilter('official')}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
+                                        activeFilter === 'official'
+                                            ? 'bg-[#d62e1f] text-white shadow-sm'
+                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-graduation-cap text-xs" />
+                                    Official
+                                </button>
+                                <button
+                                    onClick={() => setActiveFilter('students')}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
+                                        activeFilter === 'students'
+                                            ? 'bg-[#d62e1f] text-white shadow-sm'
+                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-users text-xs" />
                                     Students
-                                </TabsTrigger>
-                                <TabsTrigger value="faculty" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all text-xs md:text-sm">
-                                    Faculty
-                                </TabsTrigger>
-                                <TabsTrigger value="announcements" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm transition-all text-xs md:text-sm">
-                                    News
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500 dark:text-gray-400">Sort:</span>
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="px-3 py-2 bg-gray-100 dark:bg-white/5 border-0 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50"
+                                >
+                                    <option value="newest">Newest</option>
+                                    <option value="popular">Popular</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                {/* Active Filters Display */}
-                {(activeTab !== 'all' || debouncedSearch) && (
+                {/* Sort Only - For FACULTY/ADMIN/MODERATOR */}
+                {(user?.role === 'FACULTY' || user?.role === 'ADMIN' || user?.role === 'MODERATOR') && (
+                    <div className="flex justify-end mb-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">Sort:</span>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="px-3 py-2 bg-gray-100 dark:bg-white/5 border-0 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50"
+                            >
+                                <option value="newest">Newest</option>
+                                <option value="popular">Popular</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
+
+                {/* Active Search Filter Display */}
+                {debouncedSearch && (
                     <div className="flex flex-wrap items-center gap-2 mb-4">
-                        {debouncedSearch && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-sm">
-                                <i className="fa-solid fa-search text-xs" />
-                                "{debouncedSearch}"
-                                <button onClick={() => setSearchQuery('')} className="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
-                                    <i className="fa-solid fa-times text-xs" />
-                                </button>
-                            </span>
-                        )}
-                        {activeTab !== 'all' && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#d62e1f]/10 text-[#d62e1f] rounded-full text-sm">
-                                <i className="fa-solid fa-tag text-xs" />
-                                {activeTab === 'students' ? 'Student Posts' : activeTab === 'faculty' ? 'Faculty Posts' : 'Announcements'}
-                                <button onClick={() => setActiveTab('all')} className="ml-1 hover:text-[#a0200f]">
-                                    <i className="fa-solid fa-times text-xs" />
-                                </button>
-                            </span>
-                        )}
-                        <button
-                            onClick={() => {
-                                setSearchQuery('');
-                                setActiveTab('all');
-                                setSortBy('newest');
-                            }}
-                            className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                            Clear all
-                        </button>
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-sm">
+                            <i className="fa-solid fa-search text-xs" />
+                            "{debouncedSearch}"
+                            <button onClick={() => setSearchQuery('')} className="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
+                                <i className="fa-solid fa-times text-xs" />
+                            </button>
+                        </span>
                     </div>
                 )}
 
@@ -227,24 +237,33 @@ export default function CommunityPage() {
                 <div className="space-y-6">
                     {!isLoading && posts.length === 0 ? (
                         <div className="text-center py-12 text-gray-500">
-                            <i className={`${debouncedSearch ? 'fa-solid fa-search' : 'fa-regular fa-newspaper'} text-4xl mb-3 opacity-50`}></i>
-                            <p className="mb-2">
-                                {debouncedSearch
-                                    ? `No posts found for "${debouncedSearch}"`
-                                    : activeTab !== 'all'
-                                        ? `No ${activeTab === 'students' ? 'student' : activeTab === 'faculty' ? 'faculty' : ''} posts yet`
-                                        : 'No posts yet. Be the first to share something!'}
-                            </p>
-                            {(debouncedSearch || activeTab !== 'all') && (
-                                <button
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setActiveTab('all');
-                                    }}
-                                    className="text-[#d62e1f] hover:underline text-sm"
-                                >
-                                    Clear filters
-                                </button>
+                            {user?.role === 'EXTERNAL_PARTNER' ? (
+                                <>
+                                    <i className="fa-solid fa-lock text-4xl mb-3 opacity-50"></i>
+                                    <p className="mb-2">Community posts are not available for partners</p>
+                                </>
+                            ) : (
+                                <>
+                                    <i className={`${debouncedSearch ? 'fa-solid fa-search' : 'fa-regular fa-newspaper'} text-4xl mb-3 opacity-50`}></i>
+                                    <p className="mb-2">
+                                        {debouncedSearch
+                                            ? `No posts found for "${debouncedSearch}"`
+                                            : user?.role === 'STUDENT' && activeFilter !== 'all'
+                                                ? `No ${activeFilter === 'students' ? 'student' : 'official'} posts yet`
+                                                : 'No posts yet. Be the first to share something!'}
+                                    </p>
+                                    {(debouncedSearch || (user?.role === 'STUDENT' && activeFilter !== 'all')) && (
+                                        <button
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setActiveFilter('all');
+                                            }}
+                                            className="text-[#d62e1f] hover:underline text-sm"
+                                        >
+                                            Clear filters
+                                        </button>
+                                    )}
+                                </>
                             )}
                         </div>
                     ) : (

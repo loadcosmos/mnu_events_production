@@ -99,9 +99,24 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
         }
     };
 
+    const isOfficial = post.type === 'FACULTY_POST' || post.type === 'ANNOUNCEMENT';
+
     return (
-        <Card className="liquid-glass-card rounded-2xl mb-4 overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow">
+        <Card className={`
+            liquid-glass-card rounded-2xl mb-4 overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow
+            ${isOfficial ? 'border-l-4 border-[#d62e1f]' : ''}
+        `}>
             <CardContent className="p-4">
+                {/* OFFICIAL Badge for FACULTY posts */}
+                {isOfficial && (
+                    <div className="mb-3">
+                        <Badge className="bg-[#d62e1f] text-white px-3 py-1">
+                            <i className="fa-solid fa-graduation-cap mr-1.5 text-xs" />
+                            OFFICIAL
+                        </Badge>
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -155,11 +170,6 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
 
                 {/* Content */}
                 <div className="mb-4">
-                    {post.type === 'ANNOUNCEMENT' && (
-                        <Badge className="mb-2 bg-red-100 text-red-800 border-red-200">
-                            <i className="fa-solid fa-bullhorn mr-1"></i> Announcement
-                        </Badge>
-                    )}
                     <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap text-sm md:text-base leading-relaxed">
                         {post.content}
                     </p>
