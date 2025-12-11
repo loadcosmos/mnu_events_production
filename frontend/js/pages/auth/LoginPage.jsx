@@ -73,6 +73,12 @@ export default function LoginPage() {
             description: `Logged in as Moderator: ${response?.user?.firstName || response?.user?.email}`,
           });
           break;
+        case 'EXTERNAL_PARTNER':
+          navigate('/partner', { replace: true });
+          toast.success('Welcome back!', {
+            description: `Logged in as Partner: ${response?.user?.firstName || response?.user?.email}`,
+          });
+          break;
         case 'STUDENT':
         default:
           navigate('/', { replace: true });

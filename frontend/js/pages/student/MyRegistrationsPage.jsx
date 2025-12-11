@@ -480,7 +480,7 @@ export default function MyRegistrationsPage() {
                         {registration.qrCode &&
                           registration.status === 'REGISTERED' &&
                           event.checkInMode === 'ORGANIZER_SCANS' &&
-                          !event.isPaid && (
+                          (event.isExternalEvent || event.isPaid) && (
                             <div className="mt-4 p-4 bg-gray-50 dark:bg-[#0a0a0a] rounded-lg border border-gray-200 dark:border-[#2a2a2a]">
                               <div className="flex flex-col items-center gap-3">
                                 <p className="text-sm font-semibold text-gray-900 dark:text-white text-center">
