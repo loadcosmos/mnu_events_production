@@ -5,6 +5,7 @@ import { Badge } from './ui/badge';
 import preferencesService from '../services/preferencesService';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
+import { useTranslation } from 'react-i18next';
 import {
     EVENT_CATEGORIES,
     CSI_TAGS,
@@ -17,6 +18,7 @@ import {
 } from '../constants/preferences';
 
 export default function OnboardingModal({ isOpen, onComplete }) {
+    const { t } = useTranslation();
     const [step, setStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [preferences, setPreferences] = useState({
@@ -28,37 +30,37 @@ export default function OnboardingModal({ isOpen, onComplete }) {
 
     const steps = [
         {
-            title: 'Welcome to MNU Events! 🎉',
-            subtitle: "Let's personalize your experience",
+            title: t('onboarding.welcome'),
+            subtitle: t('onboarding.subtitle'),
             content: (
                 <div className="text-center py-8">
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Answer a few quick questions to get personalized event recommendations
+                        {t('onboarding.intro')}
                     </p>
                     <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                         <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-xl">
                             <i className="fa-solid fa-calendar text-3xl text-[#d62e1f] mb-2" />
-                            <p className="text-sm font-semibold">Discover Events</p>
+                            <p className="text-sm font-semibold">{t('onboarding.discoverEvents')}</p>
                         </div>
                         <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-xl">
                             <i className="fa-solid fa-medal text-3xl text-purple-600 mb-2" />
-                            <p className="text-sm font-semibold">Earn CSI Points</p>
+                            <p className="text-sm font-semibold">{t('onboarding.earnCsiPoints')}</p>
                         </div>
                         <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-xl">
                             <i className="fa-solid fa-users text-3xl text-green-600 mb-2" />
-                            <p className="text-sm font-semibold">Join Clubs</p>
+                            <p className="text-sm font-semibold">{t('onboarding.joinClubs')}</p>
                         </div>
                         <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-xl">
                             <i className="fa-solid fa-star text-3xl text-blue-600 mb-2" />
-                            <p className="text-sm font-semibold">Get Recommendations</p>
+                            <p className="text-sm font-semibold">{t('onboarding.getRecommendations')}</p>
                         </div>
                     </div>
                 </div>
             )
         },
         {
-            title: 'What events interest you?',
-            subtitle: 'Select all categories you like',
+            title: t('onboarding.whatInterestsYou'),
+            subtitle: t('onboarding.selectCategories'),
             content: (
                 <div className="flex flex-wrap gap-3 justify-center max-w-2xl mx-auto py-4">
                     {EVENT_CATEGORIES.map(category => (
@@ -66,8 +68,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                             key={category}
                             onClick={() => togglePreference('preferredCategories', category)}
                             className={`cursor-pointer transition-all px-4 py-3 text-base ${preferences.preferredCategories.includes(category)
-                                    ? 'bg-[#d62e1f] text-white hover:bg-[#b82419] scale-105 shadow-md'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-[#d62e1f] text-white hover:bg-[#b82419] scale-105 shadow-md'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             {formatCategory(category)}
@@ -77,8 +79,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
             )
         },
         {
-            title: 'CSI Activity Interests',
-            subtitle: 'Which CSI categories do you want to earn points in?',
+            title: t('onboarding.csiInterests'),
+            subtitle: t('onboarding.selectCsiTags'),
             content: (
                 <div className="flex flex-wrap gap-4 justify-center max-w-2xl mx-auto py-6">
                     {CSI_TAGS.map(tag => (
@@ -86,8 +88,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                             key={tag}
                             onClick={() => togglePreference('preferredCsiTags', tag)}
                             className={`cursor-pointer transition-all px-6 py-4 text-lg ${preferences.preferredCsiTags.includes(tag)
-                                    ? 'bg-purple-600 text-white hover:bg-purple-700 scale-105 shadow-md'
-                                    : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                ? 'bg-purple-600 text-white hover:bg-purple-700 scale-105 shadow-md'
+                                : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
                             {formatCsiTag(tag)}
@@ -97,20 +99,20 @@ export default function OnboardingModal({ isOpen, onComplete }) {
             )
         },
         {
-            title: 'When are you usually free?',
-            subtitle: 'Select your available days and preferred time',
+            title: t('onboarding.whenFree'),
+            subtitle: t('onboarding.selectCategories'),
             content: (
                 <div className="space-y-6 max-w-lg mx-auto py-4">
                     <div>
-                        <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Available Days</h4>
+                        <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{t('onboarding.availableDays')}</h4>
                         <div className="flex flex-wrap gap-2 justify-center">
                             {DAYS_OF_WEEK.map(day => (
                                 <Badge
                                     key={day}
                                     onClick={() => togglePreference('availableDays', day)}
                                     className={`cursor-pointer transition-all px-4 py-2 ${preferences.availableDays.includes(day)
-                                            ? 'bg-green-600 text-white hover:bg-green-700 scale-105'
-                                            : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                        ? 'bg-green-600 text-white hover:bg-green-700 scale-105'
+                                        : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                         }`}
                                 >
                                     {formatDay(day)}
@@ -119,24 +121,24 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                         </div>
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Preferred Time</h4>
+                        <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{t('onboarding.preferredTime')}</h4>
                         <div className="flex gap-3 justify-center">
                             {Object.values(TIME_SLOTS).map(slot => {
                                 const { label, sublabel } = formatTimeSlot(slot);
                                 return (
-                                <div
-                                    key={slot}
-                                    onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
-                                    className={`cursor-pointer transition-all px-4 py-3 rounded-xl text-center ${preferences.preferredTimeSlot === slot
+                                    <div
+                                        key={slot}
+                                        onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
+                                        className={`cursor-pointer transition-all px-4 py-3 rounded-xl text-center ${preferences.preferredTimeSlot === slot
                                             ? 'bg-blue-600 text-white scale-105 shadow-md'
                                             : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
-                                        }`}
-                                >
-                                    <p className="font-semibold">{label}</p>
-                                    <p className={`text-xs ${preferences.preferredTimeSlot === slot ? 'text-blue-100' : 'text-gray-500'}`}>
-                                        {sublabel}
-                                    </p>
-                                </div>
+                                            }`}
+                                    >
+                                        <p className="font-semibold">{label}</p>
+                                        <p className={`text-xs ${preferences.preferredTimeSlot === slot ? 'text-blue-100' : 'text-gray-500'}`}>
+                                            {sublabel}
+                                        </p>
+                                    </div>
                                 );
                             })}
                         </div>
@@ -181,7 +183,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                toast.success('Profile setup complete! 🎉');
+                toast.success(t('onboarding.profileSetupComplete'));
             } else {
                 await preferencesService.updateMyPreferences({
                     onboardingCompleted: true
@@ -190,7 +192,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
             onComplete();
         } catch (error) {
             console.error('Failed to save preferences:', error);
-            toast.error('Failed to save preferences');
+            toast.error(t('onboarding.failedToSave'));
         } finally {
             setIsLoading(false);
         }
@@ -223,7 +225,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                         ))}
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                        Step {step + 1} of {steps.length}
+                        {t('onboarding.stepXofY', { current: step + 1, total: steps.length })}
                     </p>
                 </div>
 
@@ -246,7 +248,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                         disabled={isLoading}
                         className="text-gray-500"
                     >
-                        Skip for now
+                        {t('onboarding.skipForNow')}
                     </Button>
                     <div className="flex gap-2">
                         {step > 0 && (
@@ -255,7 +257,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                                 onClick={() => setStep(step - 1)}
                                 disabled={isLoading}
                             >
-                                Back
+                                {t('onboarding.back')}
                             </Button>
                         )}
                         <Button
@@ -266,11 +268,11 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                             {isLoading ? (
                                 <>
                                     <i className="fa-solid fa-spinner fa-spin mr-2" />
-                                    Saving...
+                                    {t('onboarding.saving')}
                                 </>
                             ) : (
                                 <>
-                                    {step === steps.length - 1 ? 'Complete' : 'Next'}
+                                    {step === steps.length - 1 ? t('onboarding.complete') : t('onboarding.next')}
                                     <i className="fa-solid fa-arrow-right ml-2" />
                                 </>
                             )}

@@ -156,7 +156,52 @@ async someMethod() { ... }
 
 ## Recent Changes (2025-12-11)
 
-### Community & Announcements UI Redesign 🎨 LATEST (2025-12-11)
+### Phase 3: i18n Internationalization ✅ COMPLETED (2025-12-11)
+
+**Infrastructure:**
+- ✅ `react-i18next` configured with EN/RU/KZ support
+- ✅ Language selector (iOS-style minimalist switcher in header)
+- ✅ Locale files: `frontend/js/i18n/locales/{en,ru,kz}.json`
+- ✅ Language persists in localStorage
+
+**Translated Modules (100%):**
+- Navigation (Layout, BottomNavigation)
+- Auth (LoginPage)
+- Events (EventsPage, EventDetailsPage, EventModal, date formatting)
+- Posts (CommunityPage, CreatePostModal, PostCard)
+- Profile (ProfilePage, EditInterestsSection)
+- Saved (SavedPage)
+- Onboarding (OnboardingModal)
+
+**Usage:**
+```jsx
+import { useTranslation } from 'react-i18next';
+const { t } = useTranslation();
+<h1>{t('events.title')}</h1>
+```
+
+---
+
+### Security Hardening 🔒 (2025-12-11)
+
+**Rate Limiting (Already Implemented):**
+- ✅ `@nestjs/throttler` configured in `app.module.ts`
+- ✅ Auth endpoints: 5 login attempts/min, 3 registrations/min
+- ✅ Forgot password: 3 requests/5 min
+- ✅ `@SkipThrottle()` on `/auth/me`
+
+**Input Validation (@MaxLength Added):**
+- ✅ `create-event.dto.ts`: title(200), description(5000), location(500), imageUrl(500)
+- ✅ `register.dto.ts`: firstName(100), lastName(100), password(128)
+- ✅ `update-user.dto.ts`: firstName(100), lastName(100), faculty(200), avatar(500), position(200)
+- ✅ `posts.dto.ts`: content(5000) - already had validation
+
+**Bug Fix:**
+- ✅ `AdminAdvertisementsPage.jsx`: Fixed `parseInt(formData.duration)` → `parseInt(formData.duration, 10)`
+
+---
+
+### Community & Announcements UI Redesign 🎨 (2025-12-11)
 
 **Problem:** Community page used confusing tabs, Announcements on homepage were too compact (3-column grid), OFFICIAL posts not visually distinguished.
 
@@ -452,6 +497,6 @@ We use `vercel.json` to control caching/
 
 ---
 
-*Last Updated: 2025-12-11 | v5.9 (Session & Preferences Fixes)*
+*Last Updated: 2025-12-11 | v6.0 (Phase 3 i18n Complete + Security Hardening)*
 
 

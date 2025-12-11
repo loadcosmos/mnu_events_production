@@ -7,8 +7,10 @@ import { useAuth } from '../../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import postsService from '../../services/postsService';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [liked, setLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likesCount);
@@ -33,18 +35,18 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
             // Revert on error
             setLiked(!liked);
             setLikesCount(prev => !liked ? prev + 1 : prev - 1);
-            toast.error('Failed to like post');
+            toast.error(t('posts.failedToLike'));
         }
     };
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this post?')) return;
+        if (!confirm(t('posts.confirmDelete'))) return;
         try {
             await postsService.delete(post.id);
-            toast.success('Post deleted');
+            toast.success(t('posts.postDeleted'));
             if (onDelete) onDelete(post.id);
         } catch (error) {
-            toast.error('Failed to delete post');
+            toast.error(t('posts.failedToDelete'));
         }
     };
 
@@ -60,7 +62,7 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
             const response = await postsService.getComments(post.id);
             setComments(response.data || []);
         } catch (error) {
-            toast.error('Failed to load comments');
+            toast.error(t('posts.failedToLoadComments'));
         } finally {
             setLoadingComments(false);
         }
@@ -74,9 +76,9 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
             const response = await postsService.addComment(post.id, { content: newComment });
             setComments([...comments, response]);
             setNewComment('');
-            toast.success('Comment added');
+            toast.success(t('posts.commentAdded'));
         } catch (error) {
-            toast.error('Failed to add comment');
+            toast.error(t('posts.failedToAddComment'));
         }
     };
 
@@ -84,17 +86,17 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
         try {
             await postsService.deleteComment(post.id, commentId);
             setComments(comments.filter(c => c.id !== commentId));
-            toast.success('Comment deleted');
+            toast.success(t('posts.commentDeleted'));
         } catch (error) {
-            toast.error('Failed to delete comment');
+            toast.error(t('posts.failedToDeleteComment'));
         }
     };
 
     const getRoleBadge = (role) => {
         switch (role) {
-            case 'ADMIN': return <Badge className="bg-red-100 text-red-800">Admin</Badge>;
-            case 'MODERATOR': return <Badge className="bg-green-100 text-green-800">Mod</Badge>;
-            case 'FACULTY': return <Badge className="bg-teal-100 text-teal-800">Faculty</Badge>;
+            case 'ADMIN': return <Badge className="bg-red-100 text-red-800">{t('posts.admin')}</Badge>;
+            case 'MODERATOR': return <Badge className="bg-green-100 text-green-800">{t('posts.mod')}</Badge>;
+            case 'FACULTY': return <Badge className="bg-teal-100 text-teal-800">{t('posts.faculty')}</Badge>;
             default: return null;
         }
     };
@@ -112,7 +114,7 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
                     <div className="mb-3">
                         <Badge className="bg-[#d62e1f] text-white px-3 py-1">
                             <i className="fa-solid fa-graduation-cap mr-1.5 text-xs" />
-                            OFFICIAL
+                            {t('posts.official')}
                         </Badge>
                     </div>
                 )}
@@ -148,7 +150,7 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
                                     onToggleSave();
                                 }}
                                 className="text-[#d62e1f] hover:bg-red-50 dark:hover:bg-red-950/30 rounded-full h-8 w-8"
-                                title="Remove from saved"
+                                title={t('posts.removeFromSaved')}
                             >
                                 <i className="fa-solid fa-bookmark text-sm" />
                             </Button>
@@ -213,7 +215,7 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
                                 </div>
                             ) : comments.length === 0 ? (
-                                <p className="text-center text-gray-500 text-sm py-2">No comments yet</p>
+                                <p className="text-center text-gray-500 text-sm py-2">{t('posts.noCommentsYet')}</p>
                             ) : (
                                 comments.map(comment => (
                                     <div key={comment.id} className="flex gap-3">
@@ -247,7 +249,7 @@ function PostCard({ post, onDelete, onUpdate, isSaved, onToggleSave }) {
                                 type="text"
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Write a comment..."
+                                placeholder={t('posts.writeComment')}
                                 className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 dark:text-white"
                             />
                             <Button

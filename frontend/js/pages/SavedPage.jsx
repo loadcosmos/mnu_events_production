@@ -7,11 +7,13 @@ import PostCard from '../components/posts/PostCard';
 import EventModal from '../components/EventModal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 /**
  * SavedPage - Combined saved posts and events view
  */
 export default function SavedPage() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('posts');
 
@@ -28,18 +30,18 @@ export default function SavedPage() {
     const handleUnsavePost = async (postId) => {
         try {
             await unsavePostMutation.mutateAsync(postId);
-            toast.success('Post removed from saved');
+            toast.success(t('saved.postRemovedFromSaved'));
         } catch (error) {
-            toast.error('Failed to remove post');
+            toast.error(t('saved.failedToRemovePost'));
         }
     };
 
     const handleUnsaveEvent = async (eventId) => {
         try {
             await unsaveEventMutation.mutateAsync(eventId);
-            toast.success('Event removed from saved');
+            toast.success(t('saved.eventRemovedFromSaved'));
         } catch (error) {
-            toast.error('Failed to remove event');
+            toast.error(t('saved.failedToRemoveEvent'));
         }
     };
 
@@ -58,7 +60,7 @@ export default function SavedPage() {
                             <i className="fa-solid fa-arrow-left text-xl" />
                         </Link>
                         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">
-                            <span className="text-[#d62e1f]">Saved</span>
+                            <span className="text-[#d62e1f]">{t('saved.saved')}</span>
                         </h1>
                     </div>
                 </div>
@@ -73,14 +75,14 @@ export default function SavedPage() {
                             className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all"
                         >
                             <i className="fa-solid fa-newspaper mr-2" />
-                            Posts ({savedPosts.length})
+                            {t('saved.posts')} ({savedPosts.length})
                         </TabsTrigger>
                         <TabsTrigger
                             value="events"
                             className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all"
                         >
                             <i className="fa-solid fa-calendar mr-2" />
-                            Events ({savedEvents.length})
+                            {t('saved.events')} ({savedEvents.length})
                         </TabsTrigger>
                     </TabsList>
 
@@ -92,9 +94,9 @@ export default function SavedPage() {
                         ) : savedPosts.length === 0 ? (
                             <div className="text-center py-12">
                                 <i className="fa-regular fa-bookmark text-5xl text-gray-400 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Saved Posts</h3>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('saved.noSavedPosts')}</h3>
                                 <p className="text-gray-600 dark:text-[#a0a0a0]">
-                                    Bookmark posts you like and they'll appear here
+                                    {t('saved.bookmarkPosts')}
                                 </p>
                             </div>
                         ) : (
@@ -121,15 +123,15 @@ export default function SavedPage() {
                         ) : savedEvents.length === 0 ? (
                             <div className="text-center py-12">
                                 <i className="fa-regular fa-calendar text-5xl text-gray-400 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Saved Events</h3>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('saved.noSavedEvents')}</h3>
                                 <p className="text-gray-600 dark:text-[#a0a0a0] mb-6">
-                                    Bookmark events you're interested in
+                                    {t('saved.bookmarkEvents')}
                                 </p>
                                 <Link
                                     to="/events"
                                     className="inline-flex items-center gap-2 px-6 py-3 liquid-glass-red-button text-white font-semibold rounded-2xl"
                                 >
-                                    Browse Events
+                                    {t('saved.browseEvents')}
                                     <i className="fa-solid fa-arrow-right" />
                                 </Link>
                             </div>
@@ -155,6 +157,6 @@ export default function SavedPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
             />
-        </div>
+        </div >
     );
 }

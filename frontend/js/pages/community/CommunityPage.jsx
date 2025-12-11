@@ -5,6 +5,7 @@ import PostCard from '../../components/posts/PostCard';
 import CreatePostModal from '../../components/posts/CreatePostModal';
 import { useInfinitePosts } from '../../hooks';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 // Debounce hook for search
 function useDebounce(value, delay) {
@@ -22,6 +23,7 @@ function useDebounce(value, delay) {
 }
 
 export default function CommunityPage() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [activeFilter, setActiveFilter] = useState('all');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -113,7 +115,7 @@ export default function CommunityPage() {
             <div className="container mx-auto px-4 max-w-2xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Community</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('nav.community')}</h1>
                     <Button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="md:hidden rounded-full h-10 w-10 p-0 liquid-glass-red-button text-white shadow-lg"
@@ -125,7 +127,7 @@ export default function CommunityPage() {
                         className="hidden md:flex liquid-glass-red-button text-white rounded-xl gap-2"
                     >
                         <i className="fa-solid fa-plus"></i>
-                        Create Post
+                        {t('community.createPost')}
                     </Button>
                 </div>
 
@@ -136,7 +138,7 @@ export default function CommunityPage() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search posts..."
+                        placeholder={t('community.searchPosts')}
                         className="w-full pl-11 pr-10 py-3 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-2xl text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50 transition-all"
                     />
                     {searchQuery && (
@@ -157,43 +159,43 @@ export default function CommunityPage() {
                                 <button
                                     onClick={() => setActiveFilter('all')}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeFilter === 'all'
-                                            ? 'bg-[#d62e1f] text-white shadow-sm'
-                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                        ? 'bg-[#d62e1f] text-white shadow-sm'
+                                        : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
                                         }`}
                                 >
-                                    All
+                                    {t('community.all')}
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter('official')}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${activeFilter === 'official'
-                                            ? 'bg-[#d62e1f] text-white shadow-sm'
-                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                        ? 'bg-[#d62e1f] text-white shadow-sm'
+                                        : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
                                         }`}
                                 >
                                     <i className="fa-solid fa-graduation-cap text-xs" />
-                                    Official
+                                    {t('community.official')}
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter('students')}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${activeFilter === 'students'
-                                            ? 'bg-[#d62e1f] text-white shadow-sm'
-                                            : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                                        ? 'bg-[#d62e1f] text-white shadow-sm'
+                                        : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
                                         }`}
                                 >
                                     <i className="fa-solid fa-users text-xs" />
-                                    Students
+                                    {t('community.students')}
                                 </button>
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Sort:</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{t('common.sort')}:</span>
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
                                     className="px-3 py-2 bg-gray-100 dark:bg-white/5 border-0 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50"
                                 >
-                                    <option value="newest">Newest</option>
-                                    <option value="popular">Popular</option>
+                                    <option value="newest">{t('community.newest')}</option>
+                                    <option value="popular">{t('community.popular')}</option>
                                 </select>
                             </div>
                         </div>
@@ -204,14 +206,14 @@ export default function CommunityPage() {
                 {(user?.role === 'FACULTY' || user?.role === 'ADMIN' || user?.role === 'MODERATOR') && (
                     <div className="flex justify-end mb-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500 dark:text-gray-400">Sort:</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{t('common.sort')}:</span>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="px-3 py-2 bg-gray-100 dark:bg-white/5 border-0 rounded-xl text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d62e1f]/50"
                             >
-                                <option value="newest">Newest</option>
-                                <option value="popular">Popular</option>
+                                <option value="newest">{t('community.newest')}</option>
+                                <option value="popular">{t('community.popular')}</option>
                             </select>
                         </div>
                     </div>
@@ -237,17 +239,17 @@ export default function CommunityPage() {
                             {user?.role === 'EXTERNAL_PARTNER' ? (
                                 <>
                                     <i className="fa-solid fa-lock text-4xl mb-3 opacity-50"></i>
-                                    <p className="mb-2">Community posts are not available for partners</p>
+                                    <p className="mb-2">{t('community.partnersNoAccess')}</p>
                                 </>
                             ) : (
                                 <>
                                     <i className={`${debouncedSearch ? 'fa-solid fa-search' : 'fa-regular fa-newspaper'} text-4xl mb-3 opacity-50`}></i>
                                     <p className="mb-2">
                                         {debouncedSearch
-                                            ? `No posts found for "${debouncedSearch}"`
+                                            ? t('community.noPostsFoundFor', { query: debouncedSearch })
                                             : user?.role === 'STUDENT' && activeFilter !== 'all'
-                                                ? `No ${activeFilter === 'students' ? 'student' : 'official'} posts yet`
-                                                : 'No posts yet. Be the first to share something!'}
+                                                ? (activeFilter === 'students' ? t('community.noStudentPosts') : t('community.noOfficialPosts'))
+                                                : t('community.noPostsYet')}
                                     </p>
                                     {(debouncedSearch || (user?.role === 'STUDENT' && activeFilter !== 'all')) && (
                                         <button
@@ -257,7 +259,7 @@ export default function CommunityPage() {
                                             }}
                                             className="text-[#d62e1f] hover:underline text-sm"
                                         >
-                                            Clear filters
+                                            {t('common.clearFilters')}
                                         </button>
                                     )}
                                 </>
@@ -293,7 +295,7 @@ export default function CommunityPage() {
                     {!hasNextPage && posts.length > 0 && (
                         <div className="text-center py-8 text-gray-500 text-sm">
                             <i className="fa-solid fa-check-circle mr-2"></i>
-                            You've reached the end
+                            {t('common.endOfFeed')}
                         </div>
                     )}
                 </div>

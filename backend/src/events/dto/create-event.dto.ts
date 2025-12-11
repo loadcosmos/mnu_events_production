@@ -6,8 +6,11 @@ import {
   IsDateString,
   IsInt,
   Min,
+  Max,
   IsOptional,
   IsArray,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import { Category, CsiCategory, EventStatus } from '@prisma/client';
 
@@ -15,11 +18,14 @@ export class CreateEventDto {
   @ApiProperty({ example: 'Hackathon 2024' })
   @IsString()
   @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(200)
   title: string;
 
   @ApiProperty({ example: 'Annual coding competition for students' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(5000)
   description: string;
 
   @ApiProperty({ enum: Category, example: Category.TECH })
@@ -39,6 +45,7 @@ export class CreateEventDto {
   @ApiProperty({ example: 'Main Hall, Building A' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(500)
   location: string;
 
   @ApiProperty({ example: '2024-12-15T10:00:00Z' })
@@ -52,11 +59,13 @@ export class CreateEventDto {
   @ApiProperty({ example: 100 })
   @IsInt()
   @Min(1)
+  @Max(100000)
   capacity: number;
 
   @ApiPropertyOptional({ example: 'https://example.com/image.jpg' })
   @IsString()
   @IsOptional()
+  @MaxLength(500)
   imageUrl?: string;
 
   @ApiPropertyOptional({ enum: EventStatus, example: EventStatus.UPCOMING })

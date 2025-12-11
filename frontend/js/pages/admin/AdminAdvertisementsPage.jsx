@@ -102,7 +102,7 @@ export default function AdminAdvertisementsPage() {
             setCreating(true);
             await adsService.create({
                 ...formData,
-                duration: parseInt(formData.duration),
+                duration: parseInt(formData.duration, 10),
             });
             toast.success('Advertisement created successfully!');
             setShowCreateForm(false);

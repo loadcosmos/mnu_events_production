@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import postsService from '../../services/postsService';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
 import { Badge } from '../../components/ui/badge';
 
 /**
- * NewsFeedSection - Displays latest 3 faculty/announcement posts on homepage
+ * NewsFeedSection - Displays latest 6 faculty/announcement posts on homepage
  */
 export default function NewsFeedSection() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isCancelled = false;
@@ -38,6 +39,11 @@ export default function NewsFeedSection() {
         loadPosts();
         return () => { isCancelled = true; };
     }, []);
+
+    const handlePostClick = (postId) => {
+        // Navigate to community page - in the future можно открывать модал с постом
+        navigate('/community');
+    };
 
     if (loading) {
         return (
@@ -98,8 +104,6 @@ export default function NewsFeedSection() {
                             Official updates and news from faculty
                         </p>
                     </div>
-                    {/* Optional: We can keep the top View All or rely on the bottom button. 
-                        User asked for "Show more with arrow" below. I'll keep top as refined navigation. */}
                     <Link
                         to="/community"
                         className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:underline text-sm"
@@ -109,16 +113,16 @@ export default function NewsFeedSection() {
                     </Link>
                 </div>
 
-                {/* Posts Feed - Grid with Blur and Cutoff */}
+                {/* Posts Feed - Grid with Smooth Gradient Blur */}
                 <div className="relative">
                     {/* Container with fixed height for "one row + peek" effect */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[500px] overflow-hidden relative pb-10">
                         {posts.map((post, index) => (
-                            <Link
+                            <button
                                 key={post.id}
-                                to="/community"
+                                onClick={() => handlePostClick(post.id)}
                                 className={`
-                                    liquid-glass-card rounded-2xl p-4 hover:shadow-lg transition-all duration-300 block group h-fit
+                                    liquid-glass-card rounded-2xl p-4 hover:shadow-lg transition-all duration-300 w-full h-fit text-left cursor-pointer
                                     ${post.type === 'FACULTY_POST' || post.type === 'ANNOUNCEMENT' ? 'border-l-4 border-[#d62e1f]' : ''}
                                 `}
                             >
@@ -158,7 +162,7 @@ export default function NewsFeedSection() {
 
                                 {/* Content */}
                                 <div className="mb-3">
-                                    <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-3 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                                    <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-3 leading-relaxed">
                                         {post.content}
                                     </p>
                                 </div>
@@ -169,7 +173,7 @@ export default function NewsFeedSection() {
                                         <img
                                             src={post.imageUrl}
                                             alt=""
-                                            className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300"
+                                            className="w-full aspect-video object-cover"
                                         />
                                     </div>
                                 )}
@@ -185,15 +189,53 @@ export default function NewsFeedSection() {
                                         <span className="font-medium">{post.commentsCount || 0}</span>
                                     </div>
                                 </div>
-                            </Link>
+                            </button>
                         ))}
                     </div>
 
-                    {/* Gradient Blur Overlay + Show More Button */}
-                    <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-gray-50/90 via-gray-50/60 to-transparent dark:from-[#0a0a0a]/90 dark:via-[#0a0a0a]/60 dark:to-transparent backdrop-blur-[2px] flex items-end justify-center pb-6 rounded-b-2xl transition-all duration-500">
+                    {/* Smooth Gradient Blur Overlay - Very gradual transition */}
+                    <div
+                        className="absolute bottom-0 left-0 w-full pointer-events-none"
+                        style={{
+                            height: '200px',
+                            background: `linear-gradient(
+                                to top,
+                                rgb(249 250 251 / 0.98) 0%,
+                                rgb(249 250 251 / 0.95) 10%,
+                                rgb(249 250 251 / 0.85) 20%,
+                                rgb(249 250 251 / 0.7) 35%,
+                                rgb(249 250 251 / 0.5) 50%,
+                                rgb(249 250 251 / 0.3) 65%,
+                                rgb(249 250 251 / 0.15) 80%,
+                                rgb(249 250 251 / 0.05) 90%,
+                                transparent 100%
+                            )`,
+                        }}
+                    />
+                    <div
+                        className="absolute bottom-0 left-0 w-full pointer-events-none dark:block hidden"
+                        style={{
+                            height: '200px',
+                            background: `linear-gradient(
+                                to top,
+                                rgb(10 10 10 / 0.98) 0%,
+                                rgb(10 10 10 / 0.95) 10%,
+                                rgb(10 10 10 / 0.85) 20%,
+                                rgb(10 10 10 / 0.7) 35%,
+                                rgb(10 10 10 / 0.5) 50%,
+                                rgb(10 10 10 / 0.3) 65%,
+                                rgb(10 10 10 / 0.15) 80%,
+                                rgb(10 10 10 / 0.05) 90%,
+                                transparent 100%
+                            )`,
+                        }}
+                    />
+
+                    {/* Show More Button - separate, doesn't interfere with post clicks */}
+                    <div className="absolute bottom-0 left-0 w-full h-24 flex items-end justify-center pb-6 pointer-events-none">
                         <Link
                             to="/community"
-                            className="group flex items-center gap-2 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-xl shadow-lg hover:shadow-xl border border-gray-200 dark:border-[#333] px-8 py-3 rounded-full text-[#d62e1f] font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm z-10"
+                            className="group flex items-center gap-2 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl shadow-lg hover:shadow-xl border border-gray-200 dark:border-[#333] px-8 py-3 rounded-full text-[#d62e1f] font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm pointer-events-auto"
                         >
                             Show More
                             <i className="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform" />

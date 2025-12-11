@@ -14,8 +14,10 @@ import postsService from '../../services/postsService';
 import uploadService from '../../services/uploadService';
 import ImageUploadCrop from '../ImageUploadCrop';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [content, setContent] = useState('');
     const [imageFile, setImageFile] = useState(null);
@@ -87,7 +89,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             const result = await postsService.create(postData);
             console.log('[CreatePostModal] Post created successfully:', result);
 
-            toast.success(user.role === 'STUDENT' ? 'Post submitted for moderation' : 'Post created successfully');
+            toast.success(user.role === 'STUDENT' ? t('posts.postSubmitted') : t('posts.postCreated'));
             setContent('');
             setImageFile(null);
             setImagePreview(null);
@@ -108,7 +110,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[500px] liquid-glass-strong border-0">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">Create New Post</DialogTitle>
+                    <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">{t('posts.createNewPost')}</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -120,7 +122,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                 onClick={() => setPostType('STUDENT_POST')}
                                 className="flex-1 rounded-xl"
                             >
-                                Regular Post
+                                {t('posts.regularPost')}
                             </Button>
                             <Button
                                 type="button"
@@ -128,7 +130,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                 onClick={() => setPostType('ANNOUNCEMENT')}
                                 className={`flex-1 rounded-xl ${postType === 'ANNOUNCEMENT' ? 'bg-red-600 text-white hover:bg-red-700' : ''}`}
                             >
-                                Announcement
+                                {t('posts.announcement')}
                             </Button>
                         </div>
                     )}
@@ -137,17 +139,17 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                     <div className="space-y-2">
                         <Label htmlFor="content">
                             <i className="fa-solid fa-pen-to-square mr-2 text-[#d62e1f]" />
-                            Description
+                            {t('posts.description')}
                         </Label>
                         <Textarea
                             id="content"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder="What would you like to share with the community?"
+                            placeholder={t('posts.whatWouldYouLikeToShare')}
                             className="min-h-[100px] rounded-xl bg-white/50 dark:bg-black/20 border-gray-200 dark:border-white/10 focus:ring-[#d62e1f] focus:border-[#d62e1f]"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
-                            <span>You can post with just an image or just text</span>
+                            <span>{t('posts.canPostImageOrText')}</span>
                             {content && (
                                 <span className={content.length > 500 ? 'text-amber-600 font-semibold' : 'text-gray-600 dark:text-gray-400'}>
                                     {content.length} / 1000
@@ -160,7 +162,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                     <div className="space-y-2">
                         <Label>
                             <i className="fa-solid fa-image mr-2 text-[#d62e1f]" />
-                            Add Media
+                            {t('posts.addMedia')}
                         </Label>
 
                         {/* Image Preview */}
@@ -180,7 +182,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                 </button>
                                 <div className="absolute bottom-2 left-2 px-3 py-1.5 bg-green-600 text-white text-xs rounded-lg flex items-center gap-1">
                                     <i className="fa-solid fa-check-circle"></i>
-                                    Ready to upload
+                                    {t('posts.readyToUpload')}
                                 </div>
                                 {imageFile && (
                                     <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded-lg">
@@ -196,7 +198,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                                         <i className="fa-solid fa-plus text-xl text-[#d62e1f]" />
                                     </div>
                                     <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        Click to upload or drag & drop
+                                        {t('posts.clickToUpload')}
                                     </p>
                                 </div>
 
@@ -223,14 +225,14 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                             />
                             <label htmlFor="isPinned" className="flex items-center gap-2 cursor-pointer">
                                 <i className="fa-solid fa-thumbtack text-amber-600" />
-                                <span className="text-amber-800 dark:text-amber-200 font-medium">Pin this post</span>
+                                <span className="text-amber-800 dark:text-amber-200 font-medium">{t('posts.pinPost')}</span>
                             </label>
                         </div>
                     )}
 
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl">
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -240,10 +242,10 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                             {loading ? (
                                 <>
                                     <i className="fa-solid fa-spinner fa-spin mr-2" />
-                                    Posting...
+                                    {t('posts.posting')}
                                 </>
                             ) : (
-                                'Post'
+                                t('posts.post')
                             )}
                         </Button>
                     </DialogFooter>
