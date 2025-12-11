@@ -105,7 +105,7 @@ function App() {
       <ScrollToTop />
       <ThemeProvider>
         <AuthProvider>
-          <Toaster position="top-center" expand={false} richColors closeButton />
+          <Toaster position="bottom-right" expand={false} richColors closeButton toastOptions={{ className: 'rounded-2xl shadow-lg' }} />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>

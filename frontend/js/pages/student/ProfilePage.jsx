@@ -12,10 +12,13 @@ import { toast } from 'sonner';
 import { cn } from '../../lib/utils';
 import GamificationCard from '../../components/Gamification/GamificationCard';
 import { SavedEventsTab, EditInterestsSection, FollowStats } from '../../components/profile';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../../components/LanguageSelector';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user: currentUser, isAuthenticated, logout } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -33,7 +36,6 @@ export default function ProfilePage() {
   });
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ENG');
 
   const loadUserData = async () => {
     if (!currentUser?.id) return;
@@ -487,19 +489,11 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <i className="fa-solid fa-language text-[#d62e1f] text-xl" />
                         <div>
-                          <h3 className="text-gray-900 dark:text-white font-semibold">Language</h3>
-                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Choose your preferred language</p>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">{t('profile.language')}</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.chooseLanguage')}</p>
                         </div>
                       </div>
-                      <select
-                        value={selectedLanguage}
-                        onChange={(e) => setSelectedLanguage(e.target.value)}
-                        className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-[#3a3a3a] focus:border-[#d62e1f] focus:outline-none"
-                      >
-                        <option value="ENG">English</option>
-                        <option value="РУС">Русский</option>
-                        <option value="ҚАЗ">Қазақша</option>
-                      </select>
+                      <LanguageSelector />
                     </div>
                   </div>
 

@@ -173,22 +173,22 @@ export default function AdminAdvertisementsPage() {
     return (
         <div className="container max-w-7xl mx-auto py-8 px-4 space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
-                        <Megaphone className="w-8 h-8 text-[#d62e1f]" />
-                        Advertisements Management
+                    <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
+                        <Megaphone className="w-6 h-6 md:w-8 md:h-8 text-[#d62e1f]" />
+                        Advertisements
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
-                        Create and manage banner advertisements for the homepage
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Manage banner advertisements for the homepage
                     </p>
                 </div>
                 <Button
                     onClick={() => setShowCreateForm(!showCreateForm)}
-                    size="lg"
-                    className="liquid-glass-red-button text-white"
+                    size="sm"
+                    className="liquid-glass-red-button text-white w-full sm:w-auto"
                 >
-                    <Plus className="w-5 h-5 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" />
                     {showCreateForm ? 'Cancel' : 'Create Ad'}
                 </Button>
             </div>
@@ -302,44 +302,44 @@ export default function AdminAdvertisementsPage() {
             )}
 
             {/* Stats Overview */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
                 <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
-                    <CardHeader className="pb-2">
-                        <CardDescription>Total Ads</CardDescription>
+                    <CardHeader className="pb-2 px-3 pt-3">
+                        <CardDescription className="text-xs">Total Ads</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{ads.length}</div>
+                    <CardContent className="px-3 pb-3">
+                        <div className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{ads.length}</div>
                     </CardContent>
                 </Card>
 
                 <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
-                    <CardHeader className="pb-2">
-                        <CardDescription>Active Ads</CardDescription>
+                    <CardHeader className="pb-2 px-3 pt-3">
+                        <CardDescription className="text-xs">Active Ads</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-500">
+                    <CardContent className="px-3 pb-3">
+                        <div className="text-xl md:text-2xl font-bold text-green-500">
                             {ads.filter((a) => a.isActive && a.paymentStatus === 'PAID').length}
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
-                    <CardHeader className="pb-2">
-                        <CardDescription>Total Impressions</CardDescription>
+                    <CardHeader className="pb-2 px-3 pt-3">
+                        <CardDescription className="text-xs">Impressions</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-blue-500">
+                    <CardContent className="px-3 pb-3">
+                        <div className="text-lg md:text-2xl font-bold text-blue-500 truncate">
                             {ads.reduce((sum, a) => sum + (a.impressions || 0), 0).toLocaleString()}
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
-                    <CardHeader className="pb-2">
-                        <CardDescription>Total Clicks</CardDescription>
+                    <CardHeader className="pb-2 px-3 pt-3">
+                        <CardDescription className="text-xs">Total Clicks</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-purple-500">
+                    <CardContent className="px-3 pb-3">
+                        <div className="text-lg md:text-2xl font-bold text-purple-500">
                             {ads.reduce((sum, a) => sum + (a.clicks || 0), 0).toLocaleString()}
                         </div>
                     </CardContent>
@@ -374,9 +374,9 @@ export default function AdminAdvertisementsPage() {
                             className="border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-[#d62e1f]/30 transition-all"
                         >
                             <CardContent className="py-4">
-                                <div className="flex items-start gap-4">
+                                <div className="flex flex-col sm:flex-row items-start gap-4">
                                     {/* Ad Image Preview */}
-                                    <div className="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                                    <div className="w-full sm:w-32 h-28 sm:h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
                                         <img
                                             src={ad.imageUrl}
                                             alt={ad.title}
@@ -388,21 +388,23 @@ export default function AdminAdvertisementsPage() {
                                     </div>
 
                                     {/* Ad Details */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
+                                    <div className="flex-1 min-w-0 w-full">
+                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                            <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">
                                                 {ad.title}
                                             </h3>
                                             {ad.companyName && (
-                                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                                     by {ad.companyName}
                                                 </span>
                                             )}
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mb-2">
                                             <Badge
                                                 variant="outline"
                                                 className={ad.isActive && ad.paymentStatus === 'PAID'
-                                                    ? 'bg-green-500/10 border-green-500/20 text-green-500'
-                                                    : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500'
+                                                    ? 'bg-green-500/10 border-green-500/20 text-green-500 text-xs'
+                                                    : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500 text-xs'
                                                 }
                                             >
                                                 {ad.isActive && ad.paymentStatus === 'PAID' ? (
@@ -411,34 +413,34 @@ export default function AdminAdvertisementsPage() {
                                                     <><Clock className="w-3 h-3 mr-1" /> Inactive</>
                                                 )}
                                             </Badge>
-                                            <Badge variant="outline" className="bg-blue-500/10 border-blue-500/20 text-blue-500">
+                                            <Badge variant="outline" className="bg-blue-500/10 border-blue-500/20 text-blue-500 text-xs">
                                                 {getPositionLabel(ad.position)}
                                             </Badge>
                                         </div>
 
-                                        <div className="grid gap-2 md:grid-cols-4 text-sm text-gray-600 dark:text-gray-400">
+                                        <div className="grid gap-1 sm:gap-2 grid-cols-2 md:grid-cols-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                             <div className="flex items-center gap-1">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{formatDate(ad.startDate)} - {formatDate(ad.endDate)}</span>
+                                                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                                <span className="truncate">{formatDate(ad.startDate)}</span>
                                             </div>
                                             <div className="flex items-center gap-1">
-                                                <Eye className="w-4 h-4" />
-                                                <span>{(ad.impressions || 0).toLocaleString()} views</span>
+                                                <Eye className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                                <span>{(ad.impressions || 0).toLocaleString()}</span>
                                             </div>
                                             <div className="flex items-center gap-1">
-                                                <MousePointer className="w-4 h-4" />
-                                                <span>{(ad.clicks || 0).toLocaleString()} clicks</span>
+                                                <MousePointer className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                                <span>{(ad.clicks || 0).toLocaleString()}</span>
                                             </div>
                                             {ad.linkUrl && (
-                                                <div className="flex items-center gap-1 truncate">
-                                                    <Link className="w-4 h-4 flex-shrink-0" />
+                                                <div className="flex items-center gap-1 truncate col-span-2 md:col-span-1">
+                                                    <Link className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                                                     <a
                                                         href={ad.linkUrl}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-blue-500 hover:underline truncate"
                                                     >
-                                                        {ad.linkUrl}
+                                                        Link
                                                     </a>
                                                 </div>
                                             )}
@@ -446,27 +448,27 @@ export default function AdminAdvertisementsPage() {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="flex gap-2 flex-shrink-0">
+                                    <div className="flex sm:flex-col gap-2 flex-shrink-0 w-full sm:w-auto">
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleToggleActive(ad.id, ad.isActive && ad.paymentStatus === 'PAID')}
-                                            className={ad.isActive && ad.paymentStatus === 'PAID'
+                                            className={`flex-1 sm:flex-none ${ad.isActive && ad.paymentStatus === 'PAID'
                                                 ? 'text-yellow-500 border-yellow-500/30 hover:bg-yellow-500/10'
                                                 : 'text-green-500 border-green-500/30 hover:bg-green-500/10'
-                                            }
+                                                }`}
                                         >
                                             {ad.isActive && ad.paymentStatus === 'PAID' ? (
-                                                <><ToggleRight className="w-4 h-4 mr-1" /> Deactivate</>
+                                                <><ToggleRight className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">Off</span></>
                                             ) : (
-                                                <><ToggleLeft className="w-4 h-4 mr-1" /> Activate</>
+                                                <><ToggleLeft className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">On</span></>
                                             )}
                                         </Button>
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleDelete(ad.id)}
-                                            className="text-red-500 border-red-500/30 hover:bg-red-500/10"
+                                            className="flex-1 sm:flex-none text-red-500 border-red-500/30 hover:bg-red-500/10"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>

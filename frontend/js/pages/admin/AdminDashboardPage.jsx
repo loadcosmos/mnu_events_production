@@ -100,55 +100,63 @@ export default function AdminDashboardPage() {
         <p className="text-base md:text-lg text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Platform statistics and overview</p>
       </div>
 
-      {/* Statistics Cards */}
+      {/* Statistics Cards - Clickable */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
-        <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Users</CardDescription>
-            <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalUsers}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              All registered users
-            </Badge>
-          </CardContent>
-        </Card>
+        <Link to="/admin/users">
+          <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Users</CardDescription>
+              <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalUsers}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                Click to manage →
+              </Badge>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Events</CardDescription>
-            <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalEvents}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              All platform events
-            </Badge>
-          </CardContent>
-        </Card>
+        <Link to="/admin/events">
+          <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Events</CardDescription>
+              <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalEvents}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                Click to manage →
+              </Badge>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Registrations</CardDescription>
-            <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalRegistrations}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              Event registrations
-            </Badge>
-          </CardContent>
-        </Card>
+        <Link to="/admin/events">
+          <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Registrations</CardDescription>
+              <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalRegistrations}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                Click to view events →
+              </Badge>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Active Clubs</CardDescription>
-            <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.activeClubs}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              Student clubs
-            </Badge>
-          </CardContent>
-        </Card>
+        <Link to="/admin/clubs">
+          <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Active Clubs</CardDescription>
+              <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.activeClubs}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
+                Click to manage →
+              </Badge>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Quick Actions */}

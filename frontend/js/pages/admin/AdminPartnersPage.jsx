@@ -129,50 +129,50 @@ export default function AdminPartnersPage() {
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Building2 className="w-8 h-8 text-blue-400" />
-            External Partners Management
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <Building2 className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
+            External Partners
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage external partners and their settings
           </p>
         </div>
-        <Button onClick={() => toast.info('Partner creation will be available soon')} size="lg">
-          <Plus className="w-5 h-5 mr-2" />
+        <Button onClick={() => toast.info('Partner creation will be available soon')} size="sm" className="w-full sm:w-auto">
+          <Plus className="w-4 h-4 mr-2" />
           Add Partner
         </Button>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
-          <CardHeader className="pb-2">
-            <CardDescription>Total Partners</CardDescription>
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardDescription className="text-xs">Total Partners</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{partners.length}</div>
+          <CardContent className="px-3 pb-3">
+            <div className="text-xl md:text-2xl font-bold">{partners.length}</div>
           </CardContent>
         </Card>
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
-          <CardHeader className="pb-2">
-            <CardDescription>Verified Partners</CardDescription>
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardDescription className="text-xs">Verified</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-400">
+          <CardContent className="px-3 pb-3">
+            <div className="text-xl md:text-2xl font-bold text-green-400">
               {partners.filter((p) => p.isVerified).length}
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
-          <CardHeader className="pb-2">
-            <CardDescription>Total Revenue</CardDescription>
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardDescription className="text-xs">Total Revenue</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-400">
+          <CardContent className="px-3 pb-3">
+            <div className="text-lg md:text-2xl font-bold text-blue-400 truncate">
               {formatCurrency(
                 partners.reduce((sum, p) => sum + (p.stats?.totalRevenue || 0), 0)
               )}
@@ -181,11 +181,11 @@ export default function AdminPartnersPage() {
         </Card>
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
-          <CardHeader className="pb-2">
-            <CardDescription>Platform Commission</CardDescription>
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardDescription className="text-xs">Platform Commission</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-400">
+          <CardContent className="px-3 pb-3">
+            <div className="text-lg md:text-2xl font-bold text-green-400 truncate">
               {formatCurrency(
                 partners.reduce((sum, p) => sum + (p.stats?.totalCommission || 0), 0)
               )}
@@ -245,17 +245,17 @@ export default function AdminPartnersPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Contact Info */}
-                <div className="grid gap-3 md:grid-cols-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="w-4 h-4 text-blue-400" />
-                    <span className="text-muted-foreground">{partner.phone}</span>
+                <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                    <span className="text-muted-foreground truncate">{partner.phone}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-blue-400" />
-                    <span className="text-muted-foreground">{partner.email}</span>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
+                    <span className="text-muted-foreground truncate">{partner.email}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="w-4 h-4 text-blue-400" />
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
                     <span className="text-muted-foreground">
                       Kaspi: {partner.kaspiPhone}
                     </span>
@@ -263,7 +263,7 @@ export default function AdminPartnersPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid gap-3 md:grid-cols-4 p-3 rounded-lg bg-white/5">
+                <div className="grid gap-2 sm:gap-3 grid-cols-2 md:grid-cols-4 p-2 sm:p-3 rounded-lg bg-white/5">
                   <div>
                     <div className="text-xs text-muted-foreground">Commission</div>
                     <div className="font-bold text-blue-400">
@@ -287,7 +287,7 @@ export default function AdminPartnersPage() {
                 </div>
 
                 {/* Financial Stats */}
-                <div className="grid gap-3 md:grid-cols-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3 p-2 sm:p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
                   <div>
                     <div className="text-xs text-muted-foreground">Partner Revenue</div>
                     <div className="font-bold text-green-400">
@@ -309,9 +309,9 @@ export default function AdminPartnersPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor={`commission-${partner.id}`}>Update Commission (%)</Label>
+                    <Label htmlFor={`commission-${partner.id}`} className="text-xs sm:text-sm">Update Commission (%)</Label>
                     <div className="flex gap-2">
                       <Input
                         id={`commission-${partner.id}`}
@@ -327,39 +327,39 @@ export default function AdminPartnersPage() {
                           setSelectedPartner(partner.id);
                           setNewCommissionRate(e.target.value);
                         }}
+                        className="text-sm"
                       />
                       <Button
                         onClick={() => handleUpdateCommission(partner.id)}
                         disabled={!newCommissionRate || selectedPartner !== partner.id}
                         size="sm"
                       >
-                        <Percent className="w-4 h-4 mr-1" />
-                        Update
+                        <Percent className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
 
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor={`slots-${partner.id}`}>Add Event Slots</Label>
+                    <Label htmlFor={`slots-${partner.id}`} className="text-xs sm:text-sm">Add Event Slots</Label>
                     <div className="flex gap-2">
                       <Input
                         id={`slots-${partner.id}`}
                         type="number"
                         min="1"
-                        placeholder="Number of slots"
+                        placeholder="Slots"
                         value={selectedPartner === partner.id ? slotsToAdd : ''}
                         onChange={(e) => {
                           setSelectedPartner(partner.id);
                           setSlotsToAdd(e.target.value);
                         }}
+                        className="text-sm"
                       />
                       <Button
                         onClick={() => handleAddSlots(partner.id)}
                         disabled={!slotsToAdd || selectedPartner !== partner.id}
                         size="sm"
                       >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add
+                        <Plus className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>

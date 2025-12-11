@@ -18,8 +18,8 @@ const authService = {
       const response = await api.post('/auth/register', {
         email: userData.email,
         password: userData.password,
-        firstName: userData.name?.split(' ')[0] || '',
-        lastName: userData.name?.split(' ').slice(1).join(' ') || '',
+        firstName: userData.firstName,
+        lastName: userData.lastName,
       });
 
       // При регистрации токен не выдается, так как email не верифицирован
@@ -183,7 +183,7 @@ const authService = {
     try {
       // Бэкенд ожидает { email, code }, а не { token }
       const response = await api.post('/auth/verify-email', verifyData);
-      
+
       // Tokens are now stored in httpOnly cookies by the server
       // We only cache user data for quick access
       if (response.user) {

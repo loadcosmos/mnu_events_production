@@ -16,7 +16,8 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '',
+    firstName: '',
+    lastName: '',
     confirmPassword: '',
   });
   const [error, setError] = useState('');
@@ -92,7 +93,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.firstName || !formData.lastName) {
       setError(t('auth.pleaseFillAllFields'));
       return;
     }
@@ -112,7 +113,8 @@ export default function LoginPage() {
       await register({
         email: formData.email,
         password: formData.password,
-        name: formData.name,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
       });
       // После регистрации редиректим на страницу верификации email
       navigate('/verify-email', {
@@ -207,18 +209,35 @@ export default function LoginPage() {
                   className="bg-gray-50 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-[#d62e1f] transition-colors duration-300"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-name" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.fullName')}</Label>
-                <Input
-                  id="signup-name"
-                  name="name"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="bg-gray-50 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-[#d62e1f] transition-colors duration-300"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-firstName" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.firstName')}</Label>
+                  <Input
+                    id="signup-firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    className="bg-gray-50 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-[#d62e1f] transition-colors duration-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-lastName" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.lastName')}</Label>
+                  <Input
+                    id="signup-lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    className="bg-gray-50 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-[#d62e1f] transition-colors duration-300"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-password" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.password')}</Label>

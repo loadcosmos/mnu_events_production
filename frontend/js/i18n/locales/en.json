@@ -23,6 +23,8 @@
         "enterDetailsToSignIn": "Please enter your details to sign in",
         "registerWithKazguu": "Register with your @kazguu.kz account",
         "fullName": "Full Name",
+        "firstName": "First Name",
+        "lastName": "Last Name",
         "enterEmail": "Enter your email",
         "enterPassword": "Enter your password",
         "confirmPassword": "Confirm Password",
@@ -182,6 +184,7 @@
     "profile": {
         "profile": "Profile",
         "editProfile": "Edit Profile",
+        "shareProfile": "Share Profile",
         "settings": "Settings",
         "overview": "Overview",
         "saved": "Saved",
@@ -194,7 +197,26 @@
         "unfollow": "Unfollow",
         "points": "Points",
         "level": "Level",
-        "achievements": "Achievements"
+        "achievements": "Achievements",
+        "myStats": "My Stats",
+        "eventsAttended": "Events Attended",
+        "upcomingEvents": "Upcoming Events",
+        "clubsJoined": "Clubs Joined",
+        "gamificationProgress": "Gamification Progress",
+        "quickAccess": "Quick Access",
+        "csiStatistics": "CSI Statistics",
+        "viewCsiProgress": "View your CSI activity progress and statistics",
+        "myInterests": "My Interests",
+        "language": "Language",
+        "chooseLanguage": "Choose your preferred language",
+        "notifications": "Notifications",
+        "manageNotifications": "Manage notification preferences",
+        "privacySecurity": "Privacy & Security",
+        "controlPrivacy": "Control your privacy settings",
+        "aboutHelp": "About & Help",
+        "getHelp": "Get help and learn about the app",
+        "signOutAccount": "Sign out of your account",
+        "viewManageRegistrations": "View and manage your event registrations"
     },
     "onboarding": {
         "welcome": "Welcome to MNU Events! 🎉",
@@ -274,5 +296,52 @@
         "noOfficialPosts": "No official posts yet",
         "noPostsFoundFor": "No posts found for \"{{query}}\"",
         "createPost": "Create Post"
+    },
+    "home": {
+        "learnMore": "Learn More",
+        "viewAllEvents": "View All Events",
+        "trendingThisWeek": "Trending This Week",
+        "mostPopularEvents": "Most popular events by registrations",
+        "myUpcomingEvents": "My Upcoming Events",
+        "eventsYoureRegisteredFor": "Events you're registered for",
+        "announcements": "Announcements",
+        "showMore": "Show More"
+    },
+    "clubs": {
+        "studentClubs": "Student Clubs",
+        "organizer": "Organizer",
+        "clubStatistics": "Club Statistics",
+        "members": "Members",
+        "categories": "Categories",
+        "created": "Created",
+        "joinClub": "Join Club",
+        "leaveClub": "Leave Club",
+        "clubInfo": "Club Info"
+    },
+    "services": {
+        "perSession": "per session",
+        "contact": "Contact",
+        "safeTransaction": "Safe Transaction",
+        "provider": "Provider",
+        "createService": "Create Service",
+        "serviceDetails": "Service Details",
+        "bookNow": "Book Now"
+    },
+    "categories": {
+        "ACADEMIC": "Academic",
+        "SPORTS": "Sports",
+        "CULTURAL": "Cultural",
+        "TECH": "Tech",
+        "SOCIAL": "Social",
+        "CAREER": "Career",
+        "OTHER": "Other"
+    },
+    "roles": {
+        "STUDENT": "Student",
+        "FACULTY": "Faculty",
+        "ORGANIZER": "Organizer",
+        "ADMIN": "Admin",
+        "MODERATOR": "Moderator",
+        "EXTERNAL_PARTNER": "Partner"
     }
 }
