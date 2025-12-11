@@ -319,7 +319,7 @@ export class ServicesService {
       ...service,
       price: Number(service.price),
       rating: service.rating ? Number(service.rating) : null,
-      reviews: service.reviews ? service.reviews.map(r => ({
+      reviews: service.reviews ? service.reviews.map((r: any) => ({
         id: r.id,
         rating: r.rating,
         comment: r.comment,
