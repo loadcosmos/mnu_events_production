@@ -52,15 +52,23 @@ export default function Layout({ children }) {
   useEffect(() => {
     const checkOnboarding = async () => {
       if (isAuthenticated() && user?.role === 'STUDENT') {
+        // First check localStorage fallback
+        if (localStorage.getItem('onboardingCompleted') === 'true') {
+          setShowOnboarding(false);
+          return;
+        }
+
         try {
           const prefs = await preferencesService.getMyPreferences();
           if (!prefs?.onboardingCompleted) {
             setShowOnboarding(true);
           }
         } catch (error) {
-          // Preferences don't exist yet, show onboarding
+          // Only show onboarding if no localStorage fallback exists
           if (error?.response?.status === 404 || !error?.response) {
-            setShowOnboarding(true);
+            if (localStorage.getItem('onboardingCompleted') !== 'true') {
+              setShowOnboarding(true);
+            }
           }
         }
       }
@@ -72,16 +80,23 @@ export default function Layout({ children }) {
   // Редирект организаторов и админов с публичных страниц на их страницы
   useEffect(() => {
     if (isAuthenticated() && user) {
-      // Разрешаем организаторам просматривать детали событий
-      const allowedPaths = ['/', '/events/', '/clubs/', '/profile'];
-      const isAllowedPath = allowedPaths.some(path => location.pathname.startsWith(path));
+      // Разрешаем всем просматривать детали событий и клубов
+      const allowedPaths = ['/', '/events', '/clubs', '/profile'];
+      const isAllowedPath = allowedPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
 
-      if (user.role === 'ORGANIZER' && !isAllowedPath && location.pathname !== '/organizer' && !location.pathname.startsWith('/organizer')) {
+      // Организаторы: разрешаем только /organizer/* и разрешённые пути
+      if (user.role === 'ORGANIZER' && !location.pathname.startsWith('/organizer') && !isAllowedPath) {
         navigate('/organizer', { replace: true });
         return;
       }
-      if (user.role === 'ADMIN' && location.pathname !== '/admin' && !location.pathname.startsWith('/admin')) {
+      // Админы: разрешаем только /admin/* и разрешённые пути
+      if (user.role === 'ADMIN' && !location.pathname.startsWith('/admin') && !isAllowedPath) {
         navigate('/admin', { replace: true });
+        return;
+      }
+      // Модераторы: разрешаем /moderator/* и разрешённые пути
+      if (user.role === 'MODERATOR' && !location.pathname.startsWith('/moderator') && !isAllowedPath) {
+        navigate('/moderator', { replace: true });
         return;
       }
     }

@@ -189,12 +189,18 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     onboardingCompleted: true
                 });
             }
-            onComplete();
         } catch (error) {
             console.error('Failed to save preferences:', error);
-            toast.error(t('onboarding.failedToSave'));
+            // Save to localStorage as fallback so user doesn't see onboarding again
+            localStorage.setItem('onboardingCompleted', 'true');
+            // Don't show error toast on skip - just close silently
+            if (!skipped) {
+                toast.error(t('onboarding.failedToSave'));
+            }
         } finally {
             setIsLoading(false);
+            // Always close the modal regardless of API success/failure
+            onComplete();
         }
     };
 

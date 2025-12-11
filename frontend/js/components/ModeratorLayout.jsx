@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Административный Layout для модераторов
@@ -14,32 +16,16 @@ export default function ModeratorLayout({ children }) {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { isDark } = useTheme();
-  const [langOpen, setLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('ENG');
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const langDropdownRef = useRef(null);
 
   const handleLogout = useCallback(async () => {
     await logout();
     navigate('/');
   }, [logout, navigate]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
-        setLangOpen(false);
-      }
-    };
 
-    if (langOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [langOpen]);
 
   const navItems = useMemo(() => [
     { path: '/moderator', label: 'Dashboard', icon: '📊' },
@@ -142,7 +128,7 @@ export default function ModeratorLayout({ children }) {
                   className="w-full liquid-glass-red-button rounded-2xl text-white"
                   size="sm"
                 >
-                  Logout
+                  {t('auth.logout')}
                 </Button>
               </div>
             ) : (
@@ -191,38 +177,7 @@ export default function ModeratorLayout({ children }) {
           {/* Right side */}
           <div className="flex items-center space-x-4">
             {/* Language selector */}
-            <div className="relative" ref={langDropdownRef}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLangOpen(!langOpen)}
-                className="text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200/50 dark:hover:bg-white/10"
-              >
-                {selectedLang}
-                <i className="fa-solid fa-chevron-down text-xs ml-1" />
-              </Button>
-              {langOpen && (
-                <div className="absolute right-0 mt-2 w-32 rounded-2xl liquid-glass-strong p-1 shadow-lg z-50">
-                  {['ENG', 'РУС', 'ҚАЗ'].map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => {
-                        setSelectedLang(lang);
-                        setLangOpen(false);
-                      }}
-                      className={cn(
-                        "w-full text-left px-2 py-1.5 text-sm rounded-xl transition-colors",
-                        selectedLang === lang
-                          ? "liquid-glass-red-button text-white"
-                          : "hover:bg-gray-200/50 dark:hover:bg-white/10 text-gray-900 dark:text-white"
-                      )}
-                    >
-                      {lang}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <LanguageSelector />
           </div>
         </header>
 

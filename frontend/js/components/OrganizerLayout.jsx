@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Административный Layout для организатора
@@ -15,11 +17,9 @@ export default function OrganizerLayout({ children }) {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { isDark } = useTheme();
-  const [langOpen, setLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('ENG');
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const langDropdownRef = useRef(null);
 
   // Detect mobile screen
   useEffect(() => {
@@ -44,27 +44,13 @@ export default function OrganizerLayout({ children }) {
     navigate('/');
   }, [logout, navigate]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
-        setLangOpen(false);
-      }
-    };
 
-    if (langOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [langOpen]);
 
   const navItems = useMemo(() => [
-    { path: '/organizer', label: 'Dashboard', icon: '📊' },
-    { path: '/organizer/create-event', label: 'Create Event', icon: '➕' },
-    { path: '/organizer/analytics', label: 'Analytics', icon: '📈' },
-  ], []);
+    { path: '/organizer', label: t('nav.dashboard') || 'Dashboard', icon: '📊' },
+    { path: '/organizer/create-event', label: t('events.createEvent') || 'Create Event', icon: '➕' },
+    { path: '/organizer/analytics', label: t('events.analytics') || 'Analytics', icon: '📈' },
+  ], [t]);
 
   // Close sidebar when clicking a link on mobile
   const handleNavClick = useCallback(() => {
@@ -159,7 +145,7 @@ export default function OrganizerLayout({ children }) {
                   className="w-full liquid-glass-red-button rounded-2xl text-white"
                   size="sm"
                 >
-                  Logout
+                  {t('auth.logout')}
                 </Button>
               </div>
             ) : (
@@ -214,38 +200,7 @@ export default function OrganizerLayout({ children }) {
           {/* Right side */}
           <div className="flex items-center space-x-2 md:space-x-4">
             {/* Language selector */}
-            <div className="relative" ref={langDropdownRef}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLangOpen(!langOpen)}
-                className="text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200/50 dark:hover:bg-white/10"
-              >
-                {selectedLang}
-                <i className="fa-solid fa-chevron-down text-xs ml-1" />
-              </Button>
-              {langOpen && (
-                <div className="absolute right-0 mt-2 w-32 rounded-2xl liquid-glass-strong p-1 shadow-lg z-50">
-                  {['ENG', 'РУС', 'ҚАЗ'].map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => {
-                        setSelectedLang(lang);
-                        setLangOpen(false);
-                      }}
-                      className={cn(
-                        "w-full text-left px-2 py-1.5 text-sm rounded-xl transition-colors",
-                        selectedLang === lang
-                          ? "liquid-glass-red-button text-white"
-                          : "hover:bg-gray-200/50 dark:hover:bg-white/10 text-gray-900 dark:text-white"
-                      )}
-                    >
-                      {lang}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <LanguageSelector />
           </div>
         </header>
 

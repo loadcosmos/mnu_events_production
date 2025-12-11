@@ -7,7 +7,8 @@
         "saved": "Saved",
         "marketplace": "Marketplace",
         "more": "More",
-        "profile": "Profile"
+        "profile": "Profile",
+        "dashboard": "Dashboard"
     },
     "auth": {
         "login": "Login",

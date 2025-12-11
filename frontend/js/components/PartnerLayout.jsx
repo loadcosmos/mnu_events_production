@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Layout для внешних партнеров
@@ -14,32 +16,16 @@ export default function PartnerLayout({ children }) {
     const navigate = useNavigate();
     const { isAuthenticated, user, logout } = useAuth();
     const { isDark } = useTheme();
-    const [langOpen, setLangOpen] = useState(false);
-    const [selectedLang, setSelectedLang] = useState('ENG');
+    const { t } = useTranslation();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    const langDropdownRef = useRef(null);
 
     const handleLogout = async () => {
         await logout();
         navigate('/');
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
-                setLangOpen(false);
-            }
-        };
 
-        if (langOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [langOpen]);
 
     const navItems = [
         { path: '/partner', label: 'Dashboard', icon: '📊' },
@@ -144,7 +130,7 @@ export default function PartnerLayout({ children }) {
                                     className="w-full bg-orange-600 hover:bg-orange-700 rounded-2xl text-white"
                                     size="sm"
                                 >
-                                    Logout
+                                    {t('auth.logout')}
                                 </Button>
                             </div>
                         ) : (
@@ -193,38 +179,7 @@ export default function PartnerLayout({ children }) {
                     {/* Right side */}
                     <div className="flex items-center space-x-4">
                         {/* Language selector */}
-                        <div className="relative" ref={langDropdownRef}>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setLangOpen(!langOpen)}
-                                className="text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200/50 dark:hover:bg-white/10"
-                            >
-                                {selectedLang}
-                                <i className="fa-solid fa-chevron-down text-xs ml-1" />
-                            </Button>
-                            {langOpen && (
-                                <div className="absolute right-0 mt-2 w-32 rounded-2xl liquid-glass-strong p-1 shadow-lg z-50">
-                                    {['ENG', 'РУС', 'ҚАЗ'].map((lang) => (
-                                        <button
-                                            key={lang}
-                                            onClick={() => {
-                                                setSelectedLang(lang);
-                                                setLangOpen(false);
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-2 py-1.5 text-sm rounded-xl transition-colors",
-                                                selectedLang === lang
-                                                    ? "bg-orange-600 text-white"
-                                                    : "hover:bg-gray-200/50 dark:hover:bg-white/10 text-gray-900 dark:text-white"
-                                            )}
-                                        >
-                                            {lang}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <LanguageSelector />
                     </div>
                 </header>
 

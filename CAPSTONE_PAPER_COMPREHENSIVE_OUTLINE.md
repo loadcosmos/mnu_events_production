@@ -27,7 +27,7 @@
 
 ### ✓ Section 3: Objectives and Scope
 - 5 primary objectives (centralize, automate, incentivize, revenue, quality)
-- Full scope definition (5 roles, 12 core modules, tech stack)
+- Full scope definition (6 roles, 12 core modules, tech stack)
 - Out of scope items (native apps, real-time notifications, Kaspi API)
 - Success criteria (technical + business metrics)
 
@@ -140,7 +140,7 @@
 **5.5 Testing Strategy**
 - **Unit Tests:** 35+ backend (Jest), 30+ frontend (Vitest)
 - **Integration Tests:** API endpoint coverage
-- **Manual Testing:** User flow validation across all 5 roles
+- **Manual Testing:** User flow validation across all 6 roles
 - **Test Data:** Seed script with 6 test accounts
 - **Coverage Goals:** 60% backend, 40% frontend
 
@@ -219,6 +219,7 @@
 | **MODERATOR** | Approve/reject content (events, services, posts, ads), verify payments, check-in attendees | Content reviewer |
 | **ADMIN** | Full system access, user management, platform settings, pricing configuration, partner management | System administrator |
 | **EXTERNAL_PARTNER** | Create paid events, verify payments, track commissions, buy event slots | Business partner |
+| **FACULTY** | Create auto-approved posts (OFFICIAL), view events, specify position/title | University staff |
 
 **6.4 API Architecture**
 
@@ -1393,7 +1394,7 @@ await moderationQueue.add({
 
 **O5: Ensure Quality** ✅ **ACHIEVED**
 - Multi-tier moderation: automatic filters + human review
-- 5-role RBAC system with granular permissions
+- 6-role RBAC system with granular permissions
 - Technical validation: 100+ char minimum, spam detection, CAPS ratio
 - Moderator SLA: 24-hour review target
 - Post-publication removal capability for policy violations
@@ -2113,6 +2114,7 @@ enum PaymentStatus {
 | STUDENT | student1@kazguu.kz | Password123! |
 | STUDENT | student2@kazguu.kz | Password123! |
 | EXTERNAL_PARTNER | partner@example.com | Password123! |
+| FACULTY | faculty@kazguu.kz | Password123! |
 
 **Note:** These accounts are for development and testing only. Production deployments should use the registration flow with real email verification.
 
@@ -2212,4 +2214,81 @@ enum PaymentStatus {
 - Word Count: ~18,000
 - Last Updated: December 11, 2024
 - Version: 2.0 Final
+
+
+---
+
+## FACULTY Role - Complete Documentation
+
+### Role Definition
+
+**FACULTY** represents university teaching and administrative staff:
+- Professors
+- Deans
+- Academic Advisors
+- Teaching Assistants
+- Department Heads
+
+### Permissions Matrix (Updated with FACULTY)
+
+| Feature | STUDENT | ORGANIZER | MODERATOR | ADMIN | PARTNER | FACULTY |
+|---------|---------|-----------|-----------|-------|---------|---------|
+| Register for events | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Create events | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Create posts | ✅ (moderated) | ✅ | ✅ (auto) | ✅ (auto) | ❌ | ✅ (auto) |
+| Join clubs | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Moderate content | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Manage users | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Verify payments | ❌ | ✅ (own) | ✅ | ✅ | ✅ (own) | ❌ |
+| View analytics | ❌ | ✅ (own) | ❌ | ✅ | ✅ (own) | ❌ |
+| Scan QR codes | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Set position title | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+
+### Technical Implementation
+
+**Auto-Approval Logic (posts.service.ts):**
+```typescript
+if (userRole === Role.FACULTY) {
+    type = PostType.FACULTY_POST;
+    // No moderation needed - auto-approved
+}
+```
+
+**Position Field (update-user.dto.ts):**
+```typescript
+@ApiPropertyOptional({ 
+  example: 'Dean of Computer Science', 
+  description: 'Position/title for FACULTY role users' 
+})
+@IsOptional()
+@IsString()
+@MaxLength(200)
+position?: string;
+```
+
+### Use Cases
+
+1. **Official Announcements**
+   - Dean posts semester schedule changes
+   - Advisor shares scholarship opportunities
+   - Professor announces guest lecture
+
+2. **Direct Student Communication**
+   - Faculty can post directly without waiting for moderator approval
+   - Posts appear immediately with OFFICIAL badge
+   - Students can like and comment on faculty posts
+
+3. **Separation of Content**
+   - Faculty feed shows only official content
+   - Students can filter to see only official announcements
+   - Prevents faculty from seeing student casual discussions
+
+### Benefits
+
+- **Speed**: No moderation delay for official communications
+- **Authority**: Visual distinction with OFFICIAL badge
+- **Focus**: Clean feed without student chatter for faculty
+- **Flexibility**: Different experience based on user role
+
+---
 
