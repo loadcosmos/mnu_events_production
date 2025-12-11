@@ -880,10 +880,7 @@ async function main() {
   await prisma.advertisement.create({
     data: {
       title: 'Coffee House Promo',
-      description: 'Get 20% off your morning coffee! Show your student ID.',
       companyName: 'Coffee House Central',
-      contactEmail: 'promo@coffeehouse.kz',
-      contactPhone: '+7 701 987 65 43',
       imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
       linkUrl: 'https://www.instagram.com/coffeehouse.almaty',
       position: AdPosition.SIDEBAR,
@@ -899,10 +896,7 @@ async function main() {
   await prisma.advertisement.create({
     data: {
       title: 'IT Academy Bootcamp',
-      description: 'Learn to code in 3 months. Job guarantee or money back.',
       companyName: 'IT Academy',
-      contactEmail: 'admissions@itacademy.kz',
-      contactPhone: '+7 777 123 45 67',
       imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998',
       linkUrl: 'https://itacademy.kz',
       position: AdPosition.NATIVE_FEED,
