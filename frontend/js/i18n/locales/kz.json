@@ -1,14 +1,14 @@
 {
     "nav": {
-        "home": "Басты бет",
-        "events": "Іс-шаралар",
-        "community": "Қоғамдастық",
+        "home": "Басты",
+        "events": "Оқиғалар",
+        "community": "Лента",
         "clubs": "Клубтар",
         "saved": "Сақталған",
-        "marketplace": "Маркетплейс",
+        "marketplace": "Маркет",
         "more": "Тағы",
         "profile": "Профиль",
-        "dashboard": "Басқару тақтасы"
+        "dashboard": "Басқару"
     },
     "auth": {
         "login": "Кіру",

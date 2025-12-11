@@ -271,14 +271,14 @@ export default function Layout({ children }) {
             {/* Right side - Navigation and Auth */}
             <div className="flex flex-1 items-center justify-end gap-4">
               {/* Desktop Only: Navigation - uses navItems for consistency */}
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav className="hidden lg:flex items-center gap-0">
                 {navItems.map((item) => (
                   <Button
                     key={item.path}
                     variant="ghost"
-                    size="default"
+                    size="sm"
                     asChild
-                    className={`rounded-xl ${textColorClass} ${hoverClass} text-base transition-all`}
+                    className={`rounded-xl ${textColorClass} ${hoverClass} text-sm whitespace-nowrap px-2 xl:px-3 transition-all`}
                   >
                     <Link to={item.path}>{item.label}</Link>
                   </Button>

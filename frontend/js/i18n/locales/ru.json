@@ -1,14 +1,14 @@
 {
     "nav": {
         "home": "Главная",
-        "events": "Мероприятия",
-        "community": "Сообщество",
+        "events": "События",
+        "community": "Лента",
         "clubs": "Клубы",
         "saved": "Сохранённое",
-        "marketplace": "Маркетплейс",
+        "marketplace": "Маркет",
         "more": "Ещё",
         "profile": "Профиль",
-        "dashboard": "Панель управления"
+        "dashboard": "Панель"
     },
     "auth": {
         "login": "Войти",
