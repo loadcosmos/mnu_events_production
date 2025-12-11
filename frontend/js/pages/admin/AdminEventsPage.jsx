@@ -7,8 +7,10 @@ import { Input } from '../../components/ui/input';
 import { toast } from 'sonner';
 import eventsService from '../../services/eventsService';
 import { sanitizeText } from '../../utils/sanitize';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminEventsPage() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -114,8 +116,8 @@ export default function AdminEventsPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Manage Events</h1>
-          <p className="text-gray-600 dark:text-gray-400">Loading events...</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('admin.manageEvents')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -124,8 +126,8 @@ export default function AdminEventsPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Manage Events</h1>
-        <p className="text-gray-600 dark:text-gray-400">View and manage all platform events</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('admin.manageEvents')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{t('admin.welcome')}</p>
       </div>
 
       {/* Filters */}
@@ -160,7 +162,7 @@ export default function AdminEventsPage() {
               </div>
             </div>
             <Button type="submit" className="liquid-glass-red-button text-white rounded-2xl">
-              Search
+              {t('common.search')}
             </Button>
           </form>
         </CardContent>
@@ -220,7 +222,7 @@ export default function AdminEventsPage() {
                     asChild
                     className="rounded-xl"
                   >
-                    <Link to={`/events/${event.id}`}>View Details</Link>
+                    <Link to={`/events/${event.id}`}>{t('admin.viewDetails')}</Link>
                   </Button>
                   <Button
                     variant="destructive"
@@ -228,7 +230,7 @@ export default function AdminEventsPage() {
                     onClick={() => handleDelete(event.id, event.title)}
                     className="rounded-xl"
                   >
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </CardContent>

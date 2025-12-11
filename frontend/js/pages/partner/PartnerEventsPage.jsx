@@ -7,6 +7,7 @@ import { Badge } from '../../components/ui/badge';
 import eventsService from '../../services/eventsService';
 import { sanitizeText } from '../../utils/sanitize';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
     Calendar,
     Clock,
@@ -23,6 +24,7 @@ import {
 export default function PartnerEventsPage() {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
+    const { t } = useTranslation();
 
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -129,15 +131,15 @@ export default function PartnerEventsPage() {
                     </div>
                     <h1 className="text-3xl font-bold flex items-center gap-3 mt-2">
                         <Calendar className="w-8 h-8 text-orange-400" />
-                        My Events
+                        {t('partner.myEvents')}
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage and track all your events
+                        {t('partner.dashboard')}
                     </p>
                 </div>
                 <Button onClick={() => navigate('/partner/create-event')} size="lg">
                     <Plus className="w-5 h-5 mr-2" />
-                    Create Event
+                    {t('organizer.createEvent')}
                 </Button>
             </div>
 
@@ -177,7 +179,7 @@ export default function PartnerEventsPage() {
                         </p>
                         <Button onClick={() => navigate('/partner/create-event')}>
                             <Plus className="w-4 h-4 mr-2" />
-                            Create Your First Event
+                            {t('partner.createFirstEvent')}
                         </Button>
                     </CardContent>
                 </Card>
@@ -246,7 +248,7 @@ export default function PartnerEventsPage() {
                                         size="sm"
                                         onClick={() => navigate(`/partner/events/${event.id}`)}
                                     >
-                                        View Details
+                                        {t('admin.viewDetails')}
                                     </Button>
                                     {(event.status === 'UPCOMING' || event.status === 'PENDING_MODERATION') && (
                                         <Button
@@ -254,7 +256,7 @@ export default function PartnerEventsPage() {
                                             size="sm"
                                             onClick={() => navigate(`/partner/events/${event.id}/edit`)}
                                         >
-                                            Edit
+                                            {t('common.edit')}
                                         </Button>
                                     )}
                                     {event.isPaid && event.status !== 'PENDING_MODERATION' && (

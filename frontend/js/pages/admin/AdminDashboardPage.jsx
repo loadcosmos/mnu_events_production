@@ -5,8 +5,10 @@ import { Badge } from '../../components/ui/badge';
 import eventsService from '../../services/eventsService';
 import usersService from '../../services/usersService';
 import clubsService from '../../services/clubsService';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminDashboardPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
@@ -63,8 +65,8 @@ export default function AdminDashboardPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Admin Dashboard</h1>
-          <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Loading statistics...</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('admin.dashboard')}</h1>
+          <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('common.loading')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -96,8 +98,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Admin Dashboard</h1>
-        <p className="text-base md:text-lg text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Platform statistics and overview</p>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('admin.dashboard')}</h1>
+        <p className="text-base md:text-lg text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.welcome')}</p>
       </div>
 
       {/* Statistics Cards - Clickable */}
@@ -105,7 +107,7 @@ export default function AdminDashboardPage() {
         <Link to="/admin/users">
           <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
             <CardHeader className="pb-3">
-              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Users</CardDescription>
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.totalUsers')}</CardDescription>
               <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalUsers}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -119,7 +121,7 @@ export default function AdminDashboardPage() {
         <Link to="/admin/events">
           <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
             <CardHeader className="pb-3">
-              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Events</CardDescription>
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.totalEvents')}</CardDescription>
               <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalEvents}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -168,15 +170,15 @@ export default function AdminDashboardPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <Link to="/admin/events" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
-              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">Manage Events</h3>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageEvents')}</h3>
               <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage all platform events</p>
             </Link>
             <Link to="/admin/users" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
-              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">Manage Users</h3>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageUsers')}</h3>
               <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage user accounts</p>
             </Link>
             <Link to="/admin/clubs" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
-              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">Manage Clubs</h3>
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageClubs')}</h3>
               <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage student clubs</p>
             </Link>
           </div>

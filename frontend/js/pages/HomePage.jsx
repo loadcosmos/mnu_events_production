@@ -8,6 +8,7 @@ import EventModal from '../components/EventModal';
 import AdBanner from '../components/AdBanner';
 import AdModal from '../components/AdModal';
 import { useRecommendedEvents } from '../hooks';
+import { useTranslation } from 'react-i18next';
 
 // Extracted home page components
 import { HeroSlider, EventsHorizontalScroll, NewsFeedSection } from './home';
@@ -19,6 +20,7 @@ import { HeroSlider, EventsHorizontalScroll, NewsFeedSection } from './home';
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
 
   // Redirect organizers and admins to their pages
   useEffect(() => {

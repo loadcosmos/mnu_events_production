@@ -7,6 +7,7 @@ import { Badge } from '../../components/ui/badge';
 import partnersService from '../../services/partnersService';
 import eventsService from '../../services/eventsService';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   Building2,
   Calendar,
@@ -28,6 +29,7 @@ import {
 export default function PartnerDashboardPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);

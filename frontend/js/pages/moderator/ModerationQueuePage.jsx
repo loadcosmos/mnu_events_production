@@ -5,10 +5,12 @@ import { moderationService } from '../../services/moderationService';
 import { Button } from '../../components/ui/button';
 import { formatDate } from '../../utils/dateFormatters';
 import { sanitizeText } from '../../utils/sanitize';
+import { useTranslation } from 'react-i18next';
 
 export default function ModerationQueuePage() {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
+    const { t } = useTranslation();
     const [queue, setQueue] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('PENDING');
@@ -85,10 +87,10 @@ export default function ModerationQueuePage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
-                        Moderation <span className="text-[#d62e1f]">Queue</span>
+                        {t('moderator.moderationQueue')}
                     </h1>
                     <p className="text-gray-600 dark:text-[#a0a0a0]">
-                        Review and manage content submissions
+                        {t('moderator.reviewContent')}
                     </p>
                 </div>
 
@@ -98,9 +100,9 @@ export default function ModerationQueuePage() {
                         onChange={(e) => setFilterStatus(e.target.value)}
                         className="bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#d62e1f] focus:border-transparent outline-none"
                     >
-                        <option value="PENDING">Pending</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
+                        <option value="PENDING">{t('moderator.pending')}</option>
+                        <option value="APPROVED">{t('moderator.approved')}</option>
+                        <option value="REJECTED">{t('moderator.rejected')}</option>
                     </select>
 
                     <select
@@ -108,10 +110,10 @@ export default function ModerationQueuePage() {
                         onChange={(e) => setFilterType(e.target.value)}
                         className="bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#d62e1f] focus:border-transparent outline-none"
                     >
-                        <option value="">All Types</option>
-                        <option value="SERVICE">Services</option>
-                        <option value="EVENT">Events</option>
-                        <option value="ADVERTISEMENT">Ads</option>
+                        <option value="">{t('moderator.allTypes')}</option>
+                        <option value="SERVICE">{t('moderator.services')}</option>
+                        <option value="EVENT">{t('moderator.events')}</option>
+                        <option value="ADVERTISEMENT">{t('moderator.ads')}</option>
                     </select>
                 </div>
             </div>
@@ -123,8 +125,8 @@ export default function ModerationQueuePage() {
             ) : queue.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a]">
                     <i className="fa-solid fa-check-circle text-4xl text-green-500 mb-4"></i>
-                    <p className="text-xl font-semibold text-gray-900 dark:text-white">All caught up!</p>
-                    <p className="text-gray-600 dark:text-[#a0a0a0]">No items found with current filters.</p>
+                    <p className="text-xl font-semibold text-gray-900 dark:text-white">{t('moderator.allCaughtUp')}</p>
+                    <p className="text-gray-600 dark:text-[#a0a0a0]">{t('moderator.noItemsFound')}</p>
                 </div>
             ) : (
                 <div className="grid gap-6">

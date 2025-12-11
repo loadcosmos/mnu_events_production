@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { formatDate } from '../../utils/dateFormatters';
+import { useTranslation } from 'react-i18next';
 
 /**
  * HeroSlider - Full-screen event carousel for homepage
@@ -14,6 +15,7 @@ export default function HeroSlider({
     setCurrentSlide,
     onEventClick,
 }) {
+    const { t } = useTranslation();
     // Preload first event image for LCP improvement
     useEffect(() => {
         if (events.length > 0 && events[0].imageUrl) {
@@ -37,7 +39,7 @@ export default function HeroSlider({
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center text-gray-900 dark:text-white">
                         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#d62e1f] mb-4"></div>
-                        <p className="text-xl">Loading events...</p>
+                        <p className="text-xl">{t('common.loading')}</p>
                     </div>
                 </div>
             </section>
@@ -125,14 +127,14 @@ export default function HeroSlider({
                                         onClick={() => onEventClick(event.id)}
                                         className="liquid-glass-red-button px-8 py-4 text-white rounded-2xl font-bold text-base"
                                     >
-                                        Learn More
+                                        {t('home.learnMore')}
                                     </button>
                                     <Button
                                         size="lg"
                                         className="liquid-glass-red-button text-white rounded-2xl px-8 py-4"
                                         asChild
                                     >
-                                        <Link to="/events">View All Events</Link>
+                                        <Link to="/events">{t('home.viewAllEvents')}</Link>
                                     </Button>
                                 </div>
                             </div>

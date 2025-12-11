@@ -5,8 +5,10 @@ import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { moderationService } from '../../services/moderationService';
 import postsService from '../../services/postsService';
+import { useTranslation } from 'react-i18next';
 
 export default function ModeratorDashboardPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
@@ -93,8 +95,8 @@ export default function ModeratorDashboardPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Moderator Dashboard</h1>
-          <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Loading statistics...</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('moderator.dashboard')}</h1>
+          <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('common.loading')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -126,15 +128,15 @@ export default function ModeratorDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Moderation Dashboard</h1>
-        <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Review and manage content submissions</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('moderator.dashboard')}</h1>
+        <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.reviewContent')}</p>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-3">
-            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Pending Review</CardDescription>
+            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.pending')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-orange-600 dark:text-orange-400 transition-colors duration-300">{stats.pending}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -146,7 +148,7 @@ export default function ModeratorDashboardPage() {
 
         <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-3">
-            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Approved</CardDescription>
+            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.approved')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-green-600 dark:text-green-400 transition-colors duration-300">{stats.approved}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -158,7 +160,7 @@ export default function ModeratorDashboardPage() {
 
         <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-3">
-            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Rejected</CardDescription>
+            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.rejected')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-red-600 dark:text-red-400 transition-colors duration-300">{stats.rejected}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -267,7 +269,7 @@ export default function ModeratorDashboardPage() {
                           className="bg-green-600 hover:bg-green-700 text-white text-xs"
                         >
                           <i className="fa-solid fa-check mr-1" />
-                          Approve
+                          {t('moderator.approve')}
                         </Button>
                         <Button
                           size="sm"
@@ -276,7 +278,7 @@ export default function ModeratorDashboardPage() {
                           className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs"
                         >
                           <i className="fa-solid fa-times mr-1" />
-                          Reject
+                          {t('moderator.reject')}
                         </Button>
                       </div>
                     </div>
@@ -354,8 +356,8 @@ export default function ModeratorDashboardPage() {
           <CardContent className="py-12">
             <div className="text-center">
               <i className="fa-solid fa-check-circle text-4xl text-green-500 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">All Caught Up!</h3>
-              <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">No pending items to review at the moment.</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('moderator.allCaughtUp')}</h3>
+              <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.noItemsFound')}</p>
             </div>
           </CardContent>
         </Card>

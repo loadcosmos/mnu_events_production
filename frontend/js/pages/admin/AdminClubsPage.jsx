@@ -7,8 +7,10 @@ import { Input } from '../../components/ui/input';
 import { toast } from 'sonner';
 import clubsService from '../../services/clubsService';
 import { sanitizeText } from '../../utils/sanitize';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminClubsPage() {
+  const { t } = useTranslation();
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -103,8 +105,8 @@ export default function AdminClubsPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Manage Clubs</h1>
-          <p className="text-gray-600 dark:text-gray-400">Loading clubs...</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('admin.manageClubs')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -113,8 +115,8 @@ export default function AdminClubsPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Manage Clubs</h1>
-        <p className="text-gray-600 dark:text-gray-400">View and manage all student clubs</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('admin.manageClubs')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{t('admin.welcome')}</p>
       </div>
 
       {/* Filters */}
@@ -149,7 +151,7 @@ export default function AdminClubsPage() {
               </div>
             </div>
             <Button type="submit" className="liquid-glass-red-button text-white rounded-2xl">
-              Search
+              {t('common.search')}
             </Button>
           </form>
         </CardContent>
@@ -224,7 +226,7 @@ export default function AdminClubsPage() {
                     asChild
                     className="rounded-xl"
                   >
-                    <Link to={`/clubs/${club.id}`}>View Details</Link>
+                    <Link to={`/clubs/${club.id}`}>{t('admin.viewDetails')}</Link>
                   </Button>
                   <Button
                     variant="destructive"
@@ -232,7 +234,7 @@ export default function AdminClubsPage() {
                     onClick={() => handleDelete(club.id, club.name)}
                     className="rounded-xl"
                   >
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </CardContent>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatDate } from '../../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../../utils/categoryMappers';
 import { SkeletonCard } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 /**
  * EventCard - Reusable card for displaying event in horizontal scroll
@@ -104,6 +105,7 @@ export default function EventsHorizontalScroll({
     emptyMessage = 'No events available',
     emptyDescription = 'Check back later for new events!',
 }) {
+    const { t } = useTranslation();
     return (
         <section className="py-16 px-4 bg-gray-100 dark:bg-[#0a0a0a] transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
@@ -121,7 +123,7 @@ export default function EventsHorizontalScroll({
                         to={viewAllLink}
                         className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:text-[#ff4433] transition-colors"
                     >
-                        View All
+                        {t('common.viewAll')}
                         <i className="fa-solid fa-arrow-right" />
                     </Link>
                 </div>
@@ -141,7 +143,7 @@ export default function EventsHorizontalScroll({
                     <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                         <i className="fa-solid fa-exclamation-circle text-4xl text-[#d62e1f] mb-4"></i>
                         <p className="text-gray-900 dark:text-white font-semibold mb-2 transition-colors duration-300">
-                            Failed to load events
+                            {t('events.failedToLoad')}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
                             {error}
@@ -174,7 +176,7 @@ export default function EventsHorizontalScroll({
                                 to={viewAllLink}
                                 className="inline-flex items-center gap-2 text-[#d62e1f] font-semibold px-6 py-3 rounded-lg border-2 border-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-all"
                             >
-                                View All Events
+                                {t('home.viewAllEvents')}
                                 <i className="fa-solid fa-arrow-right" />
                             </Link>
                         </div>

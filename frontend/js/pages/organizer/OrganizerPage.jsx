@@ -8,9 +8,11 @@ import { Badge } from '../../components/ui/badge';
 import eventsService from '../../services/eventsService';
 import apiClient from '../../services/apiClient';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function OrganizerPage() {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
@@ -178,9 +180,9 @@ export default function OrganizerPage() {
       {/* Header - responsive */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('organizer.dashboard')}</h1>
           <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-            Welcome back, <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{user?.firstName || user?.email}</span>
+            {t('organizer.welcomeBack')}, <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{user?.firstName || user?.email}</span>
           </p>
         </div>
         <Button
@@ -190,7 +192,7 @@ export default function OrganizerPage() {
         >
           <Link to="/organizer/analytics">
             <i className="fa-solid fa-chart-line mr-2" />
-            View Analytics
+            {t('organizer.viewAnalytics')}
           </Link>
         </Button>
       </div>
