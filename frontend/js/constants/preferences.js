@@ -3,34 +3,23 @@
  * Used by OnboardingModal and EditInterestsSection to ensure consistency
  */
 
-// Event Categories (matching backend EventCategory enum)
+// Event Categories (matching backend Category enum)
 export const EVENT_CATEGORIES = [
     'ACADEMIC',
     'SPORTS',
     'CULTURAL',
+    'TECH',
     'SOCIAL',
     'CAREER',
-    'VOLUNTEER',
-    'WORKSHOP',
-    'CONCERT',
-    'EXHIBITION',
-    'COMPETITION',
-    'CONFERENCE',
     'OTHER'
 ];
 
-// CSI Tags (matching backend csiTags field)
+// CSI Categories (matching backend CsiCategory enum)
+// CSI = Creativity, Service, Intelligence
 export const CSI_TAGS = [
-    'universiade',
-    'culture',
-    'sport',
-    'social',
-    'professional',
-    'leadership',
-    'community',
-    'innovation',
-    'research',
-    'creative'
+    'CREATIVITY',
+    'SERVICE',
+    'INTELLIGENCE'
 ];
 
 // Days of Week (matching backend AvailableDay enum)
@@ -57,14 +46,9 @@ export const formatCategory = (category) => {
         'ACADEMIC': '📚 Academic',
         'SPORTS': '⚽ Sports',
         'CULTURAL': '🎭 Cultural',
+        'TECH': '💻 Tech',
         'SOCIAL': '🎉 Social',
         'CAREER': '💼 Career',
-        'VOLUNTEER': '🤝 Volunteer',
-        'WORKSHOP': '🛠️ Workshop',
-        'CONCERT': '🎵 Concert',
-        'EXHIBITION': '🖼️ Exhibition',
-        'COMPETITION': '🏆 Competition',
-        'CONFERENCE': '🎤 Conference',
         'OTHER': '✨ Other'
     };
     return categoryNames[category] || category.charAt(0) + category.slice(1).toLowerCase();
@@ -72,18 +56,11 @@ export const formatCategory = (category) => {
 
 export const formatCsiTag = (tag) => {
     const tagNames = {
-        'universiade': '🏅 Universiade',
-        'culture': '🎭 Culture',
-        'sport': '⚽ Sport',
-        'social': '🎉 Social',
-        'professional': '💼 Professional',
-        'leadership': '👑 Leadership',
-        'community': '🤝 Community',
-        'innovation': '💡 Innovation',
-        'research': '🔬 Research',
-        'creative': '🎨 Creative'
+        'CREATIVITY': '🎨 Creativity',
+        'SERVICE': '🤝 Service',
+        'INTELLIGENCE': '🧠 Intelligence'
     };
-    return tagNames[tag] || `#${tag}`;
+    return tagNames[tag] || tag.charAt(0) + tag.slice(1).toLowerCase();
 };
 
 export const formatDay = (day) => {
