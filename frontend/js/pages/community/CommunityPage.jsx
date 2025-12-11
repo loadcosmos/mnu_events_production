@@ -152,36 +152,33 @@ export default function CommunityPage() {
                 {/* Filters & Sort - Only for STUDENT */}
                 {user?.role === 'STUDENT' && (
                     <div className="mb-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                            <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setActiveFilter('all')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                                        activeFilter === 'all'
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeFilter === 'all'
                                             ? 'bg-[#d62e1f] text-white shadow-sm'
                                             : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                                    }`}
+                                        }`}
                                 >
                                     All
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter('official')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
-                                        activeFilter === 'official'
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${activeFilter === 'official'
                                             ? 'bg-[#d62e1f] text-white shadow-sm'
                                             : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                                    }`}
+                                        }`}
                                 >
                                     <i className="fa-solid fa-graduation-cap text-xs" />
                                     Official
                                 </button>
                                 <button
                                     onClick={() => setActiveFilter('students')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
-                                        activeFilter === 'students'
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${activeFilter === 'students'
                                             ? 'bg-[#d62e1f] text-white shadow-sm'
                                             : 'bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                                    }`}
+                                        }`}
                                 >
                                     <i className="fa-solid fa-users text-xs" />
                                     Students

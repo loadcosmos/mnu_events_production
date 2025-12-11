@@ -10,7 +10,7 @@ const postsService = {
      * @param {Object} params - Query params (page, limit)
      */
     async getAll(params = {}) {
-        return api.get('/posts', params);
+        return api.get('/posts', { params });
     },
 
     /**
@@ -18,7 +18,7 @@ const postsService = {
      * @param {Object} params - Query params (page, limit)
      */
     async getMyPosts(params = {}) {
-        return api.get('/posts/me', params);
+        return api.get('/posts/me', { params });
     },
 
     /**
@@ -26,7 +26,7 @@ const postsService = {
      * @param {Object} params - Query params (page, limit)
      */
     async getPendingPosts(params = {}) {
-        return api.get('/posts/moderation', params);
+        return api.get('/posts/moderation', { params });
     },
 
     /**
@@ -81,7 +81,7 @@ const postsService = {
      * @param {Object} params - Query params
      */
     async getComments(id, params = {}) {
-        return api.get(`/posts/${id}/comments`, params);
+        return api.get(`/posts/${id}/comments`, { params });
     },
 
     /**
