@@ -78,6 +78,18 @@ async function main() {
     },
   });
 
+  const faculty = await prisma.user.create({
+    data: {
+      email: 'faculty@kazguu.kz',
+      password: hashedPassword,
+      firstName: 'Anna',
+      lastName: 'Professor',
+      role: Role.FACULTY,
+      emailVerified: true,
+      faculty: 'Economics',
+    },
+  });
+
   const student1 = await prisma.user.create({
     data: {
       email: 'student1@kazguu.kz',
@@ -951,6 +963,8 @@ async function main() {
   ║   CORE ACCOUNTS:                                             ║
   ║   Admin:        admin@kazguu.kz                              ║
   ║   Organizer:    organizer@kazguu.kz                          ║
+  ║   Moderator:    moderator@kazguu.kz                          ║
+  ║   Faculty:      faculty@kazguu.kz                            ║
   ║   Student 1:    student1@kazguu.kz                           ║
   ║   (Default Pwd: Password123!)                                ║
   ║                                                              ║
