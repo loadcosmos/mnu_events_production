@@ -155,7 +155,43 @@ async someMethod() { ... }
 
 ## Recent Changes (2025-12-11)
 
-### Performance Optimizations ⚡ NEW
+### Critical Bug Fixes (Session & Preferences) 🔧 LATEST
+
+**Problem 1: Session expiry doesn't update UI**
+- ✅ **Auto-logout fix:** When JWT expires (401 Unauthorized), user data now cleared from localStorage
+- ✅ **UI update:** Header now shows "Login" button instead of username after session expires
+- ✅ **File modified:** `frontend/js/services/apiClient.js:138` - Added `localStorage.removeItem('user')`
+
+**Problem 2: Onboarding preferences not saving correctly**
+- ✅ **Root cause:** OnboardingModal and EditInterestsSection used **different constants**
+  - OnboardingModal: `CREATIVITY`, `SERVICE`, `INTELLIGENCE` (correct ✅)
+  - EditInterestsSection: `universiade`, `culture`, `sport`... (wrong ❌)
+  - Result: User selections in onboarding didn't match profile checks → nothing displayed
+- ✅ **Solution:** Created shared `constants/preferences.js` with canonical values
+- ✅ **CSI Categories:** Restored correct 3 categories matching backend Prisma schema
+  - `CREATIVITY` 🎨, `SERVICE` 🤝, `INTELLIGENCE` 🧠
+- ✅ **Event Categories:** 7 categories including `TECH` (backend supports it)
+  - `ACADEMIC`, `SPORTS`, `CULTURAL`, `TECH`, `SOCIAL`, `CAREER`, `OTHER`
+
+**Files Created:**
+- `frontend/js/constants/preferences.js` - Shared preferences constants (matching Prisma enums)
+
+**Files Modified:**
+- `frontend/js/services/apiClient.js` - Clear localStorage on 401
+- `frontend/js/components/OnboardingModal.jsx` - Import shared constants
+- `frontend/js/components/profile/EditInterestsSection.jsx` - Import shared constants
+
+**Backend Schema Reference:**
+```prisma
+enum Category { ACADEMIC, SPORTS, CULTURAL, TECH, SOCIAL, CAREER, OTHER }
+enum CsiCategory { CREATIVITY, SERVICE, INTELLIGENCE }
+enum AvailableDay { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
+enum TimeSlot { MORNING, AFTERNOON, EVENING }
+```
+
+---
+
+### Performance Optimizations ⚡
 
 **Backend (Redis + Prisma):**
 - ✅ **Recommendations caching:** `GET /events/recommendations` cached in Redis (10 min TTL)
@@ -361,6 +397,6 @@ We use `vercel.json` to control caching/
 
 ---
 
-*Last Updated: 2025-12-11 | v5.8 (Bug Fixes & Docs)*
+*Last Updated: 2025-12-11 | v5.9 (Session & Preferences Fixes)*
 
 

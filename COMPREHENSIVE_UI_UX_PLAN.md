@@ -2,7 +2,7 @@
 
 **Created:** 2025-12-10
 **Last Updated:** 2025-12-11
-**Status:** Phase 1 Complete ✅ | Phase 2 Complete ✅ | Phase 3-4 Pending
+**Status:** Phase 1 Complete ✅ | Phase 2 Complete ✅ | Constants Fixed ✅ | Phase 3-4 Pending
 **Timeline:** 10-14 days total | Phase 1: Completed | Phase 2: Completed 2025-12-11
 **Priority:** All 4 phases (1 → 2 → 3 → 4)
 
@@ -431,17 +431,14 @@ import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
 const EVENT_CATEGORIES = [
-    'ACADEMIC', 'SPORTS', 'CULTURAL', 'SOCIAL', 'CAREER',
-    'VOLUNTEER', 'WORKSHOP', 'CONCERT', 'EXHIBITION',
-    'COMPETITION', 'CONFERENCE', 'OTHER'
+    'ACADEMIC', 'SPORTS', 'CULTURAL', 'TECH', 'SOCIAL', 'CAREER', 'OTHER'
 ];
 
 const CSI_TAGS = [
-    'universiade', 'culture', 'sport', 'social', 'professional',
-    'leadership', 'community', 'innovation', 'research', 'creative'
+    'CREATIVITY', 'SERVICE', 'INTELLIGENCE'
 ];
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
 export default function OnboardingModal({ isOpen, onComplete }) {
     const [step, setStep] = useState(0);
