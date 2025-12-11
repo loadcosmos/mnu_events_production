@@ -8,7 +8,10 @@ import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { cn } from '../../lib/utils';
 
+import { useTranslation } from 'react-i18next'; // Added
+
 export default function LoginPage() {
+  const { t } = useTranslation(); // Added
   const [showSignup, setShowSignup] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -36,7 +39,7 @@ export default function LoginPage() {
     setError('');
 
     if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
+      setError(t('auth.pleaseFillAllFields'));
       return;
     }
 
@@ -78,7 +81,7 @@ export default function LoginPage() {
           break;
       }
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || t('auth.loginFailed'));
       // Toast для ошибок уже показывается в apiClient interceptor
     } finally {
       setLoading(false);
@@ -90,17 +93,17 @@ export default function LoginPage() {
     setError('');
 
     if (!formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all fields');
+      setError(t('auth.pleaseFillAllFields'));
       return;
     }
 
     if (!formData.email.endsWith('@kazguu.kz')) {
-      setError('Please use your @kazguu.kz email');
+      setError(t('auth.useKazguuEmail'));
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
@@ -117,7 +120,7 @@ export default function LoginPage() {
         state: { email: formData.email }
       });
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -138,12 +141,12 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-2xl liquid-glass-strong border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-            {showSignup ? 'Create Account' : 'Welcome Back'}
+            {showSignup ? t('auth.createAccount') : t('auth.welcomeBack')}
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
             {showSignup
-              ? 'Register with your @kazguu.kz account'
-              : 'Please enter your details to sign in'}
+              ? t('auth.registerWithKazguu')
+              : t('auth.enterDetailsToSignIn')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -156,12 +159,12 @@ export default function LoginPage() {
           {!showSignup ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-900 dark:text-white transition-colors duration-300">Email</Label>
+                <Label htmlFor="email" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.email')}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.enterEmail')}
                   value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
@@ -170,12 +173,12 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-900 dark:text-white transition-colors duration-300">Password</Label>
+                <Label htmlFor="password" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.password')}</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.enterPassword')}
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
@@ -185,13 +188,13 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full liquid-glass-red-button text-white rounded-2xl" disabled={loading}>
-                {loading ? 'Signing In...' : 'Sign In'}
+                {loading ? t('auth.signingIn') : t('auth.signIn')}
               </Button>
             </form>
           ) : (
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="signup-email" className="text-gray-900 dark:text-white transition-colors duration-300">Email</Label>
+                <Label htmlFor="signup-email" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.email')}</Label>
                 <Input
                   id="signup-email"
                   name="email"
@@ -205,7 +208,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="signup-name" className="text-gray-900 dark:text-white transition-colors duration-300">Full Name</Label>
+                <Label htmlFor="signup-name" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.fullName')}</Label>
                 <Input
                   id="signup-name"
                   name="name"
@@ -218,12 +221,12 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="signup-password" className="text-gray-900 dark:text-white transition-colors duration-300">Password</Label>
+                <Label htmlFor="signup-password" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.password')}</Label>
                 <Input
                   id="signup-password"
                   name="password"
                   type="password"
-                  placeholder="Create password"
+                  placeholder={t('auth.createPassword')}
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
@@ -233,12 +236,12 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password" className="text-gray-900 dark:text-white transition-colors duration-300">Confirm Password</Label>
+                <Label htmlFor="confirm-password" className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.confirmPassword')}</Label>
                 <Input
                   id="confirm-password"
                   name="confirmPassword"
                   type="password"
-                  placeholder="Confirm password"
+                  placeholder={t('auth.confirmPassword')}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   disabled={loading}
@@ -248,7 +251,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full liquid-glass-red-button text-white rounded-2xl" disabled={loading}>
-                {loading ? 'Signing Up...' : 'Sign Up'}
+                {loading ? t('auth.signingUp') : t('auth.signUp')}
               </Button>
             </form>
           )}
@@ -264,8 +267,8 @@ export default function LoginPage() {
             }}
           >
             {showSignup
-              ? 'Already have an account? Sign In'
-              : "Don't have an account? Sign Up"}
+              ? t('auth.alreadyHaveAccount')
+              : t('auth.dontHaveAccount')}
           </Button>
         </CardFooter>
       </Card>

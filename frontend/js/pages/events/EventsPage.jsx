@@ -11,9 +11,11 @@ import FilterSheet from '../../components/FilterSheet';
 import { EVENT_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiColors, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation, Trans } from 'react-i18next'; // Added
 
 
 export default function EventsPage() {
+  const { t } = useTranslation(); // Added
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
 
@@ -182,15 +184,15 @@ export default function EventsPage() {
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white transition-colors duration-300">
-                Discover <span className="text-[#d62e1f]">Events</span>
+                <Trans i18nKey="events.discoverTitle" components={{ 1: <span className="text-[#d62e1f]" /> }} />
               </h1>
-              <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Find your next adventure</p>
+              <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.subtitle')}</p>
             </div>
             <button
               onClick={() => navigate('/registrations')}
               className="liquid-glass-red-button text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
             >
-              My Registrations
+              {t('events.myRegistrations')}
             </button>
           </div>
         </div>
@@ -208,7 +210,7 @@ export default function EventsPage() {
                 }`}
             >
               <i className="fa-solid fa-globe mr-2" />
-              All Events
+              {t('events.allEvents')}
             </button>
             <button
               onClick={() => setActiveTab('for-you')}
@@ -218,7 +220,7 @@ export default function EventsPage() {
                 }`}
             >
               <i className="fa-solid fa-star mr-2" />
-              For You
+              {t('events.forYou')}
             </button>
           </div>
         </div>
@@ -247,7 +249,7 @@ export default function EventsPage() {
                 }`}
             >
               <i className="fa-solid fa-filter" />
-              <span>Filters</span>
+              <span>{t('events.filters')}</span>
               {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || selectedStatus !== 'ALL' || startDate || endDate) && (
                 <span className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs">
                   {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (selectedStatus !== 'ALL' ? 1 : 0) + (startDate || endDate ? 1 : 0)}
@@ -261,7 +263,7 @@ export default function EventsPage() {
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showFilters ? 'max-h-[800px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
             <div className="pb-2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Filter Options</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('events.filterOptions')}</h3>
                 {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || selectedStatus !== 'ALL' || startDate || endDate) && (
                   <button
                     onClick={() => {
@@ -274,7 +276,7 @@ export default function EventsPage() {
                     className="text-sm text-[#d62e1f] hover:text-[#ff4433] font-semibold flex items-center gap-1"
                   >
                     <i className="fa-solid fa-xmark" />
-                    Clear All
+                    {t('events.clearAll')}
                   </button>
                 )}
               </div>
@@ -283,7 +285,7 @@ export default function EventsPage() {
                 {/* Section: Categories */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    Categories
+                    {t('events.categories')}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map((cat) => (
@@ -304,7 +306,7 @@ export default function EventsPage() {
                 {/* Section: CSI Tags */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    CSI Attributes
+                    {t('events.csiAttributes')}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {csiCategories.map((csi) => {
@@ -330,7 +332,7 @@ export default function EventsPage() {
                 {/* Section: Date Range */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    Date Range
+                    {t('events.dateRange')}
                   </h3>
                   <div className="flex gap-3 items-center flex-wrap">
                     <div className="flex-1 min-w-[200px] max-w-xs">
@@ -367,7 +369,7 @@ export default function EventsPage() {
             className="flex-1 flex items-center gap-3 px-4 py-3 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg border border-gray-300 dark:border-[#2a2a2a] text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300"
           >
             <i className="fa-solid fa-magnifying-glass text-lg" />
-            <span className="text-sm">Search events...</span>
+            <span className="text-sm">{t('events.searchPlaceholder')}</span>
           </button>
 
           {/* Filter Icon */}
@@ -394,7 +396,7 @@ export default function EventsPage() {
               <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#a0a0a0] text-lg transition-colors duration-300" />
               <Input
                 type="search"
-                placeholder="Search events..."
+                placeholder={t('events.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
@@ -420,14 +422,14 @@ export default function EventsPage() {
               ) : recommendedEvents.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                   <i className="fa-solid fa-star text-5xl text-yellow-500 mb-6" />
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No recommendations yet</h3>
-                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300 mb-4">Complete your profile preferences to get personalized event recommendations</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('events.noRecommendations')}</h3>
+                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300 mb-4">{t('events.completeProfilePreferences')}</p>
                   <button
                     onClick={() => navigate('/profile')}
                     className="px-6 py-3 bg-[#d62e1f] text-white rounded-xl font-semibold hover:bg-[#b82419] transition-colors"
                   >
                     <i className="fa-solid fa-user-cog mr-2" />
-                    Update Preferences
+                    {t('events.updatePreferences')}
                   </button>
                 </div>
               ) : (
@@ -435,8 +437,7 @@ export default function EventsPage() {
                   <div className="mb-6">
                     <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
                       <i className="fa-solid fa-star text-yellow-500 mr-2" />
-                      Showing <span className="font-semibold text-gray-900 dark:text-white">{recommendedEvents.length}</span>{' '}
-                      personalized recommendations based on your preferences
+                      {t('events.showingRecommendations', { count: recommendedEvents.length })}
                     </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -475,16 +476,15 @@ export default function EventsPage() {
               ) : sortedEvents.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                   <i className="fa-regular fa-calendar-xmark text-5xl text-gray-400 dark:text-[#666666] mb-6 transition-colors duration-300"></i>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No events found</h3>
-                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Try adjusting your search or filters</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('events.noEventsFound')}</h3>
+                  <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.tryAdjustingFilters')}</p>
                 </div>
               ) : (
                 <>
                   <div className="mb-6">
                     <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-                      Showing <span className="font-semibold text-gray-900 dark:text-white">{sortedEvents.length}</span>{' '}
-                      {sortedEvents.length === 1 ? 'event' : 'events'}
-                      {hasNextPage && ' (scroll for more)'}
+                      {t('events.showingEvents', { count: sortedEvents.length })}
+                      {hasNextPage && ` ${t('events.scrollForMore')}`}
                     </p>
                   </div>
 
@@ -515,7 +515,7 @@ export default function EventsPage() {
                   {/* End of list indicator */}
                   {!hasNextPage && sortedEvents.length > 0 && (
                     <div className="text-center py-8 text-gray-500 dark:text-[#666666]">
-                      <p className="text-sm">You've seen all events</p>
+                      <p className="text-sm">{t('events.seenAllEvents')}</p>
                     </div>
                   )}
                 </>
@@ -529,7 +529,7 @@ export default function EventsPage() {
       <FilterSheet
         isOpen={filterSheetOpen}
         onClose={() => setFilterSheetOpen(false)}
-        title="Filter Events"
+        title={t('events.filterOptions')}
       >
         <div className="space-y-4">
           {/* Category Filter - Collapsible */}
@@ -538,7 +538,7 @@ export default function EventsPage() {
               onClick={() => setCategoryExpanded(!categoryExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>Category</span>
+              <span>{t('events.category')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${categoryExpanded ? 'rotate-180' : ''
                   }`}
@@ -574,7 +574,7 @@ export default function EventsPage() {
               onClick={() => setStatusExpanded(!statusExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>Status</span>
+              <span>{t('events.status')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${statusExpanded ? 'rotate-180' : ''
                   }`}
@@ -650,7 +650,7 @@ export default function EventsPage() {
               onClick={() => setDateExpanded(!dateExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>Date Range</span>
+              <span>{t('events.dateRange')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${dateExpanded ? 'rotate-180' : ''
                   }`}
@@ -659,7 +659,7 @@ export default function EventsPage() {
             {dateExpanded && (
               <div className="p-4 space-y-4 bg-white dark:bg-[#1a1a1a] transition-colors duration-300">
                 <div>
-                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">From Date</label>
+                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">{t('events.fromDate')}</label>
                   <input
                     type="date"
                     value={startDate}
@@ -668,7 +668,7 @@ export default function EventsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">To Date</label>
+                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">{t('events.toDate')}</label>
                   <input
                     type="date"
                     value={endDate}
@@ -684,7 +684,7 @@ export default function EventsPage() {
                     }}
                     className="w-full px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
                   >
-                    Clear Dates
+                    {t('events.clearDates')}
                   </button>
                 )}
               </div>

@@ -12,21 +12,24 @@ import GamificationBadge from './Gamification/GamificationBadge';
 import gamificationService from '../services/gamificationService';
 import OnboardingModal from './OnboardingModal';
 import preferencesService from '../services/preferencesService';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next'; // Added
 
 export default function Layout({ children }) {
+  const { t } = useTranslation(); // Added
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { theme, toggleTheme, isDark } = useTheme();
 
   // Все хуки должны быть объявлены до любых условных return
-  const [langOpen, setLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('ENG');
+  // const [langOpen, setLangOpen] = useState(false); // Removed
+  // const [selectedLang, setSelectedLang] = useState('ENG'); // Removed
   const [profileOpen, setProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [gamificationData, setGamificationData] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const langDropdownRef = useRef(null);
+  // const langDropdownRef = useRef(null); // Removed
   const profileDropdownRef = useRef(null);
 
   // Load gamification data for students
@@ -88,22 +91,22 @@ export default function Layout({ children }) {
   // Закрытие dropdown при клике вне
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
-        setLangOpen(false);
-      }
+      // if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+      //   setLangOpen(false);
+      // }
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
         setProfileOpen(false);
       }
     };
 
-    if (langOpen || profileOpen) {
+    if (profileOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [langOpen, profileOpen]);
+  }, [profileOpen]);
 
   // Отслеживание прокрутки для анимации хедера (только на главной странице)
   useEffect(() => {
@@ -162,10 +165,10 @@ export default function Layout({ children }) {
   };
 
   const navItems = [
-    { path: '/marketplace', label: 'Marketplace' },
-    { path: '/events', label: 'Events' },
-    { path: '/community', label: 'Community' },
-    { path: '/clubs', label: 'Clubs' },
+    { path: '/marketplace', label: t('nav.marketplace') },
+    { path: '/events', label: t('nav.events') },
+    { path: '/community', label: t('nav.community') },
+    { path: '/clubs', label: t('nav.clubs') },
   ];
 
   const isHomePage = location.pathname === '/';
@@ -218,39 +221,7 @@ export default function Layout({ children }) {
               </Button>
 
               {/* Language Selector */}
-              <div className="relative" ref={langDropdownRef}>
-                <Button
-                  variant="ghost"
-                  size="default"
-                  onClick={() => setLangOpen(!langOpen)}
-                  className={`rounded-xl gap-2 ${textColorClass} ${hoverClass} text-base transition-all`}
-                >
-                  {selectedLang}
-                  <i
-                    className={`fa-solid fa-chevron-down text-xs transition-transform ${iconColorClass} ${langOpen ? 'rotate-180' : ''
-                      }`}
-                  />
-                </Button>
-                {langOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-32 rounded-2xl liquid-glass-strong p-1 shadow-xl z-50">
-                    {['ENG', 'РУС', 'ҚАЗ'].map((lang) => (
-                      <button
-                        key={lang}
-                        onClick={() => {
-                          setSelectedLang(lang);
-                          setLangOpen(false);
-                        }}
-                        className={cn(
-                          'w-full text-left px-3 py-1.5 text-sm rounded-xl text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all',
-                          selectedLang === lang && 'bg-gray-200/70 dark:bg-white/15 text-gray-900 dark:text-white'
-                        )}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <LanguageSelector />
             </div>
             {/* Mobile left spacer - with theme toggle */}
             <div className="lg:hidden flex items-center gap-2 flex-1">
@@ -340,7 +311,7 @@ export default function Layout({ children }) {
                                   className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
                                 >
                                   <i className="fa-solid fa-calendar-check w-4 text-center" />
-                                  My Registrations
+                                  {t('profile.myRegistrations')}
                                 </Link>
                                 <Link
                                   to="/csi-dashboard"
@@ -348,7 +319,7 @@ export default function Layout({ children }) {
                                   className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
                                 >
                                   <i className="fa-solid fa-chart-line w-4 text-center" />
-                                  CSI Dashboard
+                                  {t('profile.csiDashboard')}
                                 </Link>
 
                               </>
@@ -359,8 +330,12 @@ export default function Layout({ children }) {
                               className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
                             >
                               <i className="fa-solid fa-user w-4 text-center" />
-                              Profile
+                              {t('profile.profile')}
                             </Link>
+                            {/* Language Selector in dropdown */}
+                            <div className="px-3 py-2">
+                              <LanguageSelector />
+                            </div>
                             {/* Theme Toggle in dropdown */}
                             <button
                               onClick={() => {
@@ -370,7 +345,7 @@ export default function Layout({ children }) {
                               className="flex w-full items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-[#a0a0a0] hover:bg-gray-200/50 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all rounded-xl"
                             >
                               <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'} w-4 text-center`} />
-                              {isDark ? 'Light Mode' : 'Dark Mode'}
+                              {isDark ? t('common.lightMode') : t('common.darkMode')}
                             </button>
                             <div className="my-1 h-px bg-gray-300/30 dark:bg-white/10" />
                             <button
@@ -381,7 +356,7 @@ export default function Layout({ children }) {
                               className="flex w-full items-center gap-3 px-3 py-2 text-sm text-[#d62e1f] hover:bg-[#d62e1f] hover:text-white transition-colors rounded-xl"
                             >
                               <i className="fa-solid fa-sign-out-alt w-4 text-center" />
-                              Logout
+                              {t('auth.logout')}
                             </button>
                           </div>
                         </div>
@@ -395,7 +370,7 @@ export default function Layout({ children }) {
                       asChild
                       className="liquid-glass-red-button text-white rounded-2xl text-base px-6 font-semibold shadow-lg"
                     >
-                      <Link to="/login">Log In</Link>
+                      <Link to="/login">{t('auth.login')}</Link>
                     </Button>
                   </>
                 )}

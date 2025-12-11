@@ -7,11 +7,14 @@ import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import authService from '../../services/authService';
 
+import { useTranslation } from 'react-i18next'; // Added
+
 export default function VerifyEmailPage() {
+  const { t } = useTranslation(); // Added
   const location = useLocation();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
-  
+
   // Получаем email из location state или localStorage
   const emailFromState = location.state?.email;
   const [email, setEmail] = useState(emailFromState || '');
@@ -63,26 +66,26 @@ export default function VerifyEmailPage() {
     setError('');
 
     if (!email) {
-      setError('Email is required');
+      setError(t('auth.emailRequired'));
       return;
     }
 
     if (!code || code.length !== 6) {
-      setError('Please enter a valid 6-digit code');
+      setError(t('auth.invalidCode'));
       return;
     }
 
     try {
       setLoading(true);
       const response = await authService.verifyEmail({ email, code });
-      
+
       // Обновляем пользователя в контексте
       await refreshUser();
-      
+
       // Редирект на главную страницу
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Verification failed. Please try again.');
+      setError(err.response?.data?.message || err.message || t('auth.verificationFailed'));
     } finally {
       setLoading(false);
     }
@@ -91,7 +94,7 @@ export default function VerifyEmailPage() {
   // Повторная отправка кода
   const handleResendCode = async () => {
     if (!email) {
-      setError('Email is required');
+      setError(t('auth.emailRequired'));
       return;
     }
 
@@ -106,9 +109,9 @@ export default function VerifyEmailPage() {
       setCode('');
 
       // Показываем успешное сообщение
-      alert('Verification code sent! Check your email and console.');
+      alert(t('auth.codeResentSuccess'));
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to resend code. Please try again.';
+      const errorMessage = err.response?.data?.message || err.message || t('auth.resendFailed');
       setError(errorMessage);
 
       // Если ошибка содержит информацию о времени ожидания, не даём повторно отправлять
@@ -131,11 +134,11 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold">Verify Your Email</CardTitle>
+          <CardTitle className="text-3xl font-bold">{t('auth.verifyEmailTitle')}</CardTitle>
           <CardDescription>
-            We've sent a 6-digit verification code to your email address.
+            {t('auth.codeSentDescription')}
             <br />
-            <span className="text-xs">Code expires in 24 hours</span>
+            <span className="text-xs">{t('auth.codeExpires')}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -147,7 +150,7 @@ export default function VerifyEmailPage() {
 
           <form onSubmit={handleVerify} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -163,7 +166,7 @@ export default function VerifyEmailPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="code">Verification Code</Label>
+              <Label htmlFor="code">{t('auth.verificationCode')}</Label>
               <Input
                 id="code"
                 type="text"
@@ -177,12 +180,12 @@ export default function VerifyEmailPage() {
                 required
               />
               <p className="text-xs text-muted-foreground text-center">
-                Enter the 6-digit code sent to your email
+                {t('auth.enter6DigitCode')}
               </p>
             </div>
 
             <Button type="submit" className="w-full" disabled={loading || code.length !== 6}>
-              {loading ? 'Verifying...' : 'Verify Email'}
+              {loading ? t('auth.verifying') : t('auth.verifyEmail')}
             </Button>
           </form>
 
@@ -190,13 +193,13 @@ export default function VerifyEmailPage() {
             {!canResend ? (
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
-                  Code sent! You can request a new code in:
+                  {t('auth.codeSentTimer')}
                 </p>
                 <p className="text-lg font-mono font-bold text-primary">
                   {formatTime(timeLeft)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  (Protection against spam)
+                  {t('auth.spamProtection')}
                 </p>
               </div>
             ) : (
@@ -207,7 +210,7 @@ export default function VerifyEmailPage() {
                 disabled={resendLoading}
                 className="w-full"
               >
-                {resendLoading ? 'Sending...' : "Didn't receive the code? Resend"}
+                {resendLoading ? t('auth.sending') : t('auth.resendCode')}
               </Button>
             )}
           </div>
@@ -218,7 +221,7 @@ export default function VerifyEmailPage() {
             className="w-full"
             onClick={() => navigate('/login')}
           >
-            Back to Login
+            {t('auth.backToLogin')}
           </Button>
         </CardFooter>
       </Card>

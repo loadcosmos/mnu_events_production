@@ -899,6 +899,7 @@
 - **Styling:** Tailwind CSS
 - **Design:** Liquid glass (glassmorphism) + dark theme
 - **State:** React Context API
+- **Localization:** i18n (EN/RU/KZ) via react-i18next
 
 ### Безопасность
 - **Защита маршрутов:** ProtectedRoute компонент

@@ -7,8 +7,10 @@ import registrationsService from '../services/registrationsService';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { sanitizeText } from '../utils/sanitize';
+import { useTranslation } from 'react-i18next';
 
 const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
+  const { t, i18n } = useTranslation();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,7 +49,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
       setEvent(data);
     } catch (err) {
       console.error('[EventModal] Failed to load event:', err);
-      setError('Failed to load event details');
+      setError(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -74,19 +76,19 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
 
   const handleRegister = async () => {
     if (!user) {
-      toast.error('Please log in to register for events');
+      toast.error(t('auth.loginToRegister'));
       return;
     }
 
     if (!eventId) {
-      toast.error('Invalid event');
+      toast.error(t('events.invalidEvent'));
       return;
     }
 
     try {
       setRegistering(true);
       await registrationsService.register(eventId);
-      toast.success('Successfully registered for event!');
+      toast.success(t('events.youAreRegistered'));
       onClose();
     } catch (err) {
       console.error('[EventModal] Registration failed:', err);
@@ -94,7 +96,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
         ? (Array.isArray(err.response.data.message)
           ? err.response.data.message.join(', ')
           : err.response.data.message)
-        : err.message || 'Failed to register for event';
+        : err.message || t('auth.registrationFailed');
       toast.error(errorMessage);
     } finally {
       setRegistering(false);
@@ -103,7 +105,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
 
   const handleBuyTicket = async () => {
     if (!user) {
-      toast.error('Please log in to buy tickets');
+      toast.error(t('auth.loginToBuyTicket'));
       onClose();
       navigate('/login');
       return;
@@ -112,8 +114,8 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
     try {
       setRegistering(true);
 
-      toast.info('Redirecting to payment gateway...', {
-        description: 'You will be redirected to complete your purchase.',
+      toast.info(t('events.redirectingPayment'), {
+        description: t('events.redirectingPayment'),
       });
 
       // Generate transaction ID
@@ -132,7 +134,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
       navigate(`/mock-payment/${transactionId}?${paymentParams.toString()}`);
     } catch (err) {
       console.error('[EventModal] Buy ticket failed:', err);
-      toast.error('Failed to initiate payment');
+      toast.error(t('events.paymentFailed'));
     } finally {
       setRegistering(false);
     }
@@ -164,13 +166,14 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
   if (!isOpen) return null;
 
   const formatDate = (dateString) => {
+    const locale = i18n.language === 'kz' ? 'kk' : (i18n.language || 'en');
     const d = new Date(dateString);
-    const date = d.toLocaleDateString('en-US', {
+    const date = d.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
-    const time = d.toLocaleTimeString('en-US', {
+    const time = d.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -249,7 +252,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     <div className="flex items-center gap-2.5 liquid-glass px-3 py-2.5 rounded-lg shadow-lg transition-colors duration-300">
                       <i className="fa-regular fa-calendar text-[#d62e1f] text-lg flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/80 font-semibold mb-0.5">Date</p>
+                        <p className="text-xs text-white/80 font-semibold mb-0.5">{t('events.start')}</p>
                         <p className="text-sm font-bold text-white truncate">
                           {formatDate(event.startDate).date}
                         </p>
@@ -260,7 +263,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     <div className="flex items-center gap-2.5 liquid-glass px-3 py-2.5 rounded-lg shadow-lg transition-colors duration-300">
                       <i className="fa-solid fa-clock text-[#d62e1f] text-lg flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/80 font-semibold mb-0.5">Time</p>
+                        <p className="text-xs text-white/80 font-semibold mb-0.5">{t('events.time') || 'Time'}</p>
                         <p className="text-sm font-bold text-white truncate">
                           {formatDate(event.startDate).time}
                         </p>
@@ -271,7 +274,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     <div className="flex items-center gap-2.5 liquid-glass px-3 py-2.5 rounded-lg shadow-lg transition-colors duration-300">
                       <i className="fa-solid fa-location-dot text-[#d62e1f] text-lg flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/80 font-semibold mb-0.5">Location</p>
+                        <p className="text-xs text-white/80 font-semibold mb-0.5">{t('events.location')}</p>
                         <p className="text-sm font-bold text-white truncate">
                           {event.location}
                         </p>
@@ -282,7 +285,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     <div className="flex items-center gap-2.5 liquid-glass px-3 py-2.5 rounded-lg shadow-lg transition-colors duration-300">
                       <i className="fa-solid fa-users text-[#d62e1f] text-lg flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/80 font-semibold mb-0.5">Capacity</p>
+                        <p className="text-xs text-white/80 font-semibold mb-0.5">{t('events.capacity')}</p>
                         <p className="text-sm font-bold text-white truncate">
                           {event._count?.registrations || 0} / {event.capacity}
                         </p>
@@ -305,7 +308,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-600 dark:text-[#a0a0a0] font-semibold mb-0.5 transition-colors duration-300">Organized by</p>
+                      <p className="text-xs text-gray-600 dark:text-[#a0a0a0] font-semibold mb-0.5 transition-colors duration-300">{t('events.organizedBy')}</p>
                       <p className="font-bold text-gray-900 dark:text-white text-base truncate transition-colors duration-300">
                         {event.creator.firstName} {event.creator.lastName}
                       </p>
@@ -323,7 +326,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                       className="flex items-center gap-2 px-4 py-2.5 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg font-semibold text-sm transition-colors flex-shrink-0"
                     >
                       <i className="fa-solid fa-arrow-right text-[#d62e1f]" />
-                      <span className="hidden sm:inline">Go to Club</span>
+                      <span className="hidden sm:inline">{t('events.goToClub')}</span>
                     </button>
                   )}
                 </div>
@@ -336,7 +339,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
 
               {/* Description */}
               <div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-300">About this event</h3>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-300">{t('events.aboutEvent')}</h3>
                 <p className="text-gray-700 dark:text-[#a0a0a0] text-base leading-relaxed transition-colors duration-300">
                   {sanitizeText(event.description) || 'No description provided.'}
                 </p>
@@ -347,22 +350,22 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                 <div className="p-6 rounded-2xl bg-gradient-to-br from-[#d62e1f]/5 to-[#d62e1f]/10 border-2 border-[#d62e1f]/20 transition-all duration-300">
                   <div className="flex items-baseline justify-between mb-4">
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-[#a0a0a0] mb-1 transition-colors duration-300">Ticket Price</p>
+                      <p className="text-sm text-gray-600 dark:text-[#a0a0a0] mb-1 transition-colors duration-300">{t('events.price')}</p>
                       <p className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{event.price}₸</p>
                     </div>
                     <Badge className="bg-[#d62e1f] text-white border-none hover:bg-[#d62e1f]/90 transition-colors duration-300">
-                      Paid Event
+                      {t('events.paidEvent')}
                     </Badge>
                   </div>
 
                   <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Charity donation</span>
+                      <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.charityDonation')}</span>
                       <span className="font-medium text-gray-900 dark:text-white transition-colors duration-300">{(event.price - (event.platformFee || 0))}₸</span>
                     </div>
                     {event.platformFee > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Platform fee</span>
+                        <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.platformFee')}</span>
                         <span className="font-medium text-gray-900 dark:text-white transition-colors duration-300">{event.platformFee}₸</span>
                       </div>
                     )}
@@ -371,7 +374,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
                       <i className="fa-solid fa-users" />
-                      <span>{event.availableSeats <= 0 ? 'Sold out' : `${event.availableSeats} tickets left`}</span>
+                      <span>{event.availableSeats <= 0 ? t('events.soldOut') : t('events.ticketsLeft', { count: event.availableSeats })}</span>
                     </div>
                   </div>
                 </div>
@@ -383,11 +386,11 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                   <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300">
                     <p className="text-base font-semibold text-green-800 dark:text-green-400 transition-colors duration-300 flex items-center gap-2">
                       <i className="fa-solid fa-check-circle" />
-                      ✓ You are registered
+                      ✓ {t('events.youAreRegistered')}
                     </p>
                     {myRegistration.status === 'WAITLIST' && (
                       <p className="text-sm text-green-600 dark:text-green-500 mt-1 transition-colors duration-300">
-                        You are on the waitlist
+                        {t('events.youAreOnWaitlist')}
                       </p>
                     )}
                     <button
@@ -397,7 +400,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                       }}
                       className="mt-3 w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
                     >
-                      View My Registrations
+                      {t('events.viewMyRegistrations')}
                     </button>
                   </div>
                 ) : event.isPaid ? (
@@ -409,22 +412,22 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     {registering ? (
                       <>
                         <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
-                        Processing...
+                        {t('common.processing')}
                       </>
                     ) : event.availableSeats <= 0 ? (
                       <>
                         <i className="fa-solid fa-ban mr-2 text-lg" />
-                        Sold Out
+                        {t('events.soldOut')}
                       </>
                     ) : user ? (
                       <>
                         <i className="fa-solid fa-credit-card mr-2 text-lg" />
-                        Buy Ticket - {event.price}₸
+                        {t('events.buyTicket')} - {event.price}₸
                       </>
                     ) : (
                       <>
                         <i className="fa-solid fa-sign-in mr-2 text-lg" />
-                        Login to Buy Ticket
+                        {t('auth.loginToBuyTicket')}
                       </>
                     )}
                   </button>
@@ -437,12 +440,12 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                     {registering ? (
                       <>
                         <i className="fa-solid fa-spinner fa-spin mr-2 text-lg" />
-                        Registering...
+                        {t('events.registering')}
                       </>
                     ) : (
                       <>
                         <i className="fa-solid fa-ticket mr-2 text-lg" />
-                        {user ? 'Register for Event' : 'Login to Register'}
+                        {user ? t('events.registerForEvent') : t('auth.loginToRegister')}
                       </>
                     )}
                   </button>

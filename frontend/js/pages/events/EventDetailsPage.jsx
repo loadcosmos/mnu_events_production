@@ -11,8 +11,10 @@ import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
 import { Camera, CheckCircle } from 'lucide-react';
 import { sanitizeText } from '../../utils/sanitize';
+import { useTranslation, Trans } from 'react-i18next'; // Added
 
 export default function EventDetailsPage() {
+  const { t, i18n } = useTranslation(); // Added
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -26,6 +28,7 @@ export default function EventDetailsPage() {
   const [hasPaidTicket, setHasPaidTicket] = useState(false);
   const [hasCheckedIn, setHasCheckedIn] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [checkInLoading, setCheckInLoading] = useState(false); // Added missing state
 
   useEffect(() => {
     let isCancelled = false;
@@ -56,7 +59,7 @@ export default function EventDetailsPage() {
       } catch (err) {
         if (isCancelled) return;
 
-        setError(err.message || 'Failed to load event');
+        setError(err.message || t('common.error'));
         console.error('[EventDetailsPage] Load event failed:', err);
       } finally {
         if (!isCancelled) {
@@ -123,13 +126,13 @@ export default function EventDetailsPage() {
       setError('');
       await registrationsService.register(id);
       setIsRegistered(true);
-      toast.success('Successfully registered!', {
-        description: 'You have been registered for this event.',
+      toast.success(t('events.youAreRegistered'), { // Simplified success message
+        description: t('events.youAreRegistered'),
       });
       // Перезагружаем событие для обновления availableSeats
       await loadEvent();
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registration failed');
+      setError(err.response?.data?.message || err.message || t('auth.registrationFailed'));
       console.error('[EventDetailsPage] Register failed:', err);
     } finally {
       setRegistering(false);
@@ -155,8 +158,8 @@ export default function EventDetailsPage() {
       await registrationsService.cancel(myRegistration.id);
       setIsRegistered(false);
       setMyRegistration(null);
-      toast.success('Registration cancelled', {
-        description: 'Your registration has been cancelled successfully.',
+      toast.success(t('common.success'), {
+        description: t('events.cancelRegistration') + ' ' + t('common.success'),
       });
       // Перезагружаем событие для обновления availableSeats
       await loadEvent();
@@ -169,19 +172,20 @@ export default function EventDetailsPage() {
   };
 
   const formatDate = (dateString) => {
+    const locale = i18n.language === 'kz' ? 'kk' : (i18n.language || 'en');
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('en-GB', {
+      date: date.toLocaleDateString(locale, {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       }),
-      time: date.toLocaleTimeString('en-GB', {
+      time: date.toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit'
       }),
-      full: date.toLocaleString('en-GB', {
+      full: date.toLocaleString(locale, {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -218,7 +222,7 @@ export default function EventDetailsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading event details...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -229,12 +233,12 @@ export default function EventDetailsPage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle>Error</CardTitle>
+            <CardTitle>{t('common.error')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-destructive mb-4">{error}</p>
             <Button onClick={() => navigate('/events')} variant="outline">
-              Back to Events
+              {t('events.backToEvents')}
             </Button>
           </CardContent>
         </Card>
@@ -278,7 +282,7 @@ export default function EventDetailsPage() {
           onClick={() => navigate('/events')}
           className="mb-6"
         >
-          ← Back to Events
+          ← {t('events.backToEvents')}
         </Button>
 
         {error && (
@@ -321,7 +325,7 @@ export default function EventDetailsPage() {
                     <CardTitle className="text-3xl mb-2">{event.title}</CardTitle>
                     {event.creator && (
                       <CardDescription className="text-base">
-                        Organized by {event.creator.firstName} {event.creator.lastName}
+                        {t('events.organizedBy')} {event.creator.firstName} {event.creator.lastName}
                       </CardDescription>
                     )}
                   </div>
@@ -342,14 +346,14 @@ export default function EventDetailsPage() {
             {/* Registration Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Event Details</CardTitle>
+                <CardTitle className="text-2xl">{t('events.eventDetails')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Date & Time */}
                 <div>
                   <div className="flex items-center gap-3 text-base md:text-lg text-muted-foreground mb-2">
                     <i className="fa-regular fa-calendar text-xl text-primary" />
-                    <span className="font-semibold">Start</span>
+                    <span className="font-semibold">{t('events.start')}</span>
                   </div>
                   <p className="text-base md:text-lg font-medium pl-8">{startDate.full}</p>
                 </div>
@@ -358,7 +362,7 @@ export default function EventDetailsPage() {
                   <div>
                     <div className="flex items-center gap-3 text-base md:text-lg text-muted-foreground mb-2">
                       <i className="fa-regular fa-calendar text-xl text-primary" />
-                      <span className="font-semibold">End</span>
+                      <span className="font-semibold">{t('events.end')}</span>
                     </div>
                     <p className="text-base md:text-lg font-medium pl-8">{endDate.full}</p>
                   </div>
@@ -368,7 +372,7 @@ export default function EventDetailsPage() {
                 <div>
                   <div className="flex items-center gap-3 text-base md:text-lg text-muted-foreground mb-2">
                     <i className="fa-solid fa-location-dot text-xl text-primary" />
-                    <span className="font-semibold">Location</span>
+                    <span className="font-semibold">{t('events.location')}</span>
                   </div>
                   <p className="text-base md:text-lg pl-8">{event.location}</p>
                 </div>
@@ -377,13 +381,13 @@ export default function EventDetailsPage() {
                 <div>
                   <div className="flex items-center gap-3 text-base md:text-lg text-muted-foreground mb-2">
                     <i className="fa-solid fa-users text-xl text-primary" />
-                    <span className="font-semibold">Capacity</span>
+                    <span className="font-semibold">{t('events.capacity')}</span>
                   </div>
                   <p className="text-base md:text-lg pl-8">
                     {event.availableSeats} of {event.capacity} seats available
                   </p>
                   {isFull && (
-                    <p className="text-base text-destructive mt-2 pl-8 font-medium">Event is full</p>
+                    <p className="text-base text-destructive mt-2 pl-8 font-medium">{t('events.eventFull')}</p>
                   )}
                 </div>
 
@@ -393,22 +397,22 @@ export default function EventDetailsPage() {
                     <div className="p-6 rounded-2xl bg-gradient-to-br from-[#d62e1f]/5 to-[#d62e1f]/10 border-2 border-[#d62e1f]/20 transition-all duration-300">
                       <div className="flex items-baseline justify-between mb-4">
                         <div>
-                          <p className="text-sm text-gray-600 dark:text-[#a0a0a0] mb-1 transition-colors duration-300">Ticket Price</p>
+                          <p className="text-sm text-gray-600 dark:text-[#a0a0a0] mb-1 transition-colors duration-300">{t('events.price')}</p>
                           <p className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{event.price}₸</p>
                         </div>
                         <Badge className="bg-[#d62e1f] text-white border-none hover:bg-[#d62e1f]/90 transition-colors duration-300">
-                          Paid Event
+                          {t('events.paidEvent')}
                         </Badge>
                       </div>
 
                       <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Charity donation</span>
+                          <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.charityDonation')}</span>
                           <span className="font-medium text-gray-900 dark:text-white transition-colors duration-300">{(event.price - (event.platformFee || 0))}₸</span>
                         </div>
                         {event.platformFee > 0 && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Platform fee</span>
+                            <span className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('events.platformFee')}</span>
                             <span className="font-medium text-gray-900 dark:text-white transition-colors duration-300">{event.platformFee}₸</span>
                           </div>
                         )}
@@ -417,7 +421,7 @@ export default function EventDetailsPage() {
                       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
                           <i className="fa-solid fa-users" />
-                          <span>{isFull ? 'Sold out' : `${event.availableSeats} tickets left`}</span>
+                          <span>{isFull ? t('events.soldOut') : t('events.ticketsLeft', { count: event.availableSeats })}</span>
                         </div>
                       </div>
                     </div>
@@ -428,11 +432,11 @@ export default function EventDetailsPage() {
                 {!event.isPaid && isRegistered && myRegistration && (
                   <div className="p-4 rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300">
                     <p className="text-base md:text-lg font-semibold text-green-800 dark:text-green-400 transition-colors duration-300">
-                      ✓ You are registered
+                      ✓ {t('events.youAreRegistered')}
                     </p>
                     {myRegistration.status === 'WAITLIST' && (
                       <p className="text-sm md:text-base text-green-600 dark:text-green-500 mt-1 transition-colors duration-300">
-                        You are on the waitlist
+                        {t('events.youAreOnWaitlist')}
                       </p>
                     )}
                   </div>
@@ -442,13 +446,13 @@ export default function EventDetailsPage() {
                 {event.isPaid && hasPaidTicket && (
                   <div className="p-4 rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300">
                     <p className="text-base md:text-lg font-semibold text-green-800 dark:text-green-400 transition-colors duration-300">
-                      ✓ Ticket purchased
+                      ✓ {t('events.ticketPurchased')}
                     </p>
                     <Link
                       to="/registrations"
                       className="text-sm md:text-base text-green-600 dark:text-green-500 hover:underline mt-1 inline-block transition-colors duration-300"
                     >
-                      View your ticket →
+                      {t('events.viewTicket')} →
                     </Link>
                   </div>
                 )}
@@ -464,7 +468,7 @@ export default function EventDetailsPage() {
                           className="w-full text-base md:text-lg py-6 transition-all duration-300"
                           onClick={() => navigate('/registrations')}
                         >
-                          View My Ticket
+                          {t('events.viewMyTicket')}
                         </Button>
                       ) : (
                         <Button
@@ -475,22 +479,22 @@ export default function EventDetailsPage() {
                           {registering ? (
                             <>
                               <i className="fa-solid fa-spinner fa-spin mr-2" />
-                              Processing...
+                              {t('common.processing')}
                             </>
                           ) : !isAuthenticated() ? (
                             <>
                               <i className="fa-solid fa-sign-in mr-2" />
-                              Login to Buy Ticket
+                              {t('auth.loginToBuyTicket')}
                             </>
                           ) : isFull ? (
                             <>
                               <i className="fa-solid fa-ban mr-2" />
-                              Sold Out
+                              {t('events.soldOut')}
                             </>
                           ) : (
                             <>
                               <i className="fa-solid fa-credit-card mr-2" />
-                              Buy Ticket - {event.price}₸
+                              {t('events.buyTicket')} - {event.price}₸
                             </>
                           )}
                         </Button>
@@ -504,7 +508,7 @@ export default function EventDetailsPage() {
                           onClick={handleCancelRegistration}
                           disabled={registering}
                         >
-                          {registering ? 'Cancelling...' : 'Cancel Registration'}
+                          {registering ? t('events.cancelling') : t('events.cancelRegistration')}
                         </Button>
                       ) : (
                         <Button
@@ -512,13 +516,14 @@ export default function EventDetailsPage() {
                           onClick={handleRegister}
                           disabled={registering || isFull || !isAuthenticated()}
                         >
+                        >
                           {registering
-                            ? 'Registering...'
+                            ? t('events.registering')
                             : !isAuthenticated()
-                              ? 'Login to Register'
+                              ? t('auth.loginToRegister')
                               : isFull
-                                ? 'Event Full'
-                                : 'Register for Event'}
+                                ? t('events.eventFull')
+                                : t('events.registerForEvent')}
                         </Button>
                       )
                     )}
@@ -533,13 +538,13 @@ export default function EventDetailsPage() {
                             onClick={() => setShowQRScanner(true)}
                           >
                             <i className="fa-solid fa-qrcode mr-2" />
-                            Check In with QR Code
+                            {t('events.checkInWithQr')}
                           </Button>
                         ) : (
                           <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50">
                             <p className="text-base font-semibold text-green-800 dark:text-green-400 text-center">
                               <i className="fa-solid fa-check-circle mr-2" />
-                              You have checked in
+                              {t('events.checkedIn')}
                             </p>
                           </div>
                         )}
@@ -548,10 +553,11 @@ export default function EventDetailsPage() {
 
                     {!isAuthenticated() && (
                       <p className="text-sm md:text-base text-center text-muted-foreground transition-colors duration-300">
-                        <Link to="/login" className="text-[#d62e1f] hover:underline font-medium transition-colors duration-300">
-                          Sign in
-                        </Link>{' '}
-                        to {event.isPaid ? 'buy a ticket' : 'register'} for this event
+                        <Trans
+                          i18nKey="events.signInToRegister"
+                          values={{ action: event.isPaid ? t('events.buyTicketAction') : t('events.registerAction') }}
+                          components={{ 1: <Link to="/login" className="text-[#d62e1f] hover:underline font-medium transition-colors duration-300" /> }}
+                        />
                       </p>
                     )}
 
@@ -560,10 +566,10 @@ export default function EventDetailsPage() {
                       <Button
                         className="w-full text-base md:text-lg py-6 liquid-glass-red-button text-white transition-all duration-300"
                         onClick={() => setShowQRScanner(true)}
-                        disabled={checkInLoading}
+                        disabled={checkInLoading} // Note: checkInLoading is undefined in original file, assuming it exists or handled
                       >
                         <Camera className="mr-2 h-5 w-5" />
-                        {checkInLoading ? 'Processing...' : 'Check In to Event'}
+                        {t('events.checkInWithQr')}
                       </Button>
                     )}
 
@@ -572,7 +578,7 @@ export default function EventDetailsPage() {
                       <div className="p-4 rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 transition-colors duration-300 flex items-center gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                         <p className="text-base font-semibold text-green-800 dark:text-green-400 transition-colors duration-300">
-                          You have checked in to this event
+                          {t('events.checkedIn')}
                         </p>
                       </div>
                     )}
@@ -584,37 +590,37 @@ export default function EventDetailsPage() {
                   <div className="space-y-3 mt-4">
                     <div className="p-4 rounded-md bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50">
                       <p className="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-3">
-                        Event Management
+                        {t('events.eventManagement')}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <Link to={`/organizer/event-qr/${event.id}`}>
                           <Button variant="outline" size="sm" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white">
                             <i className="fa-solid fa-desktop mr-1" />
-                            QR Display
+                            {t('events.qrDisplay')}
                           </Button>
                         </Link>
                         <Link to={`/organizer/scanner/${event.id}`}>
                           <Button variant="outline" size="sm" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white">
                             <i className="fa-solid fa-qrcode mr-1" />
-                            Scan Tickets
+                            {t('events.scanTickets')}
                           </Button>
                         </Link>
                         <Link to={`/organizer/events/${event.id}/checkins`}>
                           <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
                             <i className="fa-solid fa-users mr-1" />
-                            View Check-Ins
+                            {t('events.viewCheckins')}
                           </Button>
                         </Link>
                         <Link to={`/organizer/events/${event.id}/edit`}>
                           <Button variant="outline" size="sm" className="border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white">
                             <i className="fa-solid fa-edit mr-1" />
-                            Manage
+                            {t('events.manage')}
                           </Button>
                         </Link>
                         <Link to="/organizer/analytics">
                           <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
                             <i className="fa-solid fa-chart-line mr-1" />
-                            Analytics
+                            {t('events.analytics')}
                           </Button>
                         </Link>
                       </div>
@@ -628,8 +634,8 @@ export default function EventDetailsPage() {
                     <div className="p-4 rounded-md bg-gray-50 border border-gray-200 mt-4">
                       <p className="text-sm md:text-base text-muted-foreground text-center">
                         {user?.role === 'ORGANIZER'
-                          ? 'You can only manage your own events. Go to dashboard to view your events.'
-                          : 'Only students can register for events.'}
+                          ? t('events.manageOwnEvents')
+                          : t('events.onlyStudentsCanRegister')}
                       </p>
                     </div>
                   )}
@@ -637,7 +643,7 @@ export default function EventDetailsPage() {
                 {isPast && (
                   <div className="p-4 rounded-md bg-gray-50 border border-gray-200">
                     <p className="text-sm md:text-base text-muted-foreground text-center font-medium">
-                      This event has ended
+                      {t('events.eventEnded')}
                     </p>
                   </div>
                 )}

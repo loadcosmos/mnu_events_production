@@ -3,6 +3,14 @@
  * Provides consistent date formatting across the application
  */
 
+import i18n from '../i18n/config';
+
+const getLocale = () => {
+  const lang = i18n.language || 'en';
+  if (lang === 'kz') return 'kk';
+  return lang;
+};
+
 /**
  * Formats a date string or Date object to a localized string
  * @param {string|Date} date - The date to format
@@ -20,7 +28,7 @@ export const formatDate = (date, options = {}) => {
   };
 
   try {
-    return new Date(date).toLocaleDateString('en-US', defaultOptions);
+    return new Date(date).toLocaleDateString(getLocale(), defaultOptions);
   } catch (error) {
     console.error('Error formatting date:', error);
     return String(date);
@@ -47,10 +55,10 @@ export const formatTime = (date) => {
   if (!date) return '';
 
   try {
-    return new Date(date).toLocaleTimeString('en-US', {
+    return new Date(date).toLocaleTimeString(getLocale(), {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true,
+      hour12: true, // customizable per locale if needed, but 12h is often preferred in UI
     });
   } catch (error) {
     console.error('Error formatting time:', error);
@@ -67,7 +75,7 @@ export const formatDateTime = (date) => {
   if (!date) return '';
 
   try {
-    return new Date(date).toLocaleString('en-US', {
+    return new Date(date).toLocaleString(getLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -93,6 +101,7 @@ export const formatDateRange = (startDate, endDate) => {
   try {
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const locale = getLocale();
 
     // Same year
     if (start.getFullYear() === end.getFullYear()) {
@@ -103,10 +112,10 @@ export const formatDateRange = (startDate, endDate) => {
           return formatDateShort(start);
         }
         // Different days, same month
-        return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.getDate()}, ${end.getFullYear()}`;
+        return `${start.toLocaleDateString(locale, { month: 'short', day: 'numeric' })} - ${end.getDate()}, ${end.getFullYear()}`;
       }
       // Different months, same year
-      return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      return `${start.toLocaleDateString(locale, { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' })}`;
     }
 
     // Different years
@@ -139,32 +148,31 @@ export const getRelativeTime = (date) => {
     const now = new Date();
     const targetDate = new Date(date);
     const diffInSeconds = Math.floor((targetDate - now) / 1000);
-    const isPast = diffInSeconds < 0;
-    const absDiff = Math.abs(diffInSeconds);
+
+    // Create formatter
+    const rtf = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
 
     const intervals = [
-      { label: 'year', seconds: 31536000 },
-      { label: 'month', seconds: 2592000 },
-      { label: 'week', seconds: 604800 },
-      { label: 'day', seconds: 86400 },
-      { label: 'hour', seconds: 3600 },
-      { label: 'minute', seconds: 60 },
-      { label: 'second', seconds: 1 },
+      { unit: 'year', seconds: 31536000 },
+      { unit: 'month', seconds: 2592000 },
+      { unit: 'week', seconds: 604800 },
+      { unit: 'day', seconds: 86400 },
+      { unit: 'hour', seconds: 3600 },
+      { unit: 'minute', seconds: 60 },
+      { unit: 'second', seconds: 1 },
     ];
 
-    for (const interval of intervals) {
-      const count = Math.floor(absDiff / interval.seconds);
-      if (count >= 1) {
-        const plural = count > 1 ? 's' : '';
-        return isPast
-          ? `${count} ${interval.label}${plural} ago`
-          : `in ${count} ${interval.label}${plural}`;
+    for (const { unit, seconds } of intervals) {
+      if (Math.abs(diffInSeconds) >= seconds) {
+        const value = Math.round(diffInSeconds / seconds);
+        return rtf.format(value, unit);
       }
     }
 
-    return 'just now';
+    return rtf.format(0, 'second'); // "now" or "0 seconds ago" depending on locale/implementation, usually "now" if numeric: auto
   } catch (error) {
     console.error('Error getting relative time:', error);
     return String(date);
   }
 };
+```

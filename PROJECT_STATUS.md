@@ -37,6 +37,16 @@
 - ✅ **Vercel Caching Fixed**: Added strict Cache-Control headers to `vercel.json` to prevent serving stale assets.
 - ✅ **Saved Post Unsave**: Fixed issue where unsaving a post from the Saved tab didn't work correctly.
 
+### Internationalization (Phase 3) - 🔄 IN PROGRESS (2025-12-11):
+- ✅ **Infrastructure**: Setup `react-i18next`, language detector, and config.
+- ✅ **Languages**: Added full support for EN, RU, KZ.
+- ✅ **UI Components**: `LanguageSelector` integrated into Header and Profile dropdown.
+- ✅ **Modules Translated**:
+  - **Auth**: Login, Register, Verify Email pages.
+  - **Events**: Events List, Details Page, Event Modal, Event Card.
+  - **Navigation**: Header links, Mobile bottom nav.
+  - **Common**: Date formatting logic updated to respect current locale (using `Intl`).
+
 ### Social Features Implementation (Phase 8-9) - Completed 2025-12-09:
 - ✅ **Posts System** - Full CRUD with moderation:
   - `GET /api/posts` - List approved posts
@@ -445,6 +455,17 @@
 - ✅ Check-in rate analytics
 - ✅ MarketplacePage with advanced filters
 - ✅ MorePage navigation hub
+
+### 🔄 PHASE 8: Internationalization (IN PROGRESS)
+**Timeline:** 3 days | **Status:** 60% Complete
+
+- ✅ i18n infrastructure (react-i18next)
+- ✅ Translation files (EN/RU/KZ)
+- ✅ Language Selector UI
+- ✅ Auth & Navigation translations
+- ✅ Events module translations
+- 🔄 Posts & Community translations
+- 🔄 Profile & Settings translations
 
 ### ⚠️ PHASE 7: Testing (PENDING)
 **Timeline:** 1-2 weeks | **Status:** 35% Complete
