@@ -7,10 +7,12 @@ import checkinService from '../../services/checkinService';
 import eventsService from '../../services/eventsService';
 import { toast } from 'sonner';
 import { ArrowLeft, Camera, CheckCircle, XCircle, Users, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function OrganizerScannerPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [event, setEvent] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [stats, setStats] = useState({ checkedIn: 0, total: 0 });
@@ -190,10 +192,10 @@ export default function OrganizerScannerPage() {
               className="rounded-xl"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              {t('common.back')}
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">QR Scanner</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('organizer.qrScanner')}</h1>
               {event && <p className="text-gray-600 dark:text-[#a0a0a0] mt-1">{event.title}</p>}
             </div>
           </div>
@@ -209,7 +211,7 @@ export default function OrganizerScannerPage() {
                 </div>
                 <div>
                   <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalCheckIns || 0}</h3>
-                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">Checked In</span>
+                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">{t('organizer.checkedIn')}</span>
                 </div>
               </div>
             </CardContent>
@@ -225,7 +227,7 @@ export default function OrganizerScannerPage() {
                   <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.totalTickets || stats.totalRegistrations || 0}
                   </h3>
-                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">Total Participants</span>
+                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">{t('organizer.totalParticipants')}</span>
                 </div>
               </div>
             </CardContent>
@@ -241,7 +243,7 @@ export default function OrganizerScannerPage() {
                   <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.checkInRate || 0}%
                   </h3>
-                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">Check-in Rate</span>
+                  <span className="text-sm text-gray-600 dark:text-[#a0a0a0]">{t('organizer.checkInRate')}</span>
                 </div>
               </div>
             </CardContent>
@@ -251,18 +253,18 @@ export default function OrganizerScannerPage() {
         {/* Scanner Section */}
         <Card className="liquid-glass-card rounded-2xl mb-6">
           <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">Scanner</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">{t('organizer.scanner')}</CardTitle>
           </CardHeader>
           <CardContent>
             {!scanning ? (
               <div className="text-center py-12">
                 <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-[#a0a0a0] mb-6">
-                  Ready to scan student tickets
+                  {t('organizer.readyToScan')}
                 </p>
                 <Button onClick={startScanning} size="lg" className="liquid-glass-red-button text-white rounded-2xl">
                   <Camera className="mr-2 h-5 w-5" />
-                  Start Scanning
+                  {t('organizer.startScanning')}
                 </Button>
               </div>
             ) : (
@@ -270,7 +272,7 @@ export default function OrganizerScannerPage() {
                 <div id="qr-reader" className="mb-6 rounded-lg overflow-hidden"></div>
                 <div className="flex justify-center">
                   <Button onClick={stopScanning} variant="outline" className="rounded-xl">
-                    Stop Scanning
+                    {t('organizer.stopScanning')}
                   </Button>
                 </div>
               </div>
@@ -289,7 +291,7 @@ export default function OrganizerScannerPage() {
                       <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-green-700 dark:text-green-400">Check-in Successful</h3>
+                      <h3 className="text-xl font-bold text-green-700 dark:text-green-400">{t('organizer.checkInSuccess')}</h3>
                       <p className="text-lg font-semibold text-gray-900 dark:text-white mt-1">
                         {lastScan.user.firstName} {lastScan.user.lastName}
                       </p>
@@ -305,7 +307,7 @@ export default function OrganizerScannerPage() {
                       <XCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-red-700 dark:text-red-400">Scan Failed</h3>
+                      <h3 className="text-xl font-bold text-red-700 dark:text-red-400">{t('organizer.scanFailed')}</h3>
                       <p className="text-gray-900 dark:text-white mt-1">{lastScan.error}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{formatTime(lastScan.timestamp)}</p>
                     </div>

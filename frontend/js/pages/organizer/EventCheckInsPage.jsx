@@ -7,11 +7,13 @@ import eventsService from '../../services/eventsService';
 import { ArrowLeft, Users, Clock, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDate } from '../../utils/dateFormatters';
+import { useTranslation } from 'react-i18next';
 
 export default function EventCheckInsPage() {
   const { id: eventId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [event, setEvent] = useState(null);
   const [checkIns, setCheckIns] = useState([]);
   const [stats, setStats] = useState(null);
@@ -119,7 +121,7 @@ export default function EventCheckInsPage() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Event Check-Ins
+                {t('organizer.eventCheckIns')}
               </h1>
               {event && (
                 <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
@@ -138,7 +140,7 @@ export default function EventCheckInsPage() {
               className="border-gray-300 dark:border-[#2a2a2a] text-gray-700 dark:text-gray-300"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('common.refresh')}
             </Button>
             <Button
               variant="outline"
@@ -148,7 +150,7 @@ export default function EventCheckInsPage() {
               className="border-gray-300 dark:border-[#2a2a2a] text-gray-700 dark:text-gray-300"
             >
               <Download className="h-4 w-4 mr-2" />
-              Export CSV
+              {t('organizer.exportCSV')}
             </Button>
           </div>
         </div>
@@ -162,7 +164,7 @@ export default function EventCheckInsPage() {
                   <Users className="h-6 w-6 text-[#d62e1f]" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Check-Ins</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('organizer.totalCheckIns')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.totalCheckIns}
                   </p>
@@ -176,7 +178,7 @@ export default function EventCheckInsPage() {
                   <Clock className="h-6 w-6 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Check-In Rate</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('organizer.checkInRate')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.checkInRate}%
                   </p>
@@ -191,7 +193,7 @@ export default function EventCheckInsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {stats.totalTickets ? 'Total Tickets' : 'Total Registered'}
+                    {stats.totalTickets ? t('organizer.totalTickets') : t('organizer.totalRegistered')}
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.totalTickets || stats.totalRegistrations || 0}
@@ -206,9 +208,9 @@ export default function EventCheckInsPage() {
         <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-[#2a2a2a]">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Check-In List
+              {t('organizer.checkInList')}
               <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
-                ({checkIns.length} attendees)
+                ({checkIns.length} {t('organizer.attendees')})
               </span>
             </h2>
           </div>
@@ -216,9 +218,9 @@ export default function EventCheckInsPage() {
           {checkIns.length === 0 ? (
             <div className="p-12 text-center">
               <Users className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">No check-ins yet</p>
+              <p className="text-gray-600 dark:text-gray-400">{t('organizer.noCheckIns')}</p>
               <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                Attendees will appear here when they check in
+                {t('organizer.attendeesWillAppear')}
               </p>
             </div>
           ) : (
@@ -227,19 +229,19 @@ export default function EventCheckInsPage() {
                 <thead className="bg-gray-50 dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#2a2a2a]">
                   <tr>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Name
+                      {t('common.name')}
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Email
+                      {t('common.email')}
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Faculty
+                      {t('common.faculty')}
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Checked In At
+                      {t('organizer.checkedInAt')}
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Scan Mode
+                      {t('organizer.scanMode')}
                     </th>
                   </tr>
                 </thead>
@@ -264,13 +266,13 @@ export default function EventCheckInsPage() {
                       <td className="py-3 px-6">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${checkIn.scanMode === 'STUDENTS_SCAN'
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                              : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                            : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
                             }`}
                         >
                           {checkIn.scanMode === 'STUDENTS_SCAN'
-                            ? 'Student scanned'
-                            : 'Organizer scanned'}
+                            ? t('organizer.studentScanned')
+                            : t('organizer.organizerScanned')}
                         </span>
                       </td>
                     </tr>

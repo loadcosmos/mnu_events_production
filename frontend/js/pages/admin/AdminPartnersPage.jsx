@@ -23,9 +23,12 @@ import {
   Mail,
 } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 export default function AdminPartnersPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,15 +136,15 @@ export default function AdminPartnersPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
             <Building2 className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
-            External Partners
+            {t('admin.externalPartners')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage external partners and their settings
+            {t('admin.managePartners')}
           </p>
         </div>
         <Button onClick={() => toast.info('Partner creation will be available soon')} size="sm" className="w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
-          Add Partner
+          {t('admin.addPartner')}
         </Button>
       </div>
 
@@ -149,7 +152,7 @@ export default function AdminPartnersPage() {
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2 px-3 pt-3">
-            <CardDescription className="text-xs">Total Partners</CardDescription>
+            <CardDescription className="text-xs">{t('admin.totalPartners')}</CardDescription>
           </CardHeader>
           <CardContent className="px-3 pb-3">
             <div className="text-xl md:text-2xl font-bold">{partners.length}</div>
@@ -158,7 +161,7 @@ export default function AdminPartnersPage() {
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2 px-3 pt-3">
-            <CardDescription className="text-xs">Verified</CardDescription>
+            <CardDescription className="text-xs">{t('common.verified')}</CardDescription>
           </CardHeader>
           <CardContent className="px-3 pb-3">
             <div className="text-xl md:text-2xl font-bold text-green-400">
@@ -169,7 +172,7 @@ export default function AdminPartnersPage() {
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2 px-3 pt-3">
-            <CardDescription className="text-xs">Total Revenue</CardDescription>
+            <CardDescription className="text-xs">{t('partner.totalRevenue')}</CardDescription>
           </CardHeader>
           <CardContent className="px-3 pb-3">
             <div className="text-lg md:text-2xl font-bold text-blue-400 truncate">
@@ -182,7 +185,7 @@ export default function AdminPartnersPage() {
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2 px-3 pt-3">
-            <CardDescription className="text-xs">Platform Commission</CardDescription>
+            <CardDescription className="text-xs">{t('partner.platformCommission')}</CardDescription>
           </CardHeader>
           <CardContent className="px-3 pb-3">
             <div className="text-lg md:text-2xl font-bold text-green-400 truncate">
@@ -201,9 +204,9 @@ export default function AdminPartnersPage() {
             <CardContent className="py-12">
               <div className="text-center space-y-3">
                 <Building2 className="w-12 h-12 text-muted-foreground mx-auto opacity-50" />
-                <p className="text-xl font-medium">No partners yet</p>
+                <p className="text-xl font-medium">{t('admin.noPartners')}</p>
                 <p className="text-muted-foreground">
-                  External partners will appear here once they're added
+                  {t('admin.partnersWillAppear')}
                 </p>
               </div>
             </CardContent>
@@ -225,7 +228,7 @@ export default function AdminPartnersPage() {
                           className="bg-green-500/10 border-green-500/20"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
-                          Verified
+                          {t('common.verified')}
                         </Badge>
                       ) : (
                         <Badge
@@ -233,12 +236,12 @@ export default function AdminPartnersPage() {
                           className="bg-yellow-500/10 border-yellow-500/20"
                         >
                           <Clock className="w-3 h-3 mr-1" />
-                          Pending
+                          {t('common.pending')}
                         </Badge>
                       )}
                     </div>
                     <CardDescription className="mt-2">
-                      БИН: {partner.bin} • Contact: {partner.contactPerson}
+                      {t('partner.bin')}: {partner.bin} • {t('partner.contact')}: {partner.contactPerson}
                     </CardDescription>
                   </div>
                 </div>
@@ -265,23 +268,23 @@ export default function AdminPartnersPage() {
                 {/* Stats Grid */}
                 <div className="grid gap-2 sm:gap-3 grid-cols-2 md:grid-cols-4 p-2 sm:p-3 rounded-lg bg-white/5">
                   <div>
-                    <div className="text-xs text-muted-foreground">Commission</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.commission')}</div>
                     <div className="font-bold text-blue-400">
                       {(partner.commissionRate * 100).toFixed(0)}%
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">Event Slots</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.eventSlots')}</div>
                     <div className="font-bold">
-                      1 + {partner.paidEventSlots} paid
+                      1 + {partner.paidEventSlots} {t('common.paid')}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">Active Events</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.activeEvents')}</div>
                     <div className="font-bold">{partner.stats?.activeEvents || 0}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">Tickets Sold</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.ticketsSold')}</div>
                     <div className="font-bold">{partner.stats?.totalTicketsSold || 0}</div>
                   </div>
                 </div>
@@ -289,19 +292,19 @@ export default function AdminPartnersPage() {
                 {/* Financial Stats */}
                 <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3 p-2 sm:p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
                   <div>
-                    <div className="text-xs text-muted-foreground">Partner Revenue</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.partnerRevenue')}</div>
                     <div className="font-bold text-green-400">
                       {formatCurrency(partner.stats?.totalRevenue || 0)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">Platform Commission</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.platformCommission')}</div>
                     <div className="font-bold text-blue-400">
                       {formatCurrency(partner.stats?.totalCommission || 0)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">Unpaid Commission</div>
+                    <div className="text-xs text-muted-foreground">{t('partner.unpaidCommission')}</div>
                     <div className="font-bold text-amber-400">
                       {formatCurrency(partner.stats?.unpaidCommission || 0)}
                     </div>
@@ -311,7 +314,7 @@ export default function AdminPartnersPage() {
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor={`commission-${partner.id}`} className="text-xs sm:text-sm">Update Commission (%)</Label>
+                    <Label htmlFor={`commission-${partner.id}`} className="text-xs sm:text-sm">{t('admin.updateCommission')} (%)</Label>
                     <div className="flex gap-2">
                       <Input
                         id={`commission-${partner.id}`}
@@ -340,13 +343,13 @@ export default function AdminPartnersPage() {
                   </div>
 
                   <div className="flex-1 space-y-2">
-                    <Label htmlFor={`slots-${partner.id}`} className="text-xs sm:text-sm">Add Event Slots</Label>
+                    <Label htmlFor={`slots-${partner.id}`} className="text-xs sm:text-sm">{t('admin.addEventSlots')}</Label>
                     <div className="flex gap-2">
                       <Input
                         id={`slots-${partner.id}`}
                         type="number"
                         min="1"
-                        placeholder="Slots"
+                        placeholder={t('partner.slots')}
                         value={selectedPartner === partner.id ? slotsToAdd : ''}
                         onChange={(e) => {
                           setSelectedPartner(partner.id);

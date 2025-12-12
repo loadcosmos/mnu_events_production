@@ -28,9 +28,12 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 export default function PaymentVerificationPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   const [verifications, setVerifications] = useState([]);
   const [events, setEvents] = useState([]);
@@ -161,27 +164,27 @@ export default function PaymentVerificationPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Payment Verification</h1>
-          <p className="text-muted-foreground mt-1">Review and approve student payments</p>
+          <h1 className="text-3xl font-bold">{t('organizer.paymentVerification')}</h1>
+          <p className="text-muted-foreground mt-1">{t('organizer.reviewPayments')}</p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-2">
           <Clock className="w-4 h-4 mr-2" />
-          {verifications.length} Pending
+          {verifications.length} {t('common.pending')}
         </Badge>
       </div>
 
       {/* Event Filter */}
       <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
         <CardHeader>
-          <CardTitle>Filter by Event</CardTitle>
+          <CardTitle>{t('common.filterByEvent')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Select value={selectedEvent} onValueChange={handleEventFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="All events" />
+              <SelectValue placeholder={t('common.allEvents')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Events</SelectItem>
+              <SelectItem value="all">{t('common.allEvents')}</SelectItem>
               {events.map((event) => (
                 <SelectItem key={event.id} value={event.id}>
                   {event.title}
@@ -198,9 +201,9 @@ export default function PaymentVerificationPage() {
           <CardContent className="py-12">
             <div className="text-center space-y-3">
               <CheckCircle className="w-12 h-12 text-green-400 mx-auto" />
-              <p className="text-xl font-medium">All caught up!</p>
+              <p className="text-xl font-medium">{t('organizer.allCaughtUp')}</p>
               <p className="text-muted-foreground">
-                No pending payment verifications at the moment.
+                {t('organizer.noPendingPayments')}
               </p>
             </div>
           </CardContent>
@@ -218,12 +221,12 @@ export default function PaymentVerificationPage() {
                     <CardTitle className="text-xl">{verification.ticket.event.title}</CardTitle>
                     <CardDescription className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
-                      Submitted {formatDate(verification.createdAt)}
+                      {t('organizer.submitted')} {formatDate(verification.createdAt)}
                     </CardDescription>
                   </div>
                   <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/20">
                     <Clock className="w-3 h-3 mr-1" />
-                    Pending
+                    {t('common.pending')}
                   </Badge>
                 </div>
               </CardHeader>
@@ -252,7 +255,7 @@ export default function PaymentVerificationPage() {
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
                       <ImageIcon className="w-4 h-4" />
-                      Payment Receipt
+                      {t('organizer.paymentReceipt')}
                     </Label>
                     <div className="relative rounded-lg overflow-hidden border border-white/10 bg-white/5">
                       <img
@@ -271,7 +274,7 @@ export default function PaymentVerificationPage() {
                           window.open(verification.receiptImageUrl, '_blank')
                         }
                       >
-                        Open Full Size
+                        {t('common.openFullSize')}
                       </Button>
                     </div>
                   </div>
@@ -284,12 +287,12 @@ export default function PaymentVerificationPage() {
                       <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5" />
                       <div className="flex-1 space-y-3">
                         <Label htmlFor={`notes-${verification.id}`}>
-                          Rejection Reason
+                          {t('organizer.rejectionReason')}
                           <span className="text-red-400 ml-1">*</span>
                         </Label>
                         <Textarea
                           id={`notes-${verification.id}`}
-                          placeholder="Please explain why this payment is being rejected..."
+                          placeholder={t('organizer.rejectionPlaceholder')}
                           value={organizerNotes}
                           onChange={(e) => setOrganizerNotes(e.target.value)}
                           rows={3}
@@ -306,7 +309,7 @@ export default function PaymentVerificationPage() {
                         disabled={processingId === verification.id}
                         className="flex-1"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </Button>
                       <Button
                         variant="destructive"
@@ -315,7 +318,7 @@ export default function PaymentVerificationPage() {
                         className="flex-1"
                       >
                         <XCircle className="w-4 h-4 mr-2" />
-                        {processingId === verification.id ? 'Rejecting...' : 'Confirm Rejection'}
+                        {processingId === verification.id ? t('common.rejecting') : t('common.confirmRejection')}
                       </Button>
                     </div>
                   </div>
@@ -328,7 +331,7 @@ export default function PaymentVerificationPage() {
                       className="flex-1"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
-                      Reject
+                      {t('common.reject')}
                     </Button>
                     <Button
                       onClick={() => handleApprove(verification.id)}
@@ -336,7 +339,7 @@ export default function PaymentVerificationPage() {
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      {processingId === verification.id ? 'Approving...' : 'Approve Payment'}
+                      {processingId === verification.id ? t('common.approving') : t('common.approvePayment')}
                     </Button>
                   </div>
                 )}

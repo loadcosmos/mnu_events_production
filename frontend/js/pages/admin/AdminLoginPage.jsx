@@ -6,7 +6,10 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 
+import { useTranslation } from 'react-i18next';
+
 export default function AdminLoginPage() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -40,7 +43,7 @@ export default function AdminLoginPage() {
 
       // Проверяем роль и редиректим соответственно
       const userRole = response.user?.role;
-      
+
       if (userRole === 'ADMIN') {
         navigate('/admin', { replace: true });
       } else if (userRole === 'ORGANIZER') {
@@ -51,14 +54,14 @@ export default function AdminLoginPage() {
         await logout();
       }
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.message || t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: 'url(/images/glassback.png)',
@@ -69,8 +72,8 @@ export default function AdminLoginPage() {
     >
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold">Admin & Organizer Login</CardTitle>
-          <CardDescription>Enter your admin or organizer credentials</CardDescription>
+          <CardTitle className="text-3xl font-bold">{t('admin.loginTitle')}</CardTitle>
+          <CardDescription>{t('admin.loginDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -81,7 +84,7 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="admin-email">Email</Label>
+              <Label htmlFor="admin-email">{t('common.email')}</Label>
               <Input
                 id="admin-email"
                 name="email"
@@ -94,12 +97,12 @@ export default function AdminLoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="admin-password">Password</Label>
+              <Label htmlFor="admin-password">{t('common.password')}</Label>
               <Input
                 id="admin-password"
                 name="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t('auth.enterPassword')}
                 value={formData.password}
                 onChange={handleChange}
                 disabled={loading}
@@ -108,16 +111,16 @@ export default function AdminLoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </Button>
           </form>
         </CardContent>
         <CardContent>
           <Button variant="link" className="w-full" asChild>
-            <Link to="/login">Back to User Login</Link>
+            <Link to="/login">{t('admin.backToUserLogin')}</Link>
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

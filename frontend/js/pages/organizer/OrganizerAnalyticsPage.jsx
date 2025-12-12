@@ -7,10 +7,12 @@ import AnalyticsChart from '../../components/AnalyticsChart';
 import analyticsService from '../../services/analyticsService';
 import { Users, Calendar, CheckCircle, DollarSign, Download, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function OrganizerAnalyticsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
@@ -112,11 +114,11 @@ export default function OrganizerAnalyticsPage() {
               className="rounded-xl"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              {t('common.back')}
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
-              <p className="text-gray-600 dark:text-[#a0a0a0] mt-1">Detailed event performance metrics</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('organizer.analyticsDashboard')}</h1>
+              <p className="text-gray-600 dark:text-[#a0a0a0] mt-1">{t('organizer.detailedMetrics')}</p>
             </div>
           </div>
           <Button
@@ -125,32 +127,32 @@ export default function OrganizerAnalyticsPage() {
             className="rounded-xl"
           >
             <Download className="mr-2 h-4 w-4" />
-            Export CSV
+            {t('organizer.exportCSV')}
           </Button>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <StatCard
-            title="Total Events"
+            title={t('organizer.totalEvents')}
             value={stats.totalEvents}
             icon={Calendar}
           />
           <StatCard
-            title="Total Registrations"
+            title={t('organizer.totalRegistrations')}
             value={stats.totalRegistrations}
             icon={Users}
           />
           <StatCard
-            title="Total Check-ins"
+            title={t('organizer.totalCheckIns')}
             value={stats.totalCheckIns}
             icon={CheckCircle}
           />
           <StatCard
-            title="Avg Check-in Rate"
+            title={t('organizer.avgCheckInRate')}
             value={`${Math.round(stats.checkInRate || 0)}%`}
             icon={CheckCircle}
-            trend={stats.checkInRate >= 70 ? 'Good' : 'Needs improvement'}
+            trend={stats.checkInRate >= 70 ? t('common.good') : t('common.needsImprovement')}
             trendUp={stats.checkInRate >= 70}
           />
         </div>
@@ -178,16 +180,16 @@ export default function OrganizerAnalyticsPage() {
 
         {/* Event Performance Table */}
         <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Event Performance Details</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('organizer.eventPerformanceDetails')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b border-gray-200 dark:border-[#2a2a2a]">
                 <tr>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Event</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Registrations</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Check-ins</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Check-in Rate</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Revenue</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('common.event')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.registrations')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.checkIns')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.checkInRate')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('partner.revenue')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -201,10 +203,10 @@ export default function OrganizerAnalyticsPage() {
                     <td className="py-3 px-4 text-sm text-right text-gray-900 dark:text-white">{event.checkIns}</td>
                     <td className="py-3 px-4 text-sm text-right">
                       <span className={`font-semibold ${event.checkInRate >= 70
-                          ? 'text-green-600 dark:text-green-400'
-                          : event.checkInRate >= 50
-                            ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-red-600 dark:text-red-400'
+                        ? 'text-green-600 dark:text-green-400'
+                        : event.checkInRate >= 50
+                          ? 'text-yellow-600 dark:text-yellow-400'
+                          : 'text-red-600 dark:text-red-400'
                         }`}>
                         {event.checkInRate || 0}%
                       </span>

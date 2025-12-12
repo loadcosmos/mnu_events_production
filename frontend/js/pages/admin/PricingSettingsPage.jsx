@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import settingsService from '../../services/settingsService';
 import { extractErrorMessage } from '../../utils/errorHandlers';
 
+import { useTranslation } from 'react-i18next';
+
 const PricingSettingsPage = () => {
+  const { t } = useTranslation();
   const [pricing, setPricing] = useState({
     basePrice: 5000,
     premiumPrice: 10000,
@@ -60,7 +63,7 @@ const PricingSettingsPage = () => {
     try {
       setSaving(true);
       await settingsService.updatePricing(pricing);
-      setSuccess('Pricing updated successfully!');
+      setSuccess(t('admin.pricingUpdated'));
     } catch (err) {
       setError(extractErrorMessage(err));
     } finally {
@@ -82,10 +85,10 @@ const PricingSettingsPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Pricing Management
+            {t('admin.pricingManagement')}
           </h1>
           <p className="text-gray-300">
-            Configure pricing for external venues
+            {t('admin.configurePricing')}
           </p>
         </div>
 
@@ -95,7 +98,7 @@ const PricingSettingsPage = () => {
             {/* Base Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Basic Listing
+                {t('admin.basicListing')}
               </label>
               <div className="relative">
                 <input
@@ -113,14 +116,14 @@ const PricingSettingsPage = () => {
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Standard event listing
+                {t('admin.basicListingDesc')}
               </p>
             </div>
 
             {/* Premium Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Premium Listing
+                {t('admin.premiumListing')}
               </label>
               <div className="relative">
                 <input
@@ -138,14 +141,14 @@ const PricingSettingsPage = () => {
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Priority listing with featured placement
+                {t('admin.premiumListingDesc')}
               </p>
             </div>
 
             {/* Package Price */}
             <div>
               <label className="block text-white font-semibold mb-2">
-                Package (5 events)
+                {t('admin.packagePrice')}
               </label>
               <div className="relative">
                 <input
@@ -163,7 +166,7 @@ const PricingSettingsPage = () => {
                 </span>
               </div>
               <p className="text-gray-400 text-sm mt-1">
-                Discounted bundle for 5 events
+                {t('admin.packagePriceDesc')}
               </p>
             </div>
 
@@ -187,30 +190,30 @@ const PricingSettingsPage = () => {
               disabled={saving}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-[#b52618] hover:to-red-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? t('common.saving') : t('common.saveChanges')}
             </button>
           </form>
 
           {/* Pricing Summary */}
           <div className="mt-8 pt-6 border-t border-white/20">
             <h3 className="text-white font-semibold mb-4">
-              Pricing Summary
+              {t('admin.pricingSummary')}
             </h3>
             <div className="space-y-2 text-gray-300">
               <div className="flex justify-between">
-                <span>Basic Listing:</span>
+                <span>{t('admin.basicListing')}:</span>
                 <span className="font-semibold">{pricing.basePrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between">
-                <span>Premium Listing:</span>
+                <span>{t('admin.premiumListing')}:</span>
                 <span className="font-semibold">{pricing.premiumPrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between">
-                <span>Package (5 events):</span>
+                <span>{t('admin.packagePrice')}:</span>
                 <span className="font-semibold">{pricing.packagePrice.toLocaleString()} KZT</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-white/10">
-                <span>Package Discount:</span>
+                <span>{t('admin.packageDiscount')}:</span>
                 <span className="font-semibold text-green-400">
                   {((1 - pricing.packagePrice / (pricing.basePrice * 5)) * 100).toFixed(0)}%
                 </span>

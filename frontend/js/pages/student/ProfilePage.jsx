@@ -120,8 +120,8 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      toast.error('Validation failed', {
-        description: 'First name and last name are required.',
+      toast.error(t('profile.validationFailed'), {
+        description: t('profile.requiredFields'),
       });
       return;
     }
@@ -133,13 +133,13 @@ export default function ProfilePage() {
       await loadUserData();
       setIsEditModalOpen(false);
 
-      toast.success('Profile updated successfully!', {
-        description: 'Your profile information has been saved.',
+      toast.success(t('profile.profileUpdated'), {
+        description: t('profile.profileInfoSaved'),
       });
     } catch (err) {
       console.error('[ProfilePage] Update failed:', err);
-      toast.error('Failed to update profile', {
-        description: err.message || 'Unable to save your changes. Please try again.',
+      toast.error(t('profile.updateFailed'), {
+        description: err.message || t('profile.unableToSave'),
       });
     } finally {
       setSaving(false);
@@ -151,14 +151,14 @@ export default function ProfilePage() {
 
     if (navigator.share) {
       navigator.share({
-        title: 'My MNU Events Profile',
-        text: `Check out ${user?.firstName} ${user?.lastName}'s profile on MNU Events!`,
+        title: t('profile.shareTitle'),
+        text: t('profile.shareText', { name: `${user?.firstName} ${user?.lastName}` }),
         url: profileUrl,
       }).catch((err) => console.log('Error sharing:', err));
     } else {
       navigator.clipboard.writeText(profileUrl);
-      toast.success('Link copied!', {
-        description: 'Profile link copied to clipboard.',
+      toast.success(t('profile.linkCopied'), {
+        description: t('profile.linkCopiedDesc'),
       });
     }
   };
@@ -190,16 +190,16 @@ export default function ProfilePage() {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Invalid file type', {
-        description: 'Please upload a JPEG, PNG, WebP, or GIF image.',
+      toast.error(t('profile.invalidFileType'), {
+        description: t('profile.allowedFileTypes'),
       });
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('File too large', {
-        description: 'Maximum file size is 5MB.',
+      toast.error(t('common.fileTooLarge'), {
+        description: t('common.maxFileSize'),
       });
       return;
     }
@@ -212,13 +212,13 @@ export default function ProfilePage() {
       setUser(prev => ({ ...prev, avatar: result.avatarUrl }));
       setFormData(prev => ({ ...prev, avatar: result.avatarUrl }));
 
-      toast.success('Avatar updated!', {
-        description: 'Your profile picture has been updated.',
+      toast.success(t('common.avatarUpdated'), {
+        description: t('common.avatarUpdatedDesc'),
       });
     } catch (err) {
       console.error('[ProfilePage] Avatar upload failed:', err);
-      toast.error('Upload failed', {
-        description: err.message || 'Failed to upload avatar. Please try again.',
+      toast.error(t('common.uploadFailed'), {
+        description: err.message || t('common.uploadFailed'),
       });
     } finally {
       setUploadingAvatar(false);
@@ -230,7 +230,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center transition-colors duration-300">
         <div className="text-center text-gray-900 dark:text-white transition-colors duration-300">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-xl">Loading profile...</p>
+          <p className="text-xl">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -581,19 +581,11 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-4">
                     <i className="fa-solid fa-language text-[#d62e1f] text-xl" />
                     <div>
-                      <h3 className="text-gray-900 dark:text-white font-semibold">Language</h3>
-                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Choose your preferred language</p>
+                      <h3 className="text-gray-900 dark:text-white font-semibold">{t('profile.language')}</h3>
+                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.chooseLanguage')}</p>
                     </div>
                   </div>
-                  <select
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                    className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-[#3a3a3a] focus:border-[#d62e1f] focus:outline-none"
-                  >
-                    <option value="ENG">English</option>
-                    <option value="РУС">Русский</option>
-                    <option value="ҚАЗ">Қазақша</option>
-                  </select>
+                  <LanguageSelector />
                 </div>
               </div>
 
@@ -632,7 +624,7 @@ export default function ProfilePage() {
             <div className="bg-white dark:bg-[#1a1a1a] w-full md:max-w-2xl md:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto shadow-2xl transition-colors duration-300">
               {/* Header */}
               <div className="sticky top-0 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a] px-6 py-4 flex items-center justify-between transition-colors duration-300">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Edit Profile</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{t('profile.editProfile')}</h2>
                 <button
                   onClick={() => setIsEditModalOpen(false)}
                   className="text-gray-600 dark:text-[#a0a0a0] hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -645,7 +637,7 @@ export default function ProfilePage() {
               <div className="p-6 space-y-6">
                 {/* Avatar Upload */}
                 <div>
-                  <Label className="text-gray-900 dark:text-white transition-colors duration-300 mb-3 block">Profile Picture</Label>
+                  <Label className="text-gray-900 dark:text-white transition-colors duration-300 mb-3 block">{t('profile.profilePicture')}</Label>
                   <div className="flex items-center gap-4">
                     {/* Avatar Preview */}
                     <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-[#2a2a2a] ring-2 ring-gray-300 dark:ring-[#3a3a3a]">
@@ -679,7 +671,7 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
                         <i className="fa-solid fa-camera" />
-                        <span>{uploadingAvatar ? 'Uploading...' : 'Upload Photo'}</span>
+                        <span>{uploadingAvatar ? t('profile.uploading') : t('profile.uploadPhoto')}</span>
                         <input
                           type="file"
                           accept="image/jpeg,image/png,image/webp,image/gif"
@@ -688,7 +680,7 @@ export default function ProfilePage() {
                           className="hidden"
                         />
                       </label>
-                      <p className="text-xs text-gray-500 dark:text-[#666666] mt-2">JPEG, PNG, WebP, or GIF. Max 5MB.</p>
+                      <p className="text-xs text-gray-500 dark:text-[#666666] mt-2">{t('profile.maxFileSize')}</p>
                     </div>
                   </div>
                 </div>
@@ -696,7 +688,7 @@ export default function ProfilePage() {
                 {/* First Name */}
                 <div>
                   <Label htmlFor="firstName" className="text-gray-900 dark:text-white transition-colors duration-300">
-                    First Name <span className="text-[#d62e1f]">*</span>
+                    {t('profile.firstName')} <span className="text-[#d62e1f]">*</span>
                   </Label>
                   <Input
                     id="firstName"
@@ -711,7 +703,7 @@ export default function ProfilePage() {
                 {/* Last Name */}
                 <div>
                   <Label htmlFor="lastName" className="text-gray-900 dark:text-white transition-colors duration-300">
-                    Last Name <span className="text-[#d62e1f]">*</span>
+                    {t('profile.lastName')} <span className="text-[#d62e1f]">*</span>
                   </Label>
                   <Input
                     id="lastName"
@@ -725,7 +717,7 @@ export default function ProfilePage() {
 
                 {/* Faculty */}
                 <div>
-                  <Label htmlFor="faculty" className="text-gray-900 dark:text-white transition-colors duration-300">Faculty</Label>
+                  <Label htmlFor="faculty" className="text-gray-900 dark:text-white transition-colors duration-300">{t('profile.faculty')}</Label>
                   <Input
                     id="faculty"
                     name="faculty"
@@ -738,14 +730,14 @@ export default function ProfilePage() {
 
                 {/* Email (read-only) */}
                 <div>
-                  <Label className="text-gray-900 dark:text-white transition-colors duration-300">Email</Label>
+                  <Label className="text-gray-900 dark:text-white transition-colors duration-300">{t('auth.email')}</Label>
                   <Input
                     type="email"
                     value={user.email || ''}
                     disabled
                     className="mt-2 bg-gray-200 dark:bg-[#0a0a0a] border-gray-300 dark:border-[#3a3a3a] text-gray-500 dark:text-[#a0a0a0] cursor-not-allowed transition-colors duration-300"
                   />
-                  <p className="text-xs text-gray-500 dark:text-[#666666] mt-1 transition-colors duration-300">Email cannot be changed</p>
+                  <p className="text-xs text-gray-500 dark:text-[#666666] mt-1 transition-colors duration-300">{t('profile.emailReadOnly')}</p>
                 </div>
               </div>
 
@@ -759,10 +751,10 @@ export default function ProfilePage() {
                   {saving ? (
                     <>
                       <div className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                      Saving...
+                      {t('profile.saving')}
                     </>
                   ) : (
-                    'Save Changes'
+                    t('profile.saveChanges')
                   )}
                 </button>
                 <button
@@ -770,7 +762,7 @@ export default function ProfilePage() {
                   disabled={saving}
                   className="px-6 py-3 bg-gray-300 dark:bg-[#2a2a2a] hover:bg-gray-400 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>

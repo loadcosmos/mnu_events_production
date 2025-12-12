@@ -131,19 +131,19 @@ export default function PartnerDashboardPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
             <Building2 className="w-7 h-7 md:w-8 md:h-8 text-blue-400" />
-            Partner Dashboard
+            {t('partner.dashboard')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm md:text-base">{profile.companyName}</p>
         </div>
         {canCreateEvent?.allowed ? (
           <Button onClick={() => navigate('/partner/create-event')} size="lg" className="w-full md:w-auto">
             <Plus className="w-5 h-5 mr-2" />
-            Create Event
+            {t('organizer.createEvent')}
           </Button>
         ) : (
           <Button onClick={handleBuySlots} variant="outline" size="lg" className="w-full md:w-auto">
             <Plus className="w-5 h-5 mr-2" />
-            Buy Event Slots
+            {t('partner.buySlots')}
           </Button>
         )}
       </div>
@@ -155,14 +155,13 @@ export default function PartnerDashboardPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5" />
               <div className="flex-1">
-                <p className="font-medium text-amber-400">Event Limit Reached</p>
+                <p className="font-medium text-amber-400">{t('partner.eventLimitReached')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  You have {canCreateEvent.currentEvents} active events out of {canCreateEvent.limit} allowed.
-                  Purchase additional slots to create more events (3,000₸ per slot).
+                  {t('partner.activeEventsCount', { current: canCreateEvent.currentEvents, limit: canCreateEvent.limit })}
                 </p>
               </div>
               <Button onClick={handleBuySlots} variant="outline" size="sm">
-                Buy Slots
+                {t('partner.buySlots')}
               </Button>
             </div>
           </CardContent>
@@ -174,7 +173,7 @@ export default function PartnerDashboardPage() {
         {/* Total Revenue */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2">
-            <CardDescription>Total Revenue</CardDescription>
+            <CardDescription>{t('partner.totalRevenue')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -184,7 +183,7 @@ export default function PartnerDashboardPage() {
                   {formatCurrency(stats.totalRevenue || 0)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  After commission
+                  {t('partner.afterCommission')}
                 </div>
               </div>
             </div>
@@ -194,7 +193,7 @@ export default function PartnerDashboardPage() {
         {/* Total Commission */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2">
-            <CardDescription>Platform Commission</CardDescription>
+            <CardDescription>{t('partner.platformCommission')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -204,7 +203,7 @@ export default function PartnerDashboardPage() {
                   {formatCurrency(stats.totalCommission || 0)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {(profile.commissionRate * 100).toFixed(0)}% rate
+                  {(profile.commissionRate * 100).toFixed(0)}% {t('partner.rate')}
                 </div>
               </div>
             </div>
@@ -214,7 +213,7 @@ export default function PartnerDashboardPage() {
         {/* Tickets Sold */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2">
-            <CardDescription>Tickets Sold</CardDescription>
+            <CardDescription>{t('partner.ticketsSold')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -222,7 +221,7 @@ export default function PartnerDashboardPage() {
               <div>
                 <div className="text-2xl font-bold">{stats.totalTicketsSold || 0}</div>
                 <div className="text-xs text-muted-foreground">
-                  {stats.pendingVerification || 0} pending
+                  {stats.pendingVerification || 0} {t('moderator.pending')}
                 </div>
               </div>
             </div>
@@ -232,7 +231,7 @@ export default function PartnerDashboardPage() {
         {/* Active Events */}
         <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
           <CardHeader className="pb-2">
-            <CardDescription>Active Events</CardDescription>
+            <CardDescription>{t('partner.activeEvents')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
@@ -240,7 +239,7 @@ export default function PartnerDashboardPage() {
               <div>
                 <div className="text-2xl font-bold">{stats.activeEvents || 0}</div>
                 <div className="text-xs text-muted-foreground">
-                  {canCreateEvent?.limit || 0} total slots
+                  {canCreateEvent?.limit || 0} {t('partner.totalSlots')}
                 </div>
               </div>
             </div>
@@ -255,33 +254,33 @@ export default function PartnerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-blue-400" />
-              Company Information
+              {t('partner.companyInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Company Name:</span>
+              <span className="text-muted-foreground">{t('partner.companyName')}:</span>
               <span className="font-medium">{profile.companyName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">БИН:</span>
+              <span className="text-muted-foreground">{t('partner.bin')}:</span>
               <span className="font-mono">{profile.bin}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Contact Person:</span>
+              <span className="text-muted-foreground">{t('partner.contactPerson')}:</span>
               <span>{profile.contactPerson}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Status:</span>
+              <span className="text-muted-foreground">{t('common.status')}:</span>
               {profile.isVerified ? (
                 <Badge variant="outline" className="bg-green-500/10 border-green-500/20">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  Verified
+                  {t('common.verified')}
                 </Badge>
               ) : (
                 <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/20">
                   <Clock className="w-3 h-3 mr-1" />
-                  Pending
+                  {t('common.pending')}
                 </Badge>
               )}
             </div>
@@ -293,28 +292,28 @@ export default function PartnerDashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-blue-400" />
-              Payment Information
+              {t('partner.paymentInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Kaspi Phone:</span>
+              <span className="text-muted-foreground">{t('partner.kaspiPhone')}:</span>
               <span className="font-mono">{profile.kaspiPhone}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Kaspi Name:</span>
+              <span className="text-muted-foreground">{t('partner.kaspiName')}:</span>
               <span>{profile.kaspiName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Commission Rate:</span>
+              <span className="text-muted-foreground">{t('partner.commissionRate')}:</span>
               <span className="font-bold text-blue-400">
                 {(profile.commissionRate * 100).toFixed(0)}%
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Event Slots:</span>
+              <span className="text-muted-foreground">{t('partner.eventSlots')}:</span>
               <span>
-                1 free + {profile.paidEventSlots} paid
+                1 {t('common.free')} + {profile.paidEventSlots} {t('common.paid')}
               </span>
             </div>
           </CardContent>
@@ -324,7 +323,7 @@ export default function PartnerDashboardPage() {
       {/* Contact Details */}
       <Card className="border-white/10 bg-white/5 backdrop-blur-lg">
         <CardHeader>
-          <CardTitle>Contact Details</CardTitle>
+          <CardTitle>{t('partner.contactDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
@@ -357,7 +356,7 @@ export default function PartnerDashboardPage() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-blue-400" />
-              My Events
+              {t('partner.myEvents')}
             </CardTitle>
             <Button
               onClick={() => navigate('/partner/payments')}
@@ -365,7 +364,7 @@ export default function PartnerDashboardPage() {
               size="sm"
             >
               <BarChart3 className="w-4 h-4 mr-2" />
-              Verify Payments
+              {t('partner.verifyPayments')}
             </Button>
           </div>
         </CardHeader>
@@ -373,10 +372,10 @@ export default function PartnerDashboardPage() {
           {events.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No events created yet</p>
+              <p>{t('partner.noEvents')}</p>
               <Button onClick={() => navigate('/partner/create-event')} className="mt-4">
                 <Plus className="w-4 h-4 mr-2" />
-                Create Your First Event
+                {t('partner.createFirstEvent')}
               </Button>
             </div>
           ) : (
@@ -416,7 +415,7 @@ export default function PartnerDashboardPage() {
               ))}
               {events.length > 5 && (
                 <Button variant="outline" className="w-full" onClick={() => navigate('/partner/events')}>
-                  View All Events ({events.length})
+                  {t('partner.viewAllEvents', { count: events.length })}
                 </Button>
               )}
             </div>

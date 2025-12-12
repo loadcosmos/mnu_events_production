@@ -7,10 +7,12 @@ import checkinService from '../../services/checkinService';
 import { toast } from 'sonner';
 import { ArrowLeft, QrCode, RefreshCw, Users, CheckCircle } from 'lucide-react';
 import QRCode from 'qrcode';
+import { useTranslation } from 'react-i18next';
 
 export default function EventQRDisplayPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [event, setEvent] = useState(null);
   const [qrDataUrl, setQrDataUrl] = useState(null);
   const [stats, setStats] = useState({
@@ -161,13 +163,13 @@ export default function EventQRDisplayPage() {
               className="rounded-xl"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              {t('common.back')}
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Event QR Code</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('organizer.eventQRCode')}</h1>
               {event && (
                 <p className="text-gray-600 dark:text-[#a0a0a0] mt-1">
-                  Students scan this QR to check in
+                  {t('organizer.scanInstructions')}
                 </p>
               )}
             </div>
@@ -180,13 +182,13 @@ export default function EventQRDisplayPage() {
             <QrCode className="h-6 w-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                How to use:
+                {t('organizer.howToUse')}:
               </h3>
               <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-decimal list-inside">
-                <li>Display this QR code on a projector or large screen</li>
-                <li>Students open the MNU Events app</li>
-                <li>Students tap "Scan QR" and point camera at this code</li>
-                <li>Check-ins will appear in real-time below</li>
+                <li>{t('organizer.instructionStep1')}</li>
+                <li>{t('organizer.instructionStep2')}</li>
+                <li>{t('organizer.instructionStep3')}</li>
+                <li>{t('organizer.instructionStep4')}</li>
               </ol>
             </div>
           </div>
@@ -209,7 +211,7 @@ export default function EventQRDisplayPage() {
                     className="rounded-xl"
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-                    Refresh
+                    {t('common.refresh')}
                   </Button>
                 </div>
               </CardHeader>
@@ -242,7 +244,7 @@ export default function EventQRDisplayPage() {
             <Card className="liquid-glass-card rounded-2xl">
               <CardHeader>
                 <CardTitle className="text-sm text-gray-600 dark:text-[#a0a0a0]">
-                  Real-time Stats
+                  {t('organizer.realTimeStats')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -255,7 +257,7 @@ export default function EventQRDisplayPage() {
                       {stats.totalCheckIns}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-[#a0a0a0]">
-                      Checked In
+                      {t('organizer.checkedIn')}
                     </p>
                   </div>
                 </div>
@@ -269,7 +271,7 @@ export default function EventQRDisplayPage() {
                       {totalParticipants}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-[#a0a0a0]">
-                      Total Registered
+                      {t('organizer.totalRegistered')}
                     </p>
                   </div>
                 </div>
@@ -277,7 +279,7 @@ export default function EventQRDisplayPage() {
                 {/* Progress Bar */}
                 <div className="pt-2">
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-gray-600 dark:text-[#a0a0a0]">Attendance</span>
+                    <span className="text-gray-600 dark:text-[#a0a0a0]">{t('organizer.attendance')}</span>
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {checkInPercentage}%
                     </span>
@@ -302,7 +304,7 @@ export default function EventQRDisplayPage() {
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
                     <div>
                       <p className="text-sm font-semibold text-green-700 dark:text-green-400">
-                        New check-in!
+                        {t('organizer.newCheckIn')}
                       </p>
                       <p className="text-xs text-gray-600 dark:text-[#a0a0a0]">
                         {lastCheckIn.toLocaleTimeString()}
@@ -318,7 +320,7 @@ export default function EventQRDisplayPage() {
         {/* Fullscreen Tip */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            💡 Tip: Press <kbd className="px-2 py-1 bg-gray-200 dark:bg-[#2a2a2a] rounded text-xs">F11</kbd> for fullscreen mode
+            {t('organizer.fullscreenTip')}
           </p>
         </div>
       </div>
