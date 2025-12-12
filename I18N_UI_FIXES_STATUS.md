@@ -150,13 +150,17 @@ The issue may be in specific pages or in light mode. Need user clarification on 
 ---
 
 ### 10. Translation Implementation in Components
-**Status:** Translation keys added, but some components still need to use `t()` function
+**Status:** ✅ Major components completed (EventCard, TicketView, ServiceCard, EventModal).
 
-**High Priority Components:**
-- `HeroSlider.jsx` - needs `t('home.learnMore')`, `t('home.viewAllEvents')`
-- `HomePage.jsx` - needs `t('home.trendingThisWeek')`
-- `EventCard.jsx` - needs `t(\`categories.${category}\`)`
-- Footer in `Layout.jsx` - still has hardcoded English text
+**Completed Components:**
+- ✅ `EventCard.jsx` - Category and static text translated
+- ✅ `TicketView.jsx` - Full translation including Canvas generation, dynamic statuses, and date formatting
+- ✅ `ServiceCard.jsx` - Categories, types, and labels translated
+- ✅ `EventModal.jsx` - Category and details translated
+
+**Remaining Low Priority:**
+- Footer in `Layout.jsx`
+- `HeroSlider.jsx` specific text
 
 ---
 
@@ -180,6 +184,8 @@ The issue may be in specific pages or in light mode. Need user clarification on 
 - ✅ Categories (categories.*)
 - ✅ Roles (roles.*)
 - ✅ Dashboard (nav.dashboard)
+- ✅ Tickets (tickets.*)
+- ✅ Enums (enums.* - roles, categories, statuses, etc.)
 
 ---
 
@@ -212,7 +218,15 @@ After deploying these fixes:
 9. `/frontend/js/i18n/locales/kz.json`
 
 ### Profile Page:
+### Profile Page:
 10. `/frontend/js/pages/student/ProfilePage.jsx`
+
+### Components & Pages:
+11. `/frontend/js/components/EventCard.jsx`
+12. `/frontend/js/components/TicketView.jsx`
+13. `/frontend/js/components/ServiceCard.jsx`
+14. `/frontend/js/components/EventModal.jsx`
+15. `/frontend/js/pages/student/MyRegistrationsPage.jsx`
 
 ---
 
