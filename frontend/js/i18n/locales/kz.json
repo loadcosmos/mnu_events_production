@@ -8,7 +8,13 @@
         "marketplace": "Маркет",
         "more": "Тағы",
         "profile": "Профиль",
-        "dashboard": "Басқару"
+        "dashboard": "Басқару",
+        "quickLinks": "Жылдам сілтемелер",
+        "contactSupport": "Байланыс және қолдау",
+        "footerDescription": "Студенттер, ұйымдастырушылар және серіктестерге арналған университет іс-шараларын басқару платформасы.",
+        "partnerInquiries": "Серіктестік және слоттарды сатып алу сұрақтары бойынша",
+        "rights": "MNU Events Platform. Барлық құқықтар қорғалған.",
+        "premium": "Премиум"
     },
     "auth": {
         "login": "Кіру",
@@ -326,7 +332,17 @@
         "myUpcomingEvents": "Менің алдағы іс-шараларым",
         "eventsYoureRegisteredFor": "Сіз тіркелген іс-шаралар",
         "announcements": "Хабарландырулар",
-        "showMore": "Көбірек көрсету"
+        "showMore": "Көбірек көрсету",
+        "announcementsTitle": "Хабарландырулар",
+        "announcementsSubtitle": "Факультеттің ресми жаңартулары мен жаңалықтары",
+        "officialBadge": "РЕСМИ",
+        "pinnedBadge": "Бекітілген",
+        "myUpcomingPrefix": "Менің",
+        "myUpcomingSuffix": "алдағы іс-шараларым",
+        "recommendedPrefix": "Сізге",
+        "recommendedSuffix": "ұсынылған",
+        "trendingPrefix": "Осы аптада",
+        "trendingSuffix": "танымал"
     },
     "clubs": {
         "studentClubs": "Студенттік клубтар",
@@ -513,6 +529,10 @@
     "services": {
         "order": "Тапсырыс беру",
         "noReviews": "Пікірлер жоқ"
+    },
+    "gamification": {
+        "points_one": "ұпай",
+        "points_other": "ұпай"
     },
     "enums": {
         "role": {

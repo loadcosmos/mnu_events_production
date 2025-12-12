@@ -8,7 +8,13 @@
         "marketplace": "Marketplace",
         "more": "More",
         "profile": "Profile",
-        "dashboard": "Dashboard"
+        "dashboard": "Dashboard",
+        "quickLinks": "Quick Links",
+        "contactSupport": "Contact & Support",
+        "footerDescription": "University events management platform for students, organizers, and partners.",
+        "partnerInquiries": "For partner inquiries and event slot purchases",
+        "rights": "MNU Events Platform. All rights reserved.",
+        "premium": "Premium"
     },
     "auth": {
         "login": "Login",
@@ -327,7 +333,17 @@
         "myUpcomingEvents": "My Upcoming Events",
         "eventsYoureRegisteredFor": "Events you're registered for",
         "announcements": "Announcements",
-        "showMore": "Show More"
+        "showMore": "Show More",
+        "announcementsTitle": "Announcements",
+        "announcementsSubtitle": "Official updates and news from faculty",
+        "officialBadge": "OFFICIAL",
+        "pinnedBadge": "Pinned",
+        "myUpcomingPrefix": "My",
+        "myUpcomingSuffix": "Upcoming Events",
+        "recommendedPrefix": "Recommended",
+        "recommendedSuffix": "For You",
+        "trendingPrefix": "Trending",
+        "trendingSuffix": "This Week"
     },
     "clubs": {
         "studentClubs": "Student Clubs",
@@ -514,6 +530,10 @@
     "services": {
         "order": "Order",
         "noReviews": "No reviews"
+    },
+    "gamification": {
+        "points_one": "point",
+        "points_other": "points"
     },
     "enums": {
         "role": {

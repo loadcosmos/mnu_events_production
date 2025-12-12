@@ -406,13 +406,13 @@ export default function Layout({ children }) {
               <div>
                 <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-white">MNU Events</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  University events management platform for students, organizers, and partners.
+                  {t('nav.footerDescription')}
                 </p>
               </div>
 
               {/* Quick Links */}
               <div>
-                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-white">Quick Links</h3>
+                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-white">{t('nav.quickLinks')}</h3>
                 <ul className="space-y-2">
                   <li>
                     <Link to="/events" className="text-sm text-gray-600 dark:text-gray-400 hover:text-[#d62e1f] dark:hover:text-[#d62e1f] transition-colors">
@@ -439,7 +439,7 @@ export default function Layout({ children }) {
 
               {/* Contact */}
               <div>
-                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-white">Contact & Support</h3>
+                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-white">{t('nav.contactSupport')}</h3>
                 <div className="space-y-3">
                   <a
                     href="https://wa.me/77779998877"
@@ -451,7 +451,7 @@ export default function Layout({ children }) {
                     <span>+7 777 999 88 77</span>
                   </a>
                   <p className="text-xs text-gray-500 dark:text-gray-500">
-                    For partner inquiries and event slot purchases
+                    {t('nav.partnerInquiries')}
                   </p>
                 </div>
               </div>
@@ -461,7 +461,7 @@ export default function Layout({ children }) {
             <div className="mt-8 pt-6 border-t border-gray-200 dark:border-white/10">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  © {new Date().getFullYear()} MNU Events Platform. All rights reserved.
+                  © {new Date().getFullYear()} {t('nav.rights')}
                 </p>
                 <div className="flex items-center gap-6">
                   <a

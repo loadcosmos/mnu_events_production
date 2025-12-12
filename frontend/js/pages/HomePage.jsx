@@ -262,9 +262,9 @@ export default function HomePage() {
       {/* My Upcoming Events - Only for authenticated users */}
       {isAuthenticated() && myUpcomingEvents.length > 0 && (
         <EventsHorizontalScroll
-          title="My"
-          titleHighlight="Upcoming Events"
-          subtitle="Events you're registered for"
+          title={t('home.myUpcomingPrefix')}
+          titleHighlight={t('home.myUpcomingSuffix')}
+          subtitle={t('home.eventsYoureRegisteredFor')}
           events={myUpcomingEvents}
           loading={false}
           onEventClick={openEventModal}
@@ -287,9 +287,9 @@ export default function HomePage() {
       {/* Recommended For You - Only for authenticated students */}
       {isAuthenticated() && user?.role === 'STUDENT' && recommendedEvents.length > 0 && (
         <EventsHorizontalScroll
-          title="⭐ Recommended"
-          titleHighlight="For You"
-          subtitle="Based on your interests and preferences"
+          title={`⭐ ${t('home.recommendedPrefix')}`}
+          titleHighlight={t('home.recommendedSuffix')}
+          subtitle={t('events.recommendedForYou')}
           events={recommendedEvents}
           loading={loadingRecommended}
           onEventClick={openEventModal}
@@ -301,9 +301,9 @@ export default function HomePage() {
 
       {/* Trending This Week */}
       <EventsHorizontalScroll
-        title="Trending"
-        titleHighlight="This Week"
-        subtitle="Most popular events by registrations"
+        title={t('home.trendingPrefix')}
+        titleHighlight={t('home.trendingSuffix')}
+        subtitle={t('home.mostPopularEvents')}
         events={trendingEvents}
         loading={loading}
         error={error}

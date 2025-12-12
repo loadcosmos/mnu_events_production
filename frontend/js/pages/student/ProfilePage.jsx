@@ -285,7 +285,7 @@ export default function ProfilePage() {
 
             <div className="flex items-center gap-3 mb-2">
               <span className={cn('px-4 py-1.5 rounded-full text-white text-sm font-semibold', getRoleBadgeColor(user.role))}>
-                {user.role}
+                {t(`enums.role.${user.role}`)}
               </span>
               {user.faculty && (
                 <span className="px-4 py-1.5 rounded-full bg-gray-300 dark:bg-[#2a2a2a] text-gray-900 dark:text-white text-sm font-semibold transition-colors duration-300">
@@ -307,14 +307,14 @@ export default function ProfilePage() {
               className="px-6 py-3 liquid-glass-red-button text-white font-semibold rounded-2xl"
             >
               <i className="fa-solid fa-pen-to-square mr-2" />
-              Edit Profile
+              {t('profile.editProfile')}
             </button>
             <button
               onClick={handleShareProfile}
               className="px-6 py-3 bg-gray-300 dark:bg-[#2a2a2a] hover:bg-gray-400 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white font-semibold rounded-lg transition-colors"
             >
               <i className="fa-solid fa-share-nodes mr-2" />
-              Share Profile
+              {t('profile.shareProfile')}
             </button>
           </div>
         </div>
@@ -331,21 +331,21 @@ export default function ProfilePage() {
                   className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
                 >
                   <i className="fa-solid fa-user text-sm" />
-                  Overview
+                  {t('profile.overview')}
                 </TabsTrigger>
                 <TabsTrigger
                   value="saved"
                   className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
                 >
                   <i className="fa-solid fa-bookmark text-sm" />
-                  Saved
+                  {t('profile.saved')}
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
                   className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1a1a] data-[state=active]:shadow-sm transition-all gap-2"
                 >
                   <i className="fa-solid fa-gear text-sm" />
-                  Settings
+                  {t('profile.settings')}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -362,7 +362,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-                  My <span className="text-[#d62e1f]">Stats</span>
+                  {t('profile.myStats')}
                 </h2>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -370,21 +370,21 @@ export default function ProfilePage() {
                     <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
                       {stats.eventsAttended}
                     </div>
-                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Events Attended</div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">{t('profile.eventsAttended')}</div>
                   </div>
 
                   <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
                     <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
                       {stats.upcomingEvents}
                     </div>
-                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Upcoming Events</div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">{t('profile.upcomingEvents')}</div>
                   </div>
 
                   <div className="bg-white dark:bg-[#1a1a1a] rounded-lg p-6 text-center border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all shadow-lg hover:shadow-2xl">
                     <div className="text-3xl md:text-4xl font-extrabold text-[#d62e1f] mb-2">
                       {stats.clubsJoined}
                     </div>
-                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">Clubs Joined</div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-[#a0a0a0] font-semibold">{t('profile.clubsJoined')}</div>
                   </div>
                 </div>
               </div>
@@ -394,7 +394,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-                  Gamification <span className="text-[#d62e1f]">Progress</span>
+                  {t('profile.gamificationProgress')}
                 </h2>
                 <GamificationCard userId={currentUser?.id} />
               </div>
@@ -404,7 +404,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-                  Quick <span className="text-[#d62e1f]">Access</span>
+                  {t('profile.quickAccess')}
                 </h2>
 
                 <div className="space-y-4">
@@ -451,7 +451,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-                  My <span className="text-[#d62e1f]">Interests</span>
+                  {t('profile.myInterests')}
                 </h2>
                 <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
                   <EditInterestsSection />

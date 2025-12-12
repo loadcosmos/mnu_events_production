@@ -37,7 +37,7 @@ const EventCard = memo(function EventCard({ event, onClick }) {
                 {/* Category and CSI Tags */}
                 <div className="flex items-center gap-2 flex-wrap">
                     <span className="inline-block bg-[#d62e1f] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-md">
-                        {event.category}
+                        {t(`categories.${event.category}`)}
                     </span>
                     {/* CSI Tags */}
                     {event.csiTags && event.csiTags.length > 0 && (

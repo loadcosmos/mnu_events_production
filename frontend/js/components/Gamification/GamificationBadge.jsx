@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import gamificationService from '../../services/gamificationService';
 
 /**
@@ -7,6 +8,7 @@ import gamificationService from '../../services/gamificationService';
  * Used in Header and other places
  */
 const GamificationBadge = ({ level, points, size = 'medium', showPoints = true }) => {
+    const { t } = useTranslation();
     const config = gamificationService.getLevelConfig(level);
 
     const sizeClasses = {
@@ -30,10 +32,10 @@ const GamificationBadge = ({ level, points, size = 'medium', showPoints = true }
             }}
         >
             <span className={iconSizes[size]}>{config.icon}</span>
-            <span className="font-semibold">{config.label}</span>
+            <span className="font-semibold">{t(`enums.userLevel.${level}`)}</span>
             {showPoints && (
                 <span className="ml-1 opacity-80">
-                    {points} {points === 1 ? 'балл' : points < 5 ? 'балла' : 'баллов'}
+                    {points} {t('gamification.points', { count: points })}
                 </span>
             )}
         </div>

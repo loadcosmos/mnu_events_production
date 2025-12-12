@@ -8,7 +8,13 @@
         "marketplace": "Маркет",
         "more": "Ещё",
         "profile": "Профиль",
-        "dashboard": "Панель"
+        "dashboard": "Панель",
+        "quickLinks": "Быстрые ссылки",
+        "contactSupport": "Контакты и поддержка",
+        "footerDescription": "Платформа управления университетскими событиями для студентов, организаторов и партнеров.",
+        "partnerInquiries": "По вопросам партнерства и покупки слотов",
+        "rights": "MNU Events Platform. Все права защищены.",
+        "premium": "Премиум"
     },
     "auth": {
         "login": "Войти",
@@ -330,7 +336,17 @@
         "myUpcomingEvents": "Мои предстоящие события",
         "eventsYoureRegisteredFor": "События, на которые вы зарегистрированы",
         "announcements": "Объявления",
-        "showMore": "Показать больше"
+        "showMore": "Показать больше",
+        "announcementsTitle": "Объявления",
+        "announcementsSubtitle": "Официальные обновления и новости факультета",
+        "officialBadge": "ОФИЦИАЛЬНО",
+        "pinnedBadge": "Закреплено",
+        "myUpcomingPrefix": "Мои",
+        "myUpcomingSuffix": "предстоящие события",
+        "recommendedPrefix": "Рекомендовано",
+        "recommendedSuffix": "вам",
+        "trendingPrefix": "Популярное",
+        "trendingSuffix": "на этой неделе"
     },
     "clubs": {
         "studentClubs": "Студенческие клубы",
@@ -517,6 +533,11 @@
     "services": {
         "order": "Заказать",
         "noReviews": "Нет отзывов"
+    },
+    "gamification": {
+        "points_one": "балл",
+        "points_few": "балла",
+        "points_many": "баллов"
     },
     "enums": {
         "role": {

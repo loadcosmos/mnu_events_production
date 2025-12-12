@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import postsService from '../../services/postsService';
@@ -9,6 +10,7 @@ import { Badge } from '../../components/ui/badge';
  * NewsFeedSection - Displays latest 6 faculty/announcement posts on homepage
  */
 export default function NewsFeedSection() {
+    const { t } = useTranslation();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -98,17 +100,17 @@ export default function NewsFeedSection() {
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">
-                            <span className="text-[#d62e1f]">Announcements</span>
+                            <span className="text-[#d62e1f]">{t('home.announcementsTitle')}</span>
                         </h2>
                         <p className="text-sm text-gray-600 dark:text-[#a0a0a0] mt-1">
-                            Official updates and news from faculty
+                            {t('home.announcementsSubtitle')}
                         </p>
                     </div>
                     <Link
                         to="/community"
                         className="hidden md:flex items-center gap-2 text-[#d62e1f] font-semibold hover:underline text-sm"
                     >
-                        View All
+                        {t('common.viewAll')}
                         <i className="fa-solid fa-arrow-right text-xs" />
                     </Link>
                 </div>
@@ -131,7 +133,7 @@ export default function NewsFeedSection() {
                                     <div className="mb-2">
                                         <Badge className="bg-[#d62e1f] text-white px-3 py-1">
                                             <i className="fa-solid fa-graduation-cap mr-1.5 text-xs" />
-                                            OFFICIAL
+                                            {t('home.officialBadge')}
                                         </Badge>
                                     </div>
                                 )}
@@ -155,7 +157,7 @@ export default function NewsFeedSection() {
                                     {post.isPinned && (
                                         <Badge className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 ml-2 shrink-0">
                                             <i className="fa-solid fa-thumbtack mr-1 text-[10px]" />
-                                            Pinned
+                                            {t('home.pinnedBadge')}
                                         </Badge>
                                     )}
                                 </div>
@@ -237,7 +239,7 @@ export default function NewsFeedSection() {
                             to="/community"
                             className="group flex items-center gap-2 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl shadow-lg hover:shadow-xl border border-gray-200 dark:border-[#333] px-8 py-3 rounded-full text-[#d62e1f] font-semibold transition-all transform hover:scale-105 active:scale-95 text-sm pointer-events-auto"
                         >
-                            Show More
+                            {t('home.showMore')}
                             <i className="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
