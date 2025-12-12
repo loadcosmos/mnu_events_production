@@ -248,7 +248,7 @@ export default function TicketView({ ticket }) {
               </p>
             </div>
           </div>
-          )}
+
         </div>
 
         {/* Action Buttons */}
