@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -31,6 +32,7 @@ const CATEGORIES = [
 
 export default function CreateEventPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -81,13 +83,13 @@ export default function CreateEventPage() {
       // Upload as generic image first, then we'll update the event after creation
       const result = await uploadService.uploadImage(file);
       handleChange('imageUrl', result.imageUrl);
-      toast.success('Image uploaded!', {
-        description: 'Event banner has been uploaded.',
+      toast.success(t('events.messages.imageUploaded'), {
+        description: t('events.messages.bannerUploaded'),
       });
     } catch (err) {
       console.error('[CreateEventPage] Image upload failed:', err);
-      toast.error('Upload failed', {
-        description: err.message || 'Failed to upload image.',
+      toast.error(t('events.messages.uploadFailed'), {
+        description: err.message || t('events.messages.uploadFailed'),
       });
     } finally {
       setUploadingImage(false);
@@ -96,31 +98,31 @@ export default function CreateEventPage() {
 
   const validateForm = () => {
     if (!formData.title.trim()) {
-      setError('Title is required');
+      setError(t('events.validation.titleRequired'));
       return false;
     }
     if (!formData.description.trim()) {
-      setError('Description is required');
+      setError(t('events.validation.descRequired'));
       return false;
     }
     if (!formData.category) {
-      setError('Category is required');
+      setError(t('events.validation.categoryRequired'));
       return false;
     }
     if (!formData.location.trim()) {
-      setError('Location is required');
+      setError(t('events.validation.locationRequired'));
       return false;
     }
     if (!formData.startDate || !formData.startTime) {
-      setError('Start date and time are required');
+      setError(t('events.validation.startDateTimeRequired'));
       return false;
     }
     if (!formData.endDate || !formData.endTime) {
-      setError('End date and time are required');
+      setError(t('events.validation.endDateTimeRequired'));
       return false;
     }
     if (!formData.capacity || parseInt(formData.capacity) < 1) {
-      setError('Capacity must be at least 1');
+      setError(t('events.validation.capacityMin'));
       return false;
     }
 
@@ -130,11 +132,11 @@ export default function CreateEventPage() {
     const now = new Date();
 
     if (startDateTime >= endDateTime) {
-      setError('End date/time must be after start date/time');
+      setError(t('events.validation.endDateAfterStart'));
       return false;
     }
     if (startDateTime < now) {
-      setError('Start date/time cannot be in the past');
+      setError(t('events.validation.startDatePast'));
       return false;
     }
 
@@ -174,16 +176,16 @@ export default function CreateEventPage() {
 
       // Show different messages based on user role and event status
       if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') {
-        toast.success('Event created successfully!', {
-          description: 'Your event is now visible to students.',
+        toast.success(t('events.messages.createdSuccess'), {
+          description: t('events.messages.visibleToStudents'),
         });
       } else if (eventStatus === 'PENDING_MODERATION') {
-        toast.success('Event created!', {
-          description: 'Your event is awaiting moderator approval. You can view it in your dashboard.',
+        toast.success(t('events.messages.createdPending'), {
+          description: t('events.messages.awaitingApproval'),
         });
       } else {
-        toast.success('Event created successfully!', {
-          description: 'Your event has been created and is now visible to students.',
+        toast.success(t('events.messages.createdSuccess'), {
+          description: t('events.messages.visibleToStudents'),
         });
       }
 
@@ -204,7 +206,7 @@ export default function CreateEventPage() {
         ? (Array.isArray(err.response.data.message)
           ? err.response.data.message.join(', ')
           : err.response.data.message)
-        : err.message || 'Failed to create event';
+        : err.message || t('events.messages.createFailed');
       setError(errorMessage);
       // Toast уже показывается в apiClient interceptor
     } finally {
@@ -219,18 +221,18 @@ export default function CreateEventPage() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">Create New Event</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300 mb-2">{t('events.create')}</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Fill in the details to create a new event
+          {t('events.createSubtitle')}
         </p>
       </div>
 
       <Card className="liquid-glass-card rounded-2xl">
         <CardHeader className="border-b border-gray-200 dark:border-[#2a2a2a]">
           <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-            Event Details
+            {t('events.details')}
           </CardTitle>
-          <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">Enter all required information about your event</CardDescription>
+          <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">{t('events.enterDetails')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -242,11 +244,11 @@ export default function CreateEventPage() {
 
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title" className="dark:text-white">Title *</Label>
+              <Label htmlFor="title" className="dark:text-white">{t('events.form.title')} *</Label>
               <Input
                 id="title"
                 type="text"
-                placeholder="e.g., Hackathon 2024"
+                placeholder={t('events.placeholders.title')}
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
                 required
@@ -256,10 +258,10 @@ export default function CreateEventPage() {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description" className="dark:text-white">Description *</Label>
+              <Label htmlFor="description" className="dark:text-white">{t('events.form.description')} *</Label>
               <Textarea
                 id="description"
-                placeholder="Describe your event..."
+                placeholder={t('events.placeholders.description')}
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
                 rows={5}
@@ -270,19 +272,19 @@ export default function CreateEventPage() {
 
             {/* Category */}
             <div className="space-y-2">
-              <Label htmlFor="category" className="dark:text-white">Category *</Label>
+              <Label htmlFor="category" className="dark:text-white">{t('events.form.category')} *</Label>
               <Select
                 value={formData.category}
                 onValueChange={(value) => handleChange('category', value)}
                 required
               >
                 <SelectTrigger id="category" className="rounded-xl">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={t('events.form.selectCategory')} />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
+                      {t(`enums.category.${cat.value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -291,9 +293,9 @@ export default function CreateEventPage() {
 
             {/* CSI Tags */}
             <div className="space-y-2">
-              <Label className="dark:text-white">CSI Tags (Optional)</Label>
+              <Label className="dark:text-white">{t('events.form.csiTags')}</Label>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Select all that apply: Creativity, Service, Intelligence
+                {t('events.form.csiHint')}
               </p>
               <div className="flex flex-wrap gap-3 mt-2">
                 {getAllCsiCategories().map((csi) => {
@@ -314,7 +316,7 @@ export default function CreateEventPage() {
                       `}
                     >
                       <span className="mr-2">{getCsiIcon(csi.value)}</span>
-                      {csi.label}
+                      {t(`enums.csiCategory.${csi.value}`)}
                     </button>
                   );
                 })}
@@ -323,11 +325,11 @@ export default function CreateEventPage() {
 
             {/* Location */}
             <div className="space-y-2">
-              <Label htmlFor="location" className="dark:text-white">Location *</Label>
+              <Label htmlFor="location" className="dark:text-white">{t('events.form.location')} *</Label>
               <Input
                 id="location"
                 type="text"
-                placeholder="e.g., Main Hall, Building A"
+                placeholder={t('events.placeholders.location')}
                 value={formData.location}
                 onChange={(e) => handleChange('location', e.target.value)}
                 required
@@ -338,7 +340,7 @@ export default function CreateEventPage() {
             {/* Start Date & Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="dark:text-white">Start Date *</Label>
+                <Label htmlFor="startDate" className="dark:text-white">{t('events.form.startDate')} *</Label>
                 <Input
                   id="startDate"
                   type="date"
@@ -350,7 +352,7 @@ export default function CreateEventPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="startTime" className="dark:text-white">Start Time *</Label>
+                <Label htmlFor="startTime" className="dark:text-white">{t('events.form.startTime')} *</Label>
                 <Input
                   id="startTime"
                   type="time"
@@ -365,7 +367,7 @@ export default function CreateEventPage() {
             {/* End Date & Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="endDate" className="dark:text-white">End Date *</Label>
+                <Label htmlFor="endDate" className="dark:text-white">{t('events.form.endDate')} *</Label>
                 <Input
                   id="endDate"
                   type="date"
@@ -377,7 +379,7 @@ export default function CreateEventPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="endTime" className="dark:text-white">End Time *</Label>
+                <Label htmlFor="endTime" className="dark:text-white">{t('events.form.endTime')} *</Label>
                 <Input
                   id="endTime"
                   type="time"
@@ -391,12 +393,12 @@ export default function CreateEventPage() {
 
             {/* Capacity */}
             <div className="space-y-2">
-              <Label htmlFor="capacity" className="dark:text-white">Capacity *</Label>
+              <Label htmlFor="capacity" className="dark:text-white">{t('events.form.capacity')} *</Label>
               <Input
                 id="capacity"
                 type="number"
                 min="1"
-                placeholder="e.g., 100"
+                placeholder={t('events.placeholders.capacity')}
                 value={formData.capacity}
                 onChange={(e) => handleChange('capacity', e.target.value)}
                 required
@@ -412,7 +414,7 @@ export default function CreateEventPage() {
                 shape="banner"
                 aspectRatio={16 / 9}
                 maxSizeMB={10}
-                label="Event Banner (optional)"
+                label={t('events.form.banner')}
                 loading={uploadingImage}
                 disabled={loading}
               />
@@ -426,7 +428,7 @@ export default function CreateEventPage() {
                 size="lg"
                 className="flex-1 liquid-glass-red-button text-white rounded-2xl"
               >
-                {loading ? 'Creating...' : 'Create Event'}
+                {loading ? t('events.buttons.creating') : t('events.buttons.create')}
               </Button>
               <Button
                 type="button"
@@ -442,7 +444,7 @@ export default function CreateEventPage() {
                 disabled={loading}
                 className="border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5 rounded-2xl"
               >
-                Cancel
+                {t('events.buttons.cancel')}
               </Button>
             </div>
           </form>

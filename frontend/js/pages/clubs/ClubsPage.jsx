@@ -6,8 +6,10 @@ import FilterSheet from '../../components/FilterSheet';
 import { CLUB_CATEGORIES, CSI_CATEGORIES } from '../../utils/constants';
 import { getCsiIcon, getCsiGradientClass, getAllCsiCategories } from '../../utils/categoryMappers';
 import { sanitizeText } from '../../utils/sanitize';
+import { useTranslation } from 'react-i18next';
 
 export default function ClubsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Filter state
@@ -71,9 +73,9 @@ export default function ClubsPage() {
       <div className="py-12 px-4 border-b border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
-            Student <span className="text-[#d62e1f]">Clubs</span>
+            {t('clubs.title').split(' ')[0]} <span className="text-[#d62e1f]">{t('clubs.title').split(' ')[1]}</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Join communities that share your interests</p>
+          <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('clubs.subtitle')}</p>
         </div>
       </div>
 
@@ -85,7 +87,7 @@ export default function ClubsPage() {
               <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#a0a0a0] text-lg transition-colors duration-300" />
               <Input
                 type="search"
-                placeholder="Search clubs..."
+                placeholder={t('clubs.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-6 py-3 rounded-lg border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-[#666666] focus:border-[#d62e1f] focus:ring-2 focus:ring-[#d62e1f]/20 transition-colors duration-300"
@@ -100,7 +102,7 @@ export default function ClubsPage() {
                 }`}
             >
               <i className="fa-solid fa-filter" />
-              <span>Filters</span>
+              <span>{t('clubs.filters')}</span>
               {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
                 <span className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs">
                   {(selectedCategory !== 'ALL' ? 1 : 0) + selectedCsiTags.length + (startDate || endDate ? 1 : 0)}
@@ -114,7 +116,7 @@ export default function ClubsPage() {
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${desktopFiltersExpanded ? 'max-h-[800px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
             <div className="pb-2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Filter Options</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('clubs.filterOptions')}</h3>
                 {(selectedCategory !== 'ALL' || selectedCsiTags.length > 0 || startDate || endDate) && (
                   <button
                     onClick={() => {
@@ -126,7 +128,7 @@ export default function ClubsPage() {
                     className="text-sm text-[#d62e1f] hover:text-[#ff4433] font-semibold flex items-center gap-1"
                   >
                     <i className="fa-solid fa-xmark" />
-                    Clear All
+                    {t('clubs.clearAll')}
                   </button>
                 )}
               </div>
@@ -135,7 +137,7 @@ export default function ClubsPage() {
                 {/* Section: Categories */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    Categories
+                    {t('clubs.categories')}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map((cat) => (
@@ -147,7 +149,7 @@ export default function ClubsPage() {
                           : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-200 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
                           }`}
                       >
-                        {cat}
+                        {t(`enums.clubCategory.${cat}`)}
                       </button>
                     ))}
                   </div>
@@ -156,7 +158,7 @@ export default function ClubsPage() {
                 {/* Section: CSI Tags */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    CSI Attributes
+                    {t('clubs.csiAttributes')}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {csiCategories.map((csi) => {
@@ -172,7 +174,7 @@ export default function ClubsPage() {
                             }`}
                         >
                           <span className="mr-1.5">{getCsiIcon(csi.value)}</span>
-                          {csi.label.toUpperCase()}
+                          {t(`enums.csiCategory.${csi.value}`).toUpperCase()}
                         </button>
                       );
                     })}
@@ -182,7 +184,7 @@ export default function ClubsPage() {
                 {/* Section: Date Range */}
                 <div>
                   <h3 className="text-xs font-medium text-gray-500 dark:text-[#666666] mb-3 uppercase tracking-wider">
-                    Date Range
+                    {t('clubs.dateRange')}
                   </h3>
                   <div className="flex gap-3 items-center flex-wrap">
                     <div className="flex-1 min-w-[200px] max-w-xs">
@@ -218,7 +220,7 @@ export default function ClubsPage() {
             className="flex-1 flex items-center gap-3 px-4 py-3 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-300 dark:border-[#2a2a2a] text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300"
           >
             <i className="fa-solid fa-magnifying-glass text-lg" />
-            <span className="text-sm">Search clubs...</span>
+            <span className="text-sm">{t('clubs.searchPlaceholder')}</span>
           </button>
 
           <button
@@ -243,7 +245,7 @@ export default function ClubsPage() {
               <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#a0a0a0] text-lg transition-colors duration-300" />
               <Input
                 type="search"
-                placeholder="Search clubs..."
+                placeholder={t('clubs.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
@@ -273,17 +275,17 @@ export default function ClubsPage() {
           ) : clubs.length === 0 ? (
             <div className="text-center py-20 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
               <i className="fa-regular fa-users text-5xl text-gray-400 dark:text-[#666666] mb-6 transition-colors duration-300"></i>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No clubs found</h3>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('clubs.noClubsFound')}</h3>
               <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-                {error ? 'Failed to load clubs' : 'Try adjusting your search or filters'}
+                {error ? t('clubs.failedToLoad') : t('clubs.tryAdjustingFilters')}
               </p>
             </div>
           ) : (
             <>
               <div className="mb-6">
                 <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-                  Showing <span className="font-semibold text-gray-900 dark:text-white">{clubs.length}</span>{' '}
-                  {clubs.length === 1 ? 'club' : 'clubs'}
+                  {t('clubs.showing')} <span className="font-semibold text-gray-900 dark:text-white">{clubs.length}</span>{' '}
+                  {clubs.length === 1 ? t('clubs.club') : t('clubs.clubs')}
                 </p>
               </div>
 
@@ -309,7 +311,7 @@ export default function ClubsPage() {
                         />
                         <div className="absolute inset-0 liquid-glass-overlay opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="absolute top-3 right-3 px-3 py-1.5 bg-[#d62e1f] text-white rounded text-xs font-bold uppercase">
-                          {club.category}
+                          {t(`enums.clubCategory.${club.category}`)}
                         </div>
                       </div>
 
@@ -317,7 +319,7 @@ export default function ClubsPage() {
                         {/* Category */}
                         <div>
                           <span className="inline-block bg-[#d62e1f] text-white px-3 py-1.5 rounded text-xs font-bold uppercase">
-                            {club.category}
+                            {t(`enums.clubCategory.${club.category}`)}
                           </span>
                         </div>
 
@@ -328,7 +330,7 @@ export default function ClubsPage() {
 
                         {/* Description */}
                         <p className="text-gray-600 dark:text-[#a0a0a0] text-sm line-clamp-3 transition-colors duration-300">
-                          {sanitizeText(club.description) || 'No description available'}
+                          {sanitizeText(club.description) || t('clubs.noDescription')}
                         </p>
 
                         {/* Meta Info - Vertical Layout */}
@@ -336,7 +338,7 @@ export default function ClubsPage() {
                           <div className="flex items-center text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">
                             <i className="fa-solid fa-users mr-2 text-[#d62e1f] flex-shrink-0" />
                             <span className="line-clamp-1">
-                              {membersCount} {membersCount === 1 ? 'member' : 'members'}
+                              {membersCount} {membersCount === 1 ? t('clubs.member') : t('clubs.members')}
                             </span>
                           </div>
                           {club.organizer && (
@@ -361,7 +363,7 @@ export default function ClubsPage() {
       <FilterSheet
         isOpen={filterSheetOpen}
         onClose={() => setFilterSheetOpen(false)}
-        title="Filter Clubs"
+        title={t('clubs.filterClubs')}
       >
         <div className="space-y-4">
           {/* Category Filter - Collapsible */}
@@ -370,7 +372,7 @@ export default function ClubsPage() {
               onClick={() => setCategoryExpanded(!categoryExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>Category</span>
+              <span>{t('clubs.category')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${categoryExpanded ? 'rotate-180' : ''
                   }`}
@@ -393,7 +395,7 @@ export default function ClubsPage() {
                       onChange={() => setSelectedCategory(category)}
                       className="mr-3 accent-[#d62e1f]"
                     />
-                    {category}
+                    {t(`enums.clubCategory.${category}`)}
                   </label>
                 ))}
               </div>
@@ -406,7 +408,7 @@ export default function ClubsPage() {
               onClick={() => setCsiExpanded(!csiExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>CSI</span>
+              <span>{t('clubs.csi')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${csiExpanded ? 'rotate-180' : ''
                   }`}
@@ -432,7 +434,7 @@ export default function ClubsPage() {
                         className="mr-3 accent-[#d62e1f]"
                       />
                       <span className="mr-2">{getCsiIcon(csi.value)}</span>
-                      {csi.label.toUpperCase()}
+                      {t(`enums.csiCategory.${csi.value}`).toUpperCase()}
                     </label>
                   );
                 })}
@@ -446,7 +448,7 @@ export default function ClubsPage() {
               onClick={() => setDateExpanded(!dateExpanded)}
               className="w-full flex items-center justify-between px-4 py-3 bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-semibold hover:bg-gray-300 dark:hover:bg-[#3a3a3a] transition-colors"
             >
-              <span>Date Range</span>
+              <span>{t('clubs.dateRange')}</span>
               <i
                 className={`fa-solid fa-chevron-down text-sm transition-transform ${dateExpanded ? 'rotate-180' : ''
                   }`}
@@ -455,7 +457,7 @@ export default function ClubsPage() {
             {dateExpanded && (
               <div className="p-4 space-y-4 bg-white dark:bg-[#1a1a1a] transition-colors duration-300">
                 <div>
-                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">From Date</label>
+                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">{t('clubs.fromDate')}</label>
                   <input
                     type="date"
                     value={startDate}
@@ -464,7 +466,7 @@ export default function ClubsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">To Date</label>
+                  <label className="block text-gray-600 dark:text-[#a0a0a0] text-sm mb-2 transition-colors duration-300">{t('clubs.toDate')}</label>
                   <input
                     type="date"
                     value={endDate}
@@ -480,7 +482,7 @@ export default function ClubsPage() {
                     }}
                     className="w-full px-4 py-2 rounded-lg bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
                   >
-                    Clear Dates
+                    {t('clubs.clearDates')}
                   </button>
                 )}
               </div>

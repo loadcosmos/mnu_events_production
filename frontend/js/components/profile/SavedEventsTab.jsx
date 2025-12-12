@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSavedEvents, useUnsaveEvent } from '../../hooks';
 import EventCard from '../../components/EventCard';
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
  * SavedEventsTab - Displays user's saved/bookmarked events
  */
 export default function SavedEventsTab() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { data: events = [], isLoading: loading } = useSavedEvents();
     const unsaveEventMutation = useUnsaveEvent();
@@ -27,10 +29,10 @@ export default function SavedEventsTab() {
     const handleUnsave = async (eventId) => {
         try {
             await unsaveEventMutation.mutateAsync(eventId);
-            toast.success('Event removed from saved');
+            toast.success(t('saved.eventRemovedFromSaved'));
         } catch (error) {
             console.error('[SavedEventsTab] Failed to unsave event:', error);
-            toast.error('Failed to remove event');
+            toast.error(t('saved.failedToRemoveEvent'));
         }
     };
 
@@ -46,15 +48,15 @@ export default function SavedEventsTab() {
         return (
             <div className="text-center py-12">
                 <i className="fa-regular fa-bookmark text-5xl text-gray-400 dark:text-[#666666] mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Saved Events</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('saved.noSavedEvents')}</h3>
                 <p className="text-gray-600 dark:text-[#a0a0a0] mb-6">
-                    Bookmark events you're interested in and they'll appear here
+                    {t('saved.bookmarkEvents')}
                 </p>
                 <Link
                     to="/events"
                     className="inline-flex items-center gap-2 px-6 py-3 liquid-glass-red-button text-white font-semibold rounded-2xl"
                 >
-                    Browse Events
+                    {t('saved.browseEvents')}
                     <i className="fa-solid fa-arrow-right" />
                 </Link>
             </div>
@@ -65,7 +67,7 @@ export default function SavedEventsTab() {
         <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
                 <p className="text-sm text-gray-600 dark:text-[#a0a0a0]">
-                    {events.length} saved {events.length === 1 ? 'event' : 'events'}
+                    {t('events.showingEvents', { count: events.length })}
                 </p>
             </div>
 

@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 /**
@@ -7,10 +8,14 @@ import { Link } from 'react-router-dom';
  * Space savings: 60-70% compared to full EventCard
  */
 function SavedEventCard({ event, onToggleSave, onClick }) {
+    const { t, i18n } = useTranslation();
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const options = { month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
+        // Map internal 'kz' code to standard 'kk' for date formatting if needed
+        const locale = i18n.language === 'kz' ? 'kk' : i18n.language;
+        return date.toLocaleDateString(locale, options);
     };
 
     return (
@@ -65,7 +70,7 @@ function SavedEventCard({ event, onToggleSave, onClick }) {
                 }}
 
                 className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-[#d62e1f] hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                title="Remove from saved"
+                title={t('saved.removeFromSaved')}
             >
                 <i className="fa-solid fa-bookmark"></i>
             </button>

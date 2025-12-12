@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import analyticsService from '../../services/analyticsService';
-import { getCsiIcon, getCsiColors, getCsiLabel } from '../../utils/categoryMappers';
+import { getCsiIcon, getCsiColors } from '../../utils/categoryMappers';
 import { CSI_CATEGORIES } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormatters';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function CsiDashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -21,8 +23,8 @@ export default function CsiDashboardPage() {
     }
 
     if (user?.role !== 'STUDENT') {
-      toast.error('Access Denied', {
-        description: 'Only students can access CSI Dashboard',
+      toast.error(t('common.error'), {
+        description: t('events.onlyStudentsCanRegister'),
       });
       navigate('/');
       return;
@@ -49,9 +51,9 @@ export default function CsiDashboardPage() {
             ? Array.isArray(err.response.data.message)
               ? err.response.data.message.join(', ')
               : err.response.data.message
-            : err.message || 'Failed to load CSI statistics';
+            : err.message || t('csi.failedToLoad');
         setError(errorMessage);
-        toast.error('Failed to load CSI statistics', {
+        toast.error(t('csi.failedToLoad'), {
           description: errorMessage,
         });
       } finally {
@@ -81,9 +83,9 @@ export default function CsiDashboardPage() {
           ? Array.isArray(err.response.data.message)
             ? err.response.data.message.join(', ')
             : err.response.data.message
-          : err.message || 'Failed to load CSI statistics';
+          : err.message || t('csi.failedToLoad');
       setError(errorMessage);
-      toast.error('Failed to load CSI statistics', {
+      toast.error(t('csi.failedToLoad'), {
         description: errorMessage,
       });
     } finally {
@@ -96,7 +98,7 @@ export default function CsiDashboardPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center transition-colors duration-300">
         <div className="text-center text-gray-900 dark:text-white transition-colors duration-300">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-xl">Loading CSI statistics...</p>
+          <p className="text-xl">{t('csi.loadingStats')}</p>
         </div>
       </div>
     );
@@ -108,14 +110,14 @@ export default function CsiDashboardPage() {
         <div className="text-center max-w-md">
           <i className="fa-solid fa-exclamation-circle text-5xl text-[#d62e1f] mb-4"></i>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
-            Failed to load CSI statistics
+            {t('csi.failedToLoad')}
           </h2>
           <p className="text-gray-600 dark:text-[#a0a0a0] mb-6 transition-colors duration-300">{error}</p>
           <button
             onClick={loadCsiStats}
             className="liquid-glass-red-button text-white px-6 py-3 rounded-2xl font-semibold"
           >
-            Try Again
+            {t('csi.tryAgain')}
           </button>
         </div>
       </div>
@@ -134,10 +136,10 @@ export default function CsiDashboardPage() {
       <div className="py-12 px-4 border-b border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
-            CSI <span className="text-[#d62e1f]">Dashboard</span>
+            CSI <span className="text-[#d62e1f]">{t('csi.dashboard')}</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-            Creativity, Service, Intelligence - Track your participation
+            {t('csi.subtitle')}
           </p>
         </div>
       </div>
@@ -153,7 +155,7 @@ export default function CsiDashboardPage() {
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">
-                    Total Events Attended
+                    {t('csi.totalEventsAttended')}
                   </p>
                   <p className="text-4xl font-extrabold text-gray-900 dark:text-white transition-colors duration-300">
                     {csiStats.totalEvents}
@@ -169,7 +171,7 @@ export default function CsiDashboardPage() {
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-[#a0a0a0] text-sm transition-colors duration-300">
-                    CSI-Tagged Events
+                    {t('csi.csiTaggedEvents')}
                   </p>
                   <p className="text-4xl font-extrabold text-gray-900 dark:text-white transition-colors duration-300">
                     {csiStats.totalCsiEvents}
@@ -181,14 +183,13 @@ export default function CsiDashboardPage() {
 
           {/* CSI Category Breakdown */}
           <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-            CSI <span className="text-[#d62e1f]">Breakdown</span>
+            CSI <span className="text-[#d62e1f]">{t('csi.breakdown')}</span>
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {csiCategories.map(({ key, value }) => {
               const colors = getCsiColors(value);
               const icon = getCsiIcon(value);
-              const label = getCsiLabel(value);
               const stats = csiStats.csiBreakdown[key];
 
               return (
@@ -201,24 +202,24 @@ export default function CsiDashboardPage() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <span className="text-3xl">{icon}</span>
-                        <h3 className="text-2xl font-bold">{label}</h3>
+                        <h3 className="text-2xl font-bold">{t(`enums.csiCategory.${value}`)}</h3>
                       </div>
                       <span className="text-5xl font-extrabold opacity-90">{stats.events}</span>
                     </div>
-                    <p className="text-white/80 text-sm">Events attended</p>
+                    <p className="text-white/80 text-sm">{t('csi.eventsAttended')}</p>
                   </div>
 
                   {/* Recent Events */}
                   <div className="p-6">
                     <h4 className="text-sm font-semibold text-gray-600 dark:text-[#a0a0a0] mb-4 transition-colors duration-300">
-                      Recent Events ({stats.recentEvents.length})
+                      {t('csi.recentEvents')} ({stats.recentEvents.length})
                     </h4>
 
                     {stats.recentEvents.length === 0 ? (
                       <div className="text-center py-8">
                         <i className="fa-regular fa-calendar-xmark text-3xl text-gray-300 dark:text-[#666666] mb-2 transition-colors duration-300" />
                         <p className="text-sm text-gray-500 dark:text-[#666666] transition-colors duration-300">
-                          No events yet
+                          {t('csi.noEventsYet')}
                         </p>
                       </div>
                     ) : (
@@ -237,7 +238,7 @@ export default function CsiDashboardPage() {
                                 {formatDate(event.date)}
                               </span>
                               <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-[#2a2a2a] text-gray-700 dark:text-[#a0a0a0] transition-colors duration-300">
-                                {event.category}
+                                {t(`enums.category.${event.category}`)}
                               </span>
                             </div>
                           </div>
@@ -256,28 +257,25 @@ export default function CsiDashboardPage() {
               <i className="fa-solid fa-circle-info text-2xl text-blue-600 dark:text-blue-400 transition-colors duration-300" />
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
-                  About CSI Tracking
+                  {t('csi.aboutTracking')}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-3 transition-colors duration-300">
-                  CSI (Creativity, Service, Intelligence) tracks your participation across different types of events:
+                  {t('csi.aboutDescription')}
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
                   <li className="flex items-start gap-2">
                     <span className="text-purple-600 dark:text-purple-400">🎨</span>
-                    <span><strong>Creativity:</strong> Arts, cultural events, creative workshops</span>
+                    <span>{t('csi.creativityDesc')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 dark:text-green-400">🤝</span>
-                    <span><strong>Service:</strong> Community service, volunteering, social initiatives</span>
+                    <span>{t('csi.serviceDesc')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 dark:text-blue-400">🧠</span>
-                    <span><strong>Intelligence:</strong> Academic events, tech workshops, research presentations</span>
+                    <span>{t('csi.intelligenceDesc')}</span>
                   </li>
                 </ul>
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-4 transition-colors duration-300">
-                  * Events are counted when you check in at the event. One event can contribute to multiple CSI categories.
-                </p>
               </div>
             </div>
           </div>

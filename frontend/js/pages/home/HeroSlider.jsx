@@ -52,10 +52,10 @@ export default function HeroSlider({
                 <div className="absolute inset-0 bg-[url('/images/backg.jpg')] bg-cover bg-center opacity-20 dark:opacity-20" />
                 <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
                     <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
-                        Discover <span className="text-[#d62e1f]">Events</span>
+                        {t('home.discoverEvents')} <span className="text-[#d62e1f]">{t('events.title')}</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-600 dark:text-[#a0a0a0] mb-8 max-w-2xl text-center">
-                        Join the best university events at MNU
+                        {t('home.joinBestEvents')}
                     </p>
                     <div className="hidden md:flex flex-col sm:flex-row gap-4">
                         <Button
@@ -63,7 +63,7 @@ export default function HeroSlider({
                             className="liquid-glass-red-button text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg"
                             asChild
                         >
-                            <Link to="/events">Explore Events</Link>
+                            <Link to="/events">{t('home.exploreEvents')}</Link>
                         </Button>
                         <Button
                             size="lg"
@@ -71,7 +71,7 @@ export default function HeroSlider({
                             className="border-2 border-gray-300 dark:border-[#2a2a2a] bg-transparent text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg px-8 transition-colors"
                             asChild
                         >
-                            <Link to="/clubs">View Clubs</Link>
+                            <Link to="/clubs">{t('home.viewClubs')}</Link>
                         </Button>
                     </div>
                 </div>
@@ -103,7 +103,7 @@ export default function HeroSlider({
                         <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
                             <div className="max-w-4xl text-center space-y-6">
                                 <span className="inline-block bg-[#d62e1f] text-white px-4 py-2 rounded-full text-sm font-bold uppercase">
-                                    {event.category}
+                                    {t(`enums.category.${event.category}`, event.category)}
                                 </span>
                                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
                                     {event.title}

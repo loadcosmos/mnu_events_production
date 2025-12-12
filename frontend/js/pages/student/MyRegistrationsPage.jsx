@@ -327,7 +327,7 @@ export default function MyRegistrationsPage() {
                     : 'bg-gray-200 dark:bg-[#2a2a2a] text-gray-900 dark:text-[#a0a0a0] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] hover:text-gray-900 dark:hover:text-white'
                     }`}
                 >
-                  {filter}
+                  {t(`common.filters.${filter.toLowerCase()}`)}
                 </button>
               ))}
             </div>
@@ -450,7 +450,7 @@ export default function MyRegistrationsPage() {
                         {isCheckedIn && (
                           <div className="absolute bottom-3 right-3 px-3 py-1.5 bg-green-600 text-white rounded text-xs font-bold flex items-center gap-2 shadow-lg">
                             <i className="fa-solid fa-check-circle" />
-                            CHECKED IN
+                            {t('student.checkedIn')}
                           </div>
                         )}
                       </div>
@@ -488,7 +488,7 @@ export default function MyRegistrationsPage() {
                               <div className="flex flex-col items-center gap-3">
                                 <p className="text-sm font-semibold text-gray-900 dark:text-white text-center">
                                   <i className="fa-solid fa-qrcode mr-2 text-blue-500" />
-                                  Show this QR code at the event
+                                  {t('student.showQrAtEvent')}
                                 </p>
                                 <img
                                   src={registration.qrCode}
@@ -608,7 +608,7 @@ export default function MyRegistrationsPage() {
                     onChange={() => setSelectedFilter(filter)}
                     className="mr-3 accent-[#d62e1f]"
                   />
-                  {filter}
+                  {t(`common.filters.${filter.toLowerCase()}`)}
                 </label>
               ))}
             </div>

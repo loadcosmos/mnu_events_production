@@ -61,7 +61,7 @@ export default function EventQRDisplayPage() {
       await generateQR();
     } catch (err) {
       console.error('[EventQRDisplayPage] Load failed:', err);
-      toast.error('Failed to load event');
+      toast.error(t('organizer.loadEventFailed'));
       navigate(-1);
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ export default function EventQRDisplayPage() {
       setQrDataUrl(dataUrl);
     } catch (err) {
       console.error('[EventQRDisplayPage] Generate QR failed:', err);
-      toast.error('Failed to generate QR code');
+      toast.error(t('organizer.qrGenerationFailed'));
     }
   };
 
@@ -114,7 +114,7 @@ export default function EventQRDisplayPage() {
     await generateQR();
     await updateStats();
     setRefreshing(false);
-    toast.success('QR code refreshed');
+    toast.success(t('organizer.qrRefreshed'));
   };
 
   const playSuccessSound = () => {
@@ -140,7 +140,7 @@ export default function EventQRDisplayPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-gray-600 dark:text-[#a0a0a0]">Loading QR code...</p>
+          <p className="text-gray-600 dark:text-[#a0a0a0]">{t('organizer.loadingQr')}</p>
         </div>
       </div>
     );
@@ -226,7 +226,7 @@ export default function EventQRDisplayPage() {
                       />
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
-                      QR code auto-refreshes for security
+                      {t('organizer.qrAutoRefresh')}
                     </p>
                   </div>
                 ) : (

@@ -63,7 +63,7 @@ export default function OrganizerPage() {
       );
     } catch (err) {
       console.error('[OrganizerPage] Load dashboard data failed:', err);
-      setError(err.message || 'Failed to load dashboard data');
+      setError(err.message || t('organizer.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -79,8 +79,8 @@ export default function OrganizerPage() {
 
   const handleExportParticipants = async (eventId, eventTitle) => {
     try {
-      toast.info('Exporting participants...', {
-        description: 'Downloading CSV file',
+      toast.info(t('organizer.exportParticipants'), {
+        description: t('organizer.downloadingCsv'),
       });
 
       const response = await apiClient.get(`/registrations/event/${eventId}/export`, {
@@ -98,13 +98,13 @@ export default function OrganizerPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      toast.success('Export successful!', {
-        description: 'Participants list downloaded',
+      toast.success(t('organizer.exportSuccess'), {
+        description: t('organizer.participantsDownloaded'),
       });
     } catch (err) {
       console.error('[OrganizerPage] Export failed:', err);
-      toast.error('Export failed', {
-        description: err.response?.data?.message || 'Failed to export participants list',
+      toast.error(t('organizer.exportFailed'), {
+        description: err.response?.data?.message || t('organizer.exportErrorDetail'),
       });
     }
   };
@@ -127,13 +127,13 @@ export default function OrganizerPage() {
   const getModerationBadge = (status) => {
     switch (status) {
       case 'PENDING_MODERATION':
-        return { variant: 'warning', label: 'Awaiting Approval', className: 'bg-orange-500 text-white' };
+        return { variant: 'warning', label: t('organizer.awaitingApproval'), className: 'bg-orange-500 text-white' };
       case 'CANCELLED':
-        return { variant: 'destructive', label: 'Cancelled', className: 'bg-red-600 text-white' };
+        return { variant: 'destructive', label: t('organizer.cancelled'), className: 'bg-red-600 text-white' };
       case 'UPCOMING':
       case 'ONGOING':
       case 'COMPLETED':
-        return { variant: 'success', label: 'Published', className: 'bg-green-600 text-white' };
+        return { variant: 'success', label: t('organizer.published'), className: 'bg-green-600 text-white' };
       default:
         return { variant: 'secondary', label: status, className: 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white' };
     }
@@ -145,10 +145,10 @@ export default function OrganizerPage() {
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
 
-    if (startDate > now) return { variant: 'default', label: 'Upcoming', className: 'bg-blue-600 text-white' };
-    if (startDate <= now && endDate >= now) return { variant: 'default', label: 'Ongoing', className: 'bg-red-600 text-white' };
-    if (endDate < now) return { variant: 'secondary', label: 'Completed', className: 'bg-gray-500 text-white' };
-    return { variant: 'secondary', label: 'Unknown', className: 'bg-gray-400 text-white' };
+    if (startDate > now) return { variant: 'default', label: t('organizer.upcoming'), className: 'bg-blue-600 text-white' };
+    if (startDate <= now && endDate >= now) return { variant: 'default', label: t('organizer.ongoing'), className: 'bg-red-600 text-white' };
+    if (endDate < now) return { variant: 'secondary', label: t('organizer.completed'), className: 'bg-gray-500 text-white' };
+    return { variant: 'secondary', label: t('common.unknown'), className: 'bg-gray-400 text-white' };
   };
 
   if (!isAuthenticated()) {
@@ -157,7 +157,7 @@ export default function OrganizerPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
-              Please log in to access the organizer dashboard.
+              {t('organizer.loginToAccess')}
             </p>
           </CardContent>
         </Card>
@@ -169,7 +169,7 @@ export default function OrganizerPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Loading dashboard...</p>
+          <p className="text-muted-foreground">{t('organizer.loading')}</p>
         </div>
       </div>
     );
@@ -208,25 +208,25 @@ export default function OrganizerPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Total Events</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">{t('organizer.totalEvents')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalEvents}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Published</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">{t('organizer.published')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-green-600 dark:text-green-500">{stats.publishedEvents}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Pending Moderation</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">{t('organizer.pendingModeration')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-orange-500">{stats.pendingEvents}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="liquid-glass-card rounded-2xl">
           <CardHeader className="pb-2">
-            <CardDescription className="text-gray-600 dark:text-gray-400">Total Registrations</CardDescription>
+            <CardDescription className="text-gray-600 dark:text-gray-400">{t('organizer.totalRegistrations')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalRegistrations}</CardTitle>
           </CardHeader>
         </Card>
@@ -237,15 +237,15 @@ export default function OrganizerPage() {
         <CardHeader className="border-b border-gray-200 dark:border-[#2a2a2a]">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">My Events</CardTitle>
-              <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">Manage all your events</CardDescription>
+              <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{t('organizer.myEvents')}</CardTitle>
+              <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">{t('organizer.manageEvents')}</CardDescription>
             </div>
             <Button
               asChild
               className="liquid-glass-red-button text-white rounded-2xl"
             >
               <Link to="/organizer/create-event">
-                Create Event
+                {t('organizer.createEvent')}
               </Link>
             </Button>
           </div>
@@ -263,7 +263,7 @@ export default function OrganizerPage() {
                   : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
               )}
             >
-              All Events
+              {t('organizer.allEvents')}
               <Badge className="ml-2 bg-white/20 text-white">{stats.totalEvents}</Badge>
             </Button>
             <Button
@@ -277,7 +277,7 @@ export default function OrganizerPage() {
                   : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
               )}
             >
-              Published
+              {t('organizer.published')}
               <Badge className="ml-2 bg-white/20 text-white">{stats.publishedEvents}</Badge>
             </Button>
             <Button
@@ -291,7 +291,7 @@ export default function OrganizerPage() {
                   : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
               )}
             >
-              Pending
+              {t('organizer.pending')}
               <Badge className="ml-2 bg-white/20 text-white">{stats.pendingEvents}</Badge>
             </Button>
             {stats.rejectedEvents > 0 && (
@@ -306,7 +306,7 @@ export default function OrganizerPage() {
                     : 'border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5'
                 )}
               >
-                Rejected
+                {t('organizer.rejected')}
                 <Badge className="ml-2 bg-white/20 text-white">{stats.rejectedEvents}</Badge>
               </Button>
             )}
@@ -316,10 +316,10 @@ export default function OrganizerPage() {
           {getFilteredEvents().length === 0 ? (
             <div className="text-center py-12">
               <p className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300 mb-2">
-                {activeTab === 'pending' ? 'No pending events' : activeTab === 'published' ? 'No published events' : activeTab === 'rejected' ? 'No rejected events' : 'No events'}
+                {activeTab === 'pending' ? t('organizer.noPendingEvents') : activeTab === 'published' ? t('organizer.noPublishedEvents') : activeTab === 'rejected' ? t('organizer.noRejectedEvents') : t('organizer.noEvents')}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                {activeTab === 'all' ? 'Get started by creating your first event' : 'Try switching to another tab'}
+                {activeTab === 'all' ? t('organizer.getStarted') : t('organizer.tryAnotherTab')}
               </p>
               {activeTab === 'all' && (
                 <Button
@@ -327,7 +327,7 @@ export default function OrganizerPage() {
                   size="lg"
                   className="liquid-glass-red-button text-white rounded-2xl"
                 >
-                  <Link to="/organizer/create-event">Create Your First Event</Link>
+                  <Link to="/organizer/create-event">{t('organizer.createFirstEvent')}</Link>
                 </Button>
               )}
             </div>
@@ -367,7 +367,7 @@ export default function OrganizerPage() {
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-gray-600 font-medium">
-                                {registrations} / {capacity} registered
+                                {registrations} / {capacity} {t('organizer.registered')}
                               </span>
                               <span className="text-gray-500">
                                 {Math.round(percentage)}%
@@ -388,7 +388,7 @@ export default function OrganizerPage() {
                             to={`/events/${event.id}`}
                             className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-gray-300 dark:border-[#2a2a2a] hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl")}
                           >
-                            View
+                            {t('organizer.view')}
                           </Link>
 
                           {/* Conditional QR button based on checkInMode */}
@@ -396,19 +396,19 @@ export default function OrganizerPage() {
                             <Link
                               to={`/organizer/event-qr/${event.id}`}
                               className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all")}
-                              title="Display QR for students to scan (free internal events)"
+                              title={t('organizer.qrDisplayTooltip')}
                             >
                               <i className="fa-solid fa-desktop mr-1" />
-                              QR Display
+                              {t('organizer.qrDisplay')}
                             </Link>
                           ) : (
                             <Link
                               to={`/organizer/scanner/${event.id}`}
                               className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-[#d62e1f] text-[#d62e1f] hover:bg-[#d62e1f] hover:text-white rounded-xl transition-all")}
-                              title="Scan student tickets/QR codes (paid/external events)"
+                              title={t('organizer.scanQrTooltip')}
                             >
                               <i className="fa-solid fa-qrcode mr-1" />
-                              Scan QR
+                              {t('organizer.scanQr')}
                             </Link>
                           )}
 
@@ -419,13 +419,13 @@ export default function OrganizerPage() {
                             className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white rounded-xl transition-all"
                           >
                             <i className="fa-solid fa-download mr-1" />
-                            Export
+                            {t('organizer.export')}
                           </Button>
                           <Link
                             to={`/organizer/events/${event.id}/edit`}
                             className={cn(buttonVariants({ size: "sm" }), "liquid-glass-red-button text-white rounded-xl")}
                           >
-                            Manage
+                            {t('organizer.manage')}
                           </Link>
                         </div>
                       </div>
@@ -439,7 +439,7 @@ export default function OrganizerPage() {
                 asChild
               >
                 <Link to="/organizer/create-event">
-                  Create New Event
+                  {t('organizer.createNewEvent')}
                 </Link>
               </Button>
             </>

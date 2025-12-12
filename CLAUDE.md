@@ -156,22 +156,25 @@ async someMethod() { ... }
 
 ## Recent Changes (2025-12-11)
 
-### Phase 3: i18n Internationalization ✅ COMPLETED (2025-12-11)
-
-**Infrastructure:**
-- ✅ `react-i18next` configured with EN/RU/KZ support
-- ✅ Language selector (iOS-style minimalist switcher in header)
-- ✅ Locale files: `frontend/js/i18n/locales/{en,ru,kz}.json`
-- ✅ Language persists in localStorage
-
-**Translated Modules (100%):**
-- Navigation (Layout, BottomNavigation)
-- Auth (LoginPage)
-- Events (EventsPage, EventDetailsPage, EventModal, date formatting)
-- Posts (CommunityPage, CreatePostModal, PostCard)
-- Profile (ProfilePage, EditInterestsSection)
-- Saved (SavedPage)
-- Onboarding (OnboardingModal)
+### Phase 3: i18n Internationalization ✅ COMPLETED (2025-12-12)
+ 
+ **Infrastructure:**
+ - ✅ `react-i18next` configured with EN/RU/KZ support
+ - ✅ Language selector (iOS-style minimalist switcher in header)
+ - ✅ Locale files: `frontend/js/i18n/locales/{en,ru,kz}.json`
+ - ✅ Language persists in localStorage
+ 
+ **Translated Modules (100%):**
+ - Navigation (Layout, BottomNavigation)
+ - Auth (LoginPage)
+ - Events (EventsPage, EventDetailsPage, EventModal, date formatting)
+ - Posts (CommunityPage, CreatePostModal, PostCard)
+ - Profile (ProfilePage, EditInterestsSection)
+ - Saved (SavedPage)
+ - Onboarding (OnboardingModal)
+ - **Admin Panel** (Dashboard, Users, Events, Partners, Ads, Pricing)
+ - **Moderator Panel** (Queue, Dashboard)
+ - **Organizer Panel** (Analytics, Scanner)
 
 **Usage:**
 ```jsx

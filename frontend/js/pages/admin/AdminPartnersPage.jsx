@@ -45,7 +45,7 @@ export default function AdminPartnersPage() {
     }
 
     if (user?.role !== 'ADMIN') {
-      toast.error('This page is only accessible to administrators');
+      toast.error(t('admin.adminOnlyAccess'));
       navigate('/');
       return;
     }
@@ -60,7 +60,7 @@ export default function AdminPartnersPage() {
       setPartners(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load partners:', err);
-      toast.error('Failed to load partners');
+      toast.error(t('admin.failedToLoadPartners'));
     } finally {
       setLoading(false);
     }
@@ -69,35 +69,35 @@ export default function AdminPartnersPage() {
   const handleUpdateCommission = async (partnerId) => {
     const rate = parseFloat(newCommissionRate);
     if (isNaN(rate) || rate < 0 || rate > 0.5) {
-      toast.error('Commission rate must be between 0% and 50%');
+      toast.error(t('admin.invalidCommissionRate'));
       return;
     }
 
     try {
       await partnersService.updateCommissionRate(partnerId, rate);
-      toast.success('Commission rate updated successfully');
+      toast.success(t('admin.commissionUpdateSuccess'));
       setShowEditModal(false);
       setNewCommissionRate('');
       await loadPartners();
     } catch (err) {
-      toast.error(err.message || 'Failed to update commission rate');
+      toast.error(err.message || t('admin.commissionUpdateFailed'));
     }
   };
 
   const handleAddSlots = async (partnerId) => {
     const slots = parseInt(slotsToAdd);
     if (isNaN(slots) || slots < 1) {
-      toast.error('Number of slots must be at least 1');
+      toast.error(t('admin.invalidSlotsCount'));
       return;
     }
 
     try {
       await partnersService.addPaidSlots(partnerId, slots);
-      toast.success(`Added ${slots} paid slot(s) successfully`);
+      toast.success(t('admin.addSlotsSuccess', { count: slots }));
       setSlotsToAdd('');
       await loadPartners();
     } catch (err) {
-      toast.error(err.message || 'Failed to add slots');
+      toast.error(err.message || t('admin.addSlotsFailed'));
     }
   };
 
@@ -111,7 +111,7 @@ export default function AdminPartnersPage() {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(t('language') === 'kz' ? 'kk-KZ' : t('language') === 'ru' ? 'ru-RU' : 'en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -142,7 +142,7 @@ export default function AdminPartnersPage() {
             {t('admin.managePartners')}
           </p>
         </div>
-        <Button onClick={() => toast.info('Partner creation will be available soon')} size="sm" className="w-full sm:w-auto">
+        <Button onClick={() => toast.info(t('admin.partnerCreationComingSoon'))} size="sm" className="w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           {t('admin.addPartner')}
         </Button>
@@ -260,7 +260,7 @@ export default function AdminPartnersPage() {
                   <div className="flex items-center gap-2 text-xs sm:text-sm">
                     <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
                     <span className="text-muted-foreground">
-                      Kaspi: {partner.kaspiPhone}
+                      {t('partner.kaspi')}: {partner.kaspiPhone}
                     </span>
                   </div>
                 </div>

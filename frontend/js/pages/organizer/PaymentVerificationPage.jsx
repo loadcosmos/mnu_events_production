@@ -52,7 +52,7 @@ export default function PaymentVerificationPage() {
     // Check if user has permission (ORGANIZER, MODERATOR, or ADMIN)
     const allowedRoles = ['ORGANIZER', 'MODERATOR', 'ADMIN', 'EXTERNAL_PARTNER'];
     if (!allowedRoles.includes(user?.role)) {
-      toast.error('You do not have permission to access this page');
+      toast.error(t('organizer.noPermission'));
       navigate('/');
       return;
     }
@@ -72,7 +72,7 @@ export default function PaymentVerificationPage() {
       await loadVerifications();
     } catch (err) {
       console.error('Failed to load data:', err);
-      toast.error('Failed to load verifications');
+      toast.error(t('organizer.loadVerificationsFailed'));
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ export default function PaymentVerificationPage() {
       setVerifications(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load verifications:', err);
-      toast.error('Failed to load verifications');
+      toast.error(t('organizer.loadVerificationsFailed'));
     }
   };
 
@@ -99,11 +99,11 @@ export default function PaymentVerificationPage() {
     try {
       setProcessingId(verificationId);
       await paymentVerificationService.verifyPayment(verificationId, 'APPROVED');
-      toast.success('Payment approved! QR code generated.');
+      toast.success(t('organizer.paymentApprovedMessage'));
       setSelectedVerification(null);
       await loadVerifications(selectedEvent !== 'all' ? selectedEvent : null);
     } catch (err) {
-      toast.error(err.message || 'Failed to approve payment');
+      toast.error(err.message || t('organizer.approvePaymentFailed'));
     } finally {
       setProcessingId(null);
     }
@@ -111,19 +111,19 @@ export default function PaymentVerificationPage() {
 
   const handleReject = async (verificationId) => {
     if (!organizerNotes.trim()) {
-      toast.error('Please provide a reason for rejection');
+      toast.error(t('organizer.rejectionReasonRequired'));
       return;
     }
 
     try {
       setProcessingId(verificationId);
       await paymentVerificationService.verifyPayment(verificationId, 'REJECTED', organizerNotes);
-      toast.success('Payment rejected');
+      toast.success(t('organizer.paymentRejectedMessage'));
       setSelectedVerification(null);
       setOrganizerNotes('');
       await loadVerifications(selectedEvent !== 'all' ? selectedEvent : null);
     } catch (err) {
-      toast.error(err.message || 'Failed to reject payment');
+      toast.error(err.message || t('organizer.rejectPaymentFailed'));
     } finally {
       setProcessingId(null);
     }
@@ -243,7 +243,7 @@ export default function PaymentVerificationPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-muted-foreground">Amount</div>
+                    <div className="text-sm text-muted-foreground">{t('organizer.amount')}</div>
                     <div className="font-bold text-blue-400">
                       {formatCurrency(verification.ticket.event.price)}
                     </div>

@@ -31,8 +31,8 @@ export default function OrganizerAnalyticsPage() {
       setStats(data);
     } catch (err) {
       console.error('[OrganizerAnalyticsPage] Load failed:', err);
-      setError(err.message || 'Failed to load analytics');
-      toast.error('Failed to load analytics');
+      setError(err.message || t('organizer.analyticsLoadFailed'));
+      toast.error(t('organizer.analyticsLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,13 @@ export default function OrganizerAnalyticsPage() {
   const handleExportCSV = () => {
     if (!stats || !stats.eventPerformance) return;
 
-    const headers = ['Event Title', 'Registrations', 'Check-ins', 'Check-in Rate', 'Revenue'];
+    const headers = [
+      t('organizer.eventTitle'),
+      t('organizer.headerRegistrations'),
+      t('organizer.checkIns'),
+      t('organizer.checkInRate'),
+      t('organizer.revenue')
+    ];
     const rows = stats.eventPerformance.map(event => [
       event.title,
       event.registrations,
@@ -61,7 +67,7 @@ export default function OrganizerAnalyticsPage() {
     link.download = `organizer-analytics-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
 
-    toast.success('CSV exported successfully');
+    toast.success(t('organizer.csvExportSuccess'));
   };
 
   if (loading) {
@@ -69,7 +75,7 @@ export default function OrganizerAnalyticsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-gray-600 dark:text-[#a0a0a0]">Loading analytics...</p>
+          <p className="text-gray-600 dark:text-[#a0a0a0]">{t('organizer.loadingAnalytics')}</p>
         </div>
       </div>
     );
@@ -82,7 +88,7 @@ export default function OrganizerAnalyticsPage() {
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6">
             <p className="text-red-600 dark:text-red-400">{error}</p>
             <Button onClick={loadAnalytics} className="mt-4">
-              Try Again
+              {t('common.tryAgain')}
             </Button>
           </div>
         </div>
@@ -162,7 +168,7 @@ export default function OrganizerAnalyticsPage() {
           <AnalyticsChart
             type="bar"
             data={eventPerformanceData}
-            title="Event Performance (Top 10)"
+            title={t('organizer.chartTopPerformance')}
             xKey="name"
             yKey="registrations"
             height={300}
@@ -171,7 +177,7 @@ export default function OrganizerAnalyticsPage() {
           <AnalyticsChart
             type="line"
             data={checkInRateData}
-            title="Check-in Rate by Event"
+            title={t('organizer.chartCheckInRate')}
             xKey="name"
             yKey="rate"
             height={300}
@@ -186,10 +192,10 @@ export default function OrganizerAnalyticsPage() {
               <thead className="border-b border-gray-200 dark:border-[#2a2a2a]">
                 <tr>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('common.event')}</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.registrations')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.headerRegistrations')}</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.checkIns')}</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.checkInRate')}</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('partner.revenue')}</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">{t('organizer.revenue')}</th>
                 </tr>
               </thead>
               <tbody>

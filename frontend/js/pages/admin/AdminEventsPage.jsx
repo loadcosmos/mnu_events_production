@@ -20,14 +20,14 @@ export default function AdminEventsPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   const categories = [
-    { value: '', label: 'All Categories' },
-    { value: 'ACADEMIC', label: 'Academic' },
-    { value: 'SPORTS', label: 'Sports' },
-    { value: 'CULTURAL', label: 'Cultural' },
-    { value: 'TECH', label: 'Tech' },
-    { value: 'SOCIAL', label: 'Social' },
-    { value: 'CAREER', label: 'Career' },
-    { value: 'OTHER', label: 'Other' },
+    { value: '', label: t('admin.allCategories') },
+    { value: 'ACADEMIC', label: t('enums.category.ACADEMIC') },
+    { value: 'SPORTS', label: t('enums.category.SPORTS') },
+    { value: 'CULTURAL', label: t('enums.category.CULTURAL') },
+    { value: 'TECH', label: t('enums.category.TECH') },
+    { value: 'SOCIAL', label: t('enums.category.SOCIAL') },
+    { value: 'CAREER', label: t('enums.category.CAREER') },
+    { value: 'OTHER', label: t('enums.category.OTHER') },
   ];
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export default function AdminEventsPage() {
       setTotalPages(meta.totalPages || 1);
     } catch (err) {
       console.error('[AdminEvents] Load events failed:', err);
-      setError(err.message || 'Failed to load events');
-      toast.error('Failed to load events');
+      setError(err.message || t('admin.failedToLoadEvents'));
+      toast.error(t('admin.failedToLoadEvents'));
     } finally {
       setLoading(false);
     }
@@ -74,17 +74,17 @@ export default function AdminEventsPage() {
   };
 
   const handleDelete = async (eventId, eventTitle) => {
-    if (!confirm(`Are you sure you want to delete "${eventTitle}"?`)) {
+    if (!confirm(t('admin.confirmDeleteEvent', { title: eventTitle }))) {
       return;
     }
 
     try {
       await eventsService.delete(eventId);
-      toast.success('Event deleted successfully');
+      toast.success(t('admin.deleteEventSuccess'));
       loadEvents();
     } catch (err) {
       console.error('[AdminEvents] Delete event failed:', err);
-      toast.error(err.message || 'Failed to delete event');
+      toast.error(err.message || t('admin.deleteEventFailed'));
     }
   };
 
@@ -103,13 +103,13 @@ export default function AdminEventsPage() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
       month: 'short',
-      day: 'numeric',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }).format(date);
   };
 
   if (loading && events.length === 0) {
@@ -138,7 +138,7 @@ export default function AdminEventsPage() {
               <div>
                 <Input
                   type="text"
-                  placeholder="Search events..."
+                  placeholder={t('admin.searchEventsPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full rounded-xl"
@@ -179,7 +179,7 @@ export default function AdminEventsPage() {
       {events.length === 0 ? (
         <Card className="liquid-glass-card rounded-2xl">
           <CardContent className="pt-6 text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No events found</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('admin.noEventsFound')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -200,16 +200,16 @@ export default function AdminEventsPage() {
                         {event.category}
                       </Badge>
                       <Badge variant="outline">
-                        {event._count?.registrations || 0} registrations
+                        {t('admin.registrationsCount', { count: event._count?.registrations || 0 })}
                       </Badge>
                       <Badge variant="outline">
-                        Capacity: {event.capacity}
+                        {t('events.capacity')}: {event.capacity}
                       </Badge>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <p>Start: {formatDate(event.startDate)}</p>
-                      <p>End: {formatDate(event.endDate)}</p>
-                      {event.location && <p>Location: {event.location}</p>}
+                      <p>{t('events.start')}: {formatDate(event.startDate)}</p>
+                      <p>{t('events.end')}: {formatDate(event.endDate)}</p>
+                      {event.location && <p>{t('events.location')}: {event.location}</p>}
                     </div>
                   </div>
                 </div>
@@ -248,10 +248,10 @@ export default function AdminEventsPage() {
             disabled={page === 1}
             className="rounded-xl"
           >
-            Previous
+            {t('admin.previous')}
           </Button>
           <span className="flex items-center px-4 text-sm text-gray-600 dark:text-gray-400">
-            Page {page} of {totalPages}
+            {t('admin.pageOf', { current: page, total: totalPages })}
           </span>
           <Button
             variant="outline"
@@ -259,7 +259,7 @@ export default function AdminEventsPage() {
             disabled={page === totalPages}
             className="rounded-xl"
           >
-            Next
+            {t('admin.next')}
           </Button>
         </div>
       )}

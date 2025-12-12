@@ -55,7 +55,8 @@ export default function AdminDashboardPage() {
       });
     } catch (err) {
       console.error('[AdminDashboard] Load statistics failed:', err);
-      setError(err.message || 'Failed to load statistics');
+      console.error('[AdminDashboard] Load statistics failed:', err);
+      setError(err.message || t('admin.failedToLoadStats'));
     } finally {
       setLoading(false);
     }
@@ -86,7 +87,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{t('admin.dashboard')}</h1>
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 transition-colors duration-300">
             <p className="text-red-600 dark:text-red-400 transition-colors duration-300">{error}</p>
           </div>
@@ -112,7 +113,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-                Click to manage →
+                {t('admin.clickToManage')} →
               </Badge>
             </CardContent>
           </Card>
@@ -126,7 +127,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-                Click to manage →
+                {t('admin.clickToManage')} →
               </Badge>
             </CardContent>
           </Card>
@@ -135,12 +136,12 @@ export default function AdminDashboardPage() {
         <Link to="/admin/events">
           <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
             <CardHeader className="pb-3">
-              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Registrations</CardDescription>
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.totalRegistrations')}</CardDescription>
               <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalRegistrations}</CardTitle>
             </CardHeader>
             <CardContent>
               <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-                Click to view events →
+                {t('admin.clickToViewEvents')} →
               </Badge>
             </CardContent>
           </Card>
@@ -149,12 +150,12 @@ export default function AdminDashboardPage() {
         <Link to="/admin/clubs">
           <Card className="liquid-glass-card rounded-2xl hover:shadow-lg hover:border-[#d62e1f]/50 transition-all duration-300 cursor-pointer h-full">
             <CardHeader className="pb-3">
-              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Active Clubs</CardDescription>
+              <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.activeClubs')}</CardDescription>
               <CardTitle className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.activeClubs}</CardTitle>
             </CardHeader>
             <CardContent>
               <Badge variant="outline" className="text-xs md:text-sm border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-                Click to manage →
+                {t('admin.clickToManage')} →
               </Badge>
             </CardContent>
           </Card>
@@ -164,22 +165,22 @@ export default function AdminDashboardPage() {
       {/* Quick Actions */}
       <Card className="liquid-glass-card rounded-2xl transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">Quick Actions</CardTitle>
-          <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Manage platform content</CardDescription>
+          <CardTitle className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">{t('admin.quickActions')}</CardTitle>
+          <CardDescription className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.manageContent')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <Link to="/admin/events" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
               <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageEvents')}</h3>
-              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage all platform events</p>
+              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.viewManageEvents')}</p>
             </Link>
             <Link to="/admin/users" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
               <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageUsers')}</h3>
-              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage user accounts</p>
+              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.viewManageUsers')}</p>
             </Link>
             <Link to="/admin/clubs" className="p-4 md:p-5 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
               <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{t('admin.manageClubs')}</h3>
-              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View and manage student clubs</p>
+              <p className="text-sm md:text-base text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('admin.viewManageClubs')}</p>
             </Link>
           </div>
         </CardContent>

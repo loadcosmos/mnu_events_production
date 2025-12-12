@@ -18,13 +18,13 @@ export default function AdminUsersPage() {
   const [selectedRole, setSelectedRole] = useState('');
 
   const roles = [
-    { value: '', label: 'All Roles' },
-    { value: 'STUDENT', label: 'Student' },
-    { value: 'ORGANIZER', label: 'Organizer' },
-    { value: 'MODERATOR', label: 'Moderator' },
-    { value: 'ADMIN', label: 'Admin' },
-    { value: 'EXTERNAL_PARTNER', label: 'External Partner' },
-    { value: 'FACULTY', label: 'Faculty' },
+    { value: '', label: t('admin.allRoles') },
+    { value: 'STUDENT', label: t('enums.role.STUDENT') },
+    { value: 'ORGANIZER', label: t('enums.role.ORGANIZER') },
+    { value: 'MODERATOR', label: t('enums.role.MODERATOR') },
+    { value: 'ADMIN', label: t('enums.role.ADMIN') },
+    { value: 'EXTERNAL_PARTNER', label: t('enums.role.EXTERNAL_PARTNER') },
+    { value: 'FACULTY', label: t('enums.role.FACULTY') },
   ];
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function AdminUsersPage() {
       setTotalPages(meta.totalPages || 1);
     } catch (err) {
       console.error('[AdminUsers] Load users failed:', err);
-      setError(err.message || 'Failed to load users');
-      toast.error('Failed to load users');
+      setError(err.message || t('admin.failedToLoadUsers'));
+      toast.error(t('admin.failedToLoadUsers'));
     } finally {
       setLoading(false);
     }
@@ -75,41 +75,41 @@ export default function AdminUsersPage() {
   const handleRoleChange = async (userId, newRole) => {
     try {
       await usersService.updateRole(userId, { role: newRole });
-      toast.success('User role updated successfully');
+      toast.success(t('admin.roleUpdateSuccess'));
       loadUsers();
     } catch (err) {
       console.error('[AdminUsers] Update role failed:', err);
-      toast.error(err.message || 'Failed to update user role');
+      toast.error(err.message || t('admin.roleUpdateFailed'));
     }
   };
 
   const handleDelete = async (userId, userEmail) => {
-    if (!confirm(`Are you sure you want to delete user "${userEmail}"?`)) {
+    if (!confirm(t('admin.confirmDeleteUser', { email: userEmail }))) {
       return;
     }
 
     try {
       await usersService.delete(userId);
-      toast.success('User deleted successfully');
+      toast.success(t('admin.deleteUserSuccess'));
       loadUsers();
     } catch (err) {
       console.error('[AdminUsers] Delete user failed:', err);
-      toast.error(err.message || 'Failed to delete user');
+      toast.error(err.message || t('admin.deleteUserFailed'));
     }
   };
 
   const handleVerifyEmail = async (userId, userEmail) => {
-    if (!confirm(`Manually verify email for "${userEmail}"?`)) {
+    if (!confirm(t('admin.confirmVerifyEmail', { email: userEmail }))) {
       return;
     }
 
     try {
       await usersService.verifyEmail(userId);
-      toast.success('Email verified successfully');
+      toast.success(t('admin.verifyEmailSuccess'));
       loadUsers();
     } catch (err) {
       console.error('[AdminUsers] Verify email failed:', err);
-      toast.error(err.message || 'Failed to verify email');
+      toast.error(err.message || t('admin.verifyEmailFailed'));
     }
   };
 
@@ -151,7 +151,7 @@ export default function AdminUsersPage() {
               <div>
                 <Input
                   type="text"
-                  placeholder="Search users by name or email..."
+                  placeholder={t('admin.searchUsersPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full rounded-xl"
@@ -193,7 +193,7 @@ export default function AdminUsersPage() {
       {users.length === 0 ? (
         <Card className="liquid-glass-card rounded-2xl">
           <CardContent className="pt-6 text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No users found</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('admin.noUsersFound')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -227,11 +227,11 @@ export default function AdminUsersPage() {
                       )}
                       {user.emailVerified ? (
                         <Badge variant="outline" className="bg-green-50 text-green-800">
-                          Verified
+                          {t('admin.verified')}
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="bg-yellow-50 text-yellow-800">
-                          Unverified
+                          {t('admin.unverified')}
                         </Badge>
                       )}
                     </div>
@@ -258,7 +258,7 @@ export default function AdminUsersPage() {
                       onClick={() => handleVerifyEmail(user.id, user.email)}
                       className="rounded-xl bg-green-600 hover:bg-green-700 text-white"
                     >
-                      Verify Email
+                      {t('admin.verifyEmail')}
                     </Button>
                   )}
                   <Button
@@ -285,10 +285,10 @@ export default function AdminUsersPage() {
             disabled={page === 1}
             className="rounded-xl"
           >
-            Previous
+            {t('admin.previous')}
           </Button>
           <span className="flex items-center px-4 text-sm text-gray-600 dark:text-gray-400">
-            Page {page} of {totalPages}
+            {t('admin.pageOf', { current: page, total: totalPages })}
           </span>
           <Button
             variant="outline"
@@ -296,7 +296,7 @@ export default function AdminUsersPage() {
             disabled={page === totalPages}
             className="rounded-xl"
           >
-            Next
+            {t('admin.next')}
           </Button>
         </div>
       )}

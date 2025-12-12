@@ -3,20 +3,19 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import preferencesService from '../../services/preferencesService';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
     EVENT_CATEGORIES,
     CSI_TAGS,
     DAYS_OF_WEEK,
-    TIME_SLOTS,
-    formatCategory,
-    formatCsiTag,
-    formatDay
+    TIME_SLOTS
 } from '../../constants/preferences';
 
 /**
  * EditInterestsSection - Modal content for editing user interests/preferences
  */
 export default function EditInterestsSection({ onSave }) {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [preferences, setPreferences] = useState({
@@ -87,11 +86,11 @@ export default function EditInterestsSection({ onSave }) {
             setSaving(true);
             await preferencesService.updateMyPreferences(preferences);
             setOriginalPreferences(JSON.stringify(preferences));
-            toast.success('Preferences saved!');
+            toast.success(t('profile.profileUpdated'));
             if (onSave) onSave();
         } catch (error) {
             console.error('[EditInterestsSection] Failed to save preferences:', error);
-            toast.error('Failed to save preferences');
+            toast.error(t('profile.updateFailed'));
         } finally {
             setSaving(false);
         }
@@ -111,7 +110,7 @@ export default function EditInterestsSection({ onSave }) {
             <div>
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                     <i className="fa-solid fa-tags mr-2 text-[#d62e1f]" />
-                    Event Categories You Like
+                    {t('events.categories')}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                     {EVENT_CATEGORIES.map(category => (
@@ -123,7 +122,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {formatCategory(category)}
+                            {t(`enums.category.${category}`)}
                         </Badge>
                     ))}
                 </div>
@@ -133,7 +132,7 @@ export default function EditInterestsSection({ onSave }) {
             <div>
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                     <i className="fa-solid fa-medal mr-2 text-[#d62e1f]" />
-                    CSI Activity Interests
+                    {t('onboarding.csiInterests')}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                     {CSI_TAGS.map(tag => (
@@ -145,7 +144,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {formatCsiTag(tag)}
+                            {t(`enums.csiCategory.${tag}`)}
                         </Badge>
                     ))}
                 </div>
@@ -155,7 +154,7 @@ export default function EditInterestsSection({ onSave }) {
             <div>
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                     <i className="fa-solid fa-calendar-days mr-2 text-[#d62e1f]" />
-                    When Are You Usually Free?
+                    {t('onboarding.availableDays')}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                     {DAYS_OF_WEEK.map(day => (
@@ -167,7 +166,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {formatDay(day)}
+                            {t(`enums.dayShort.${day}`)}
                         </Badge>
                     ))}
                 </div>
@@ -177,7 +176,7 @@ export default function EditInterestsSection({ onSave }) {
             <div>
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                     <i className="fa-solid fa-clock mr-2 text-[#d62e1f]" />
-                    Preferred Time
+                    {t('onboarding.preferredTime')}
                 </h4>
                 <div className="flex gap-2">
                     {Object.values(TIME_SLOTS).map(slot => (
@@ -189,7 +188,7 @@ export default function EditInterestsSection({ onSave }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {slot.charAt(0) + slot.slice(1).toLowerCase()}
+                            {t(`enums.timeSlot.${slot}`)}
                         </Badge>
                     ))}
                 </div>
@@ -200,7 +199,7 @@ export default function EditInterestsSection({ onSave }) {
                 <div className="pt-4 border-t border-gray-200 dark:border-[#2a2a2a]">
                     <div className="flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400 text-sm">
                         <i className="fa-solid fa-circle-exclamation" />
-                        <span>You have unsaved changes</span>
+                        <span>{t('common.unsavedChanges')}</span>
                     </div>
                     <Button
                         onClick={handleSave}
@@ -210,12 +209,12 @@ export default function EditInterestsSection({ onSave }) {
                         {saving ? (
                             <>
                                 <i className="fa-solid fa-spinner fa-spin mr-2" />
-                                Saving...
+                                {t('onboarding.saving')}
                             </>
                         ) : (
                             <>
                                 <i className="fa-solid fa-check mr-2" />
-                                Save Changes
+                                {t('common.saveChanges')}
                             </>
                         )}
                     </Button>

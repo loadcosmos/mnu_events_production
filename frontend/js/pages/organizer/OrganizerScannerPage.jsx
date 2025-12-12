@@ -41,7 +41,7 @@ export default function OrganizerScannerPage() {
       setStats(statsData);
     } catch (err) {
       console.error('[OrganizerScannerPage] Load failed:', err);
-      toast.error('Failed to load event data');
+      toast.error(t('organizer.loadEventFailed'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function OrganizerScannerPage() {
       if (response.success) {
         // ✅ Successful check-in
         playSuccessSound();
-        toast.success('✅ Check-in successful!', {
+        toast.success(`✅ ${t('organizer.checkInSuccessMessage')}`, {
           description: `${response.user.firstName} ${response.user.lastName}`,
         });
         setLastScan({
@@ -80,7 +80,7 @@ export default function OrganizerScannerPage() {
     } catch (error) {
       // ❌ Error
       playErrorSound();
-      const errorMessage = error.response?.data?.message || error.message || 'Invalid QR code';
+      const errorMessage = error.response?.data?.message || error.message || t('organizer.invalidQrCode');
       toast.error('❌ ' + errorMessage);
       setLastScan({
         success: false,
@@ -174,7 +174,7 @@ export default function OrganizerScannerPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-gray-600 dark:text-[#a0a0a0]">Loading scanner...</p>
+          <p className="text-gray-600 dark:text-[#a0a0a0]">{t('organizer.loadingScanner')}</p>
         </div>
       </div>
     );
@@ -322,7 +322,7 @@ export default function OrganizerScannerPage() {
         {process.env.NODE_ENV === 'development' && (
           <Card className="liquid-glass-card rounded-2xl mt-6">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-white text-sm">Dev Mode - Test QR Input</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white text-sm">{t('organizer.devModeTestQr')}</CardTitle>
             </CardHeader>
             <CardContent>
               <textarea

@@ -40,7 +40,7 @@ export default function EventCheckInsPage() {
       setStats(statsData);
     } catch (err) {
       console.error('[EventCheckInsPage] Load failed:', err);
-      toast.error('Failed to load check-ins');
+      toast.error(t('organizer.checkInsLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -56,10 +56,10 @@ export default function EventCheckInsPage() {
 
       setCheckIns(checkInsData);
       setStats(statsData);
-      toast.success('Check-ins refreshed');
+      toast.success(t('organizer.checkInsRefreshed'));
     } catch (err) {
       console.error('[EventCheckInsPage] Refresh failed:', err);
-      toast.error('Failed to refresh');
+      toast.error(t('organizer.refreshFailed'));
     } finally {
       setRefreshing(false);
     }
@@ -67,17 +67,23 @@ export default function EventCheckInsPage() {
 
   const handleExportCSV = () => {
     if (!checkIns || checkIns.length === 0) {
-      toast.error('No check-ins to export');
+      toast.error(t('organizer.noCheckInsToExport'));
       return;
     }
 
-    const headers = ['Name', 'Email', 'Faculty', 'Checked In At', 'Scan Mode'];
+    const headers = [
+      t('common.name'),
+      t('common.email'),
+      t('common.faculty'),
+      t('organizer.checkedInAt'),
+      t('organizer.scanMode')
+    ];
     const rows = checkIns.map(checkIn => [
       `${checkIn.user.firstName} ${checkIn.user.lastName}`,
       checkIn.user.email,
       checkIn.user.faculty || 'N/A',
       new Date(checkIn.checkedInAt).toLocaleString(),
-      checkIn.scanMode === 'STUDENTS_SCAN' ? 'Student scanned' : 'Organizer scanned'
+      checkIn.scanMode === 'STUDENTS_SCAN' ? t('organizer.studentScanned') : t('organizer.organizerScanned')
     ]);
 
     const csvContent = [
@@ -91,7 +97,7 @@ export default function EventCheckInsPage() {
     link.download = `checkins-${event?.title || 'event'}-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
 
-    toast.success('CSV exported successfully');
+    toast.success(t('organizer.csvExportSuccess'));
   };
 
   if (loading) {
@@ -99,7 +105,7 @@ export default function EventCheckInsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-[#2a2a2a] border-t-[#d62e1f] mb-4"></div>
-          <p className="text-gray-600 dark:text-[#a0a0a0]">Loading check-ins...</p>
+          <p className="text-gray-600 dark:text-[#a0a0a0]">{t('organizer.loadingCheckIns')}</p>
         </div>
       </div>
     );

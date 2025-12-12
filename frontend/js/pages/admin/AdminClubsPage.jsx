@@ -20,14 +20,14 @@ export default function AdminClubsPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   const categories = [
-    { value: '', label: 'All Categories' },
-    { value: 'ACADEMIC', label: 'Academic' },
-    { value: 'ARTS', label: 'Arts' },
-    { value: 'SERVICE', label: 'Service' },
-    { value: 'TECH', label: 'Tech' },
-    { value: 'SPORTS', label: 'Sports' },
-    { value: 'CULTURAL', label: 'Cultural' },
-    { value: 'OTHER', label: 'Other' },
+    { value: '', label: t('admin.allCategories') },
+    { value: 'ACADEMIC', label: t('enums.category.ACADEMIC') },
+    { value: 'ARTS', label: t('enums.category.ARTS') },
+    { value: 'SERVICE', label: t('enums.category.SERVICE') },
+    { value: 'TECH', label: t('enums.category.TECH') },
+    { value: 'SPORTS', label: t('enums.category.SPORTS') },
+    { value: 'CULTURAL', label: t('enums.category.CULTURAL') },
+    { value: 'OTHER', label: t('enums.category.OTHER') },
   ];
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export default function AdminClubsPage() {
       setTotalPages(meta.totalPages || 1);
     } catch (err) {
       console.error('[AdminClubs] Load clubs failed:', err);
-      setError(err.message || 'Failed to load clubs');
-      toast.error('Failed to load clubs');
+      setError(err.message || t('admin.failedToLoadClubs'));
+      toast.error(t('admin.failedToLoadClubs'));
     } finally {
       setLoading(false);
     }
@@ -74,17 +74,17 @@ export default function AdminClubsPage() {
   };
 
   const handleDelete = async (clubId, clubName) => {
-    if (!confirm(`Are you sure you want to delete "${clubName}"?`)) {
+    if (!confirm(t('admin.confirmDeleteClub', { name: clubName }))) {
       return;
     }
 
     try {
       await clubsService.delete(clubId);
-      toast.success('Club deleted successfully');
+      toast.success(t('admin.deleteClubSuccess'));
       loadClubs();
     } catch (err) {
       console.error('[AdminClubs] Delete club failed:', err);
-      toast.error(err.message || 'Failed to delete club');
+      toast.error(err.message || t('admin.deleteClubFailed'));
     }
   };
 
@@ -127,7 +127,7 @@ export default function AdminClubsPage() {
               <div>
                 <Input
                   type="text"
-                  placeholder="Search clubs..."
+                  placeholder={t('admin.searchClubsPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full rounded-xl"
@@ -168,7 +168,7 @@ export default function AdminClubsPage() {
       {clubs.length === 0 ? (
         <Card className="liquid-glass-card rounded-2xl">
           <CardContent className="pt-6 text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No clubs found</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('admin.noClubsFound')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -207,11 +207,11 @@ export default function AdminClubsPage() {
                         {club.category}
                       </Badge>
                       <Badge variant="outline">
-                        {club._count?.members || 0} members
+                        {t('admin.membersCount', { count: club._count?.members || 0 })}
                       </Badge>
                       {club.organizer && (
                         <Badge variant="outline">
-                          Organizer: {club.organizer.firstName} {club.organizer.lastName}
+                          {t('events.organizer')}: {club.organizer.firstName} {club.organizer.lastName}
                         </Badge>
                       )}
                     </div>
@@ -252,10 +252,10 @@ export default function AdminClubsPage() {
             disabled={page === 1}
             className="rounded-xl"
           >
-            Previous
+            {t('admin.previous')}
           </Button>
           <span className="flex items-center px-4 text-sm text-gray-600 dark:text-gray-400">
-            Page {page} of {totalPages}
+            {t('admin.pageOf', { current: page, total: totalPages })}
           </span>
           <Button
             variant="outline"
@@ -263,7 +263,7 @@ export default function AdminClubsPage() {
             disabled={page === totalPages}
             className="rounded-xl"
           >
-            Next
+            {t('admin.next')}
           </Button>
         </div>
       )}

@@ -40,7 +40,8 @@ export default function ModeratorDashboardPage() {
       setRecentItems(Array.isArray(queueData) ? queueData.slice(0, 5) : []);
     } catch (err) {
       console.error('[ModeratorDashboard] Load statistics failed:', err);
-      setError(err.message || 'Failed to load statistics');
+      console.error('[ModeratorDashboard] Load statistics failed:', err);
+      setError(err.message || t('moderator.failedToLoadStats'));
     } finally {
       setLoading(false);
     }
@@ -77,18 +78,19 @@ export default function ModeratorDashboardPage() {
   };
 
   const getItemTitle = (item) => {
-    if (!item.details) return 'Content not found';
-    return item.details.title || item.details.name || 'Untitled';
+    if (!item.details) return t('moderator.contentNotFound');
+    return item.details.title || item.details.name || t('moderator.untitled');
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-GB', {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }).format(date);
   };
 
   if (loading) {
@@ -141,7 +143,7 @@ export default function ModeratorDashboardPage() {
           </CardHeader>
           <CardContent>
             <Badge variant="outline" className="text-xs border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400 transition-colors duration-300">
-              Requires attention
+              {t('moderator.requiresAttention')}
             </Badge>
           </CardContent>
         </Card>
@@ -153,7 +155,7 @@ export default function ModeratorDashboardPage() {
           </CardHeader>
           <CardContent>
             <Badge variant="outline" className="text-xs border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 transition-colors duration-300">
-              Content published
+              {t('moderator.contentPublished')}
             </Badge>
           </CardContent>
         </Card>
@@ -165,19 +167,19 @@ export default function ModeratorDashboardPage() {
           </CardHeader>
           <CardContent>
             <Badge variant="outline" className="text-xs border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 transition-colors duration-300">
-              Content declined
+              {t('moderator.contentDeclined')}
             </Badge>
           </CardContent>
         </Card>
 
         <Card className="liquid-glass-card rounded-2xl hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-3">
-            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Total Reviewed</CardDescription>
+            <CardDescription className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.totalReviewed')}</CardDescription>
             <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.total}</CardTitle>
           </CardHeader>
           <CardContent>
             <Badge variant="outline" className="text-xs border-gray-200 dark:border-[#2a2a2a] transition-colors duration-300">
-              All time
+              {t('moderator.totalReviewedAllTime')}
             </Badge>
           </CardContent>
         </Card>
@@ -186,24 +188,24 @@ export default function ModeratorDashboardPage() {
       {/* Quick Actions */}
       <Card className="liquid-glass-card rounded-2xl transition-all duration-300 mb-6">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">Quick Actions</CardTitle>
-          <CardDescription className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Manage moderation queue</CardDescription>
+          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">{t('moderator.quickActions')}</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.manageQueue')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link to="/moderator/queue" className="p-4 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">Pending Queue</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{t('moderator.pendingQueue')}</h3>
                 <Badge className="bg-orange-600 text-white">{stats.pending}</Badge>
               </div>
-              <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">Review pending submissions</p>
+              <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.reviewPending')}</p>
             </Link>
             <Link to="/moderator/queue?status=APPROVED" className="p-4 border border-gray-200 dark:border-[#2a2a2a] rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 hover:border-[#d62e1f] transition-all duration-300 cursor-pointer">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">Approved Content</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{t('moderator.approvedContent')}</h3>
                 <Badge className="bg-green-600 text-white">{stats.approved}</Badge>
               </div>
-              <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">View approved submissions</p>
+              <p className="text-sm text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">{t('moderator.viewApproved')}</p>
             </Link>
           </div>
         </CardContent>
@@ -216,10 +218,10 @@ export default function ModeratorDashboardPage() {
             <div>
               <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
                 <i className="fa-solid fa-newspaper text-pink-500 mr-2" />
-                Pending Posts
+                {t('moderator.pendingPosts')}
               </CardTitle>
               <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">
-                Student posts awaiting moderation
+                {t('moderator.studentPostsPending')}
               </CardDescription>
             </div>
             <Badge className="bg-pink-600 text-white">{pendingPosts.length}</Badge>
@@ -233,7 +235,7 @@ export default function ModeratorDashboardPage() {
           ) : pendingPosts.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <i className="fa-solid fa-check-circle text-3xl text-green-500 mb-3"></i>
-              <p>No pending posts to review</p>
+              <p>{t('moderator.noPendingPosts')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -287,7 +289,7 @@ export default function ModeratorDashboardPage() {
               ))}
               {pendingPosts.length > 5 && (
                 <p className="text-center text-sm text-gray-500">
-                  +{pendingPosts.length - 5} more pending posts
+                  {t('moderator.morePendingPosts', { count: pendingPosts.length - 5 })}
                 </p>
               )}
             </div>
@@ -301,14 +303,14 @@ export default function ModeratorDashboardPage() {
           <CardHeader className="border-b border-gray-200 dark:border-[#2a2a2a]">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Recent Pending Items</CardTitle>
-                <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">Latest submissions awaiting review</CardDescription>
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{t('moderator.recentPendingItems')}</CardTitle>
+                <CardDescription className="mt-1 text-gray-600 dark:text-gray-400">{t('moderator.latestSubmissions')}</CardDescription>
               </div>
               <Button
                 asChild
                 className="liquid-glass-red-button text-white rounded-2xl"
               >
-                <Link to="/moderator/queue">View All</Link>
+                <Link to="/moderator/queue">{t('moderator.viewAll')}</Link>
               </Button>
             </div>
           </CardHeader>
@@ -333,7 +335,7 @@ export default function ModeratorDashboardPage() {
                         </h3>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Submitted: {formatDate(item.createdAt)}
+                        {t('moderator.submitted')}: {formatDate(item.createdAt)}
                       </p>
                     </div>
                     <Button
@@ -341,7 +343,7 @@ export default function ModeratorDashboardPage() {
                       size="sm"
                       className="liquid-glass-red-button text-white rounded-xl ml-4"
                     >
-                      <Link to="/moderator/queue">Review</Link>
+                      <Link to="/moderator/queue">{t('moderator.review')}</Link>
                     </Button>
                   </div>
                 </div>

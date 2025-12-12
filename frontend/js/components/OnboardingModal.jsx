@@ -10,11 +10,7 @@ import {
     EVENT_CATEGORIES,
     CSI_TAGS,
     DAYS_OF_WEEK,
-    TIME_SLOTS,
-    formatCategory,
-    formatCsiTag,
-    formatDay,
-    formatTimeSlot
+    TIME_SLOTS
 } from '../constants/preferences';
 
 export default function OnboardingModal({ isOpen, onComplete }) {
@@ -72,7 +68,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {formatCategory(category)}
+                            {t(`enums.category.${category}`)}
                         </Badge>
                     ))}
                 </div>
@@ -92,7 +88,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                                 : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                 }`}
                         >
-                            {formatCsiTag(tag)}
+                            {t(`enums.csiCategory.${tag}`)}
                         </Badge>
                     ))}
                 </div>
@@ -115,7 +111,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                                         : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
                                         }`}
                                 >
-                                    {formatDay(day)}
+                                    {t(`enums.dayShort.${day}`)}
                                 </Badge>
                             ))}
                         </div>
@@ -123,24 +119,21 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     <div>
                         <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{t('onboarding.preferredTime')}</h4>
                         <div className="flex gap-3 justify-center">
-                            {Object.values(TIME_SLOTS).map(slot => {
-                                const { label, sublabel } = formatTimeSlot(slot);
-                                return (
-                                    <div
-                                        key={slot}
-                                        onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
-                                        className={`cursor-pointer transition-all px-4 py-3 rounded-xl text-center ${preferences.preferredTimeSlot === slot
-                                            ? 'bg-blue-600 text-white scale-105 shadow-md'
-                                            : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
-                                            }`}
-                                    >
-                                        <p className="font-semibold">{label}</p>
-                                        <p className={`text-xs ${preferences.preferredTimeSlot === slot ? 'text-blue-100' : 'text-gray-500'}`}>
-                                            {sublabel}
-                                        </p>
-                                    </div>
-                                );
-                            })}
+                            {Object.values(TIME_SLOTS).map(slot => (
+                                <div
+                                    key={slot}
+                                    onClick={() => setPreferences(prev => ({ ...prev, preferredTimeSlot: slot }))}
+                                    className={`cursor-pointer transition-all px-4 py-3 rounded-xl text-center ${preferences.preferredTimeSlot === slot
+                                        ? 'bg-blue-600 text-white scale-105 shadow-md'
+                                        : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+                                        }`}
+                                >
+                                    <p className="font-semibold">{t(`enums.timeSlot.${slot}`)}</p>
+                                    <p className={`text-xs ${preferences.preferredTimeSlot === slot ? 'text-blue-100' : 'text-gray-500'}`}>
+                                        {t(`enums.timeSlotRange.${slot}`)}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

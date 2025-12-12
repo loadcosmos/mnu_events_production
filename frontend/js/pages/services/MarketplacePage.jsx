@@ -4,25 +4,27 @@ import { Search, Filter, SlidersHorizontal, Plus, Megaphone } from 'lucide-react
 import ServiceCard from '../../components/ServiceCard';
 import { Button } from '../../components/ui/button';
 import servicesService from '../../services/servicesService';
+import { useTranslation } from 'react-i18next';
 
 const categories = [
-  { value: 'all', label: 'All Categories' },
-  { value: 'DESIGN', label: 'Design' },
-  { value: 'PHOTO_VIDEO', label: 'Photo/Video' },
-  { value: 'IT', label: 'IT' },
-  { value: 'COPYWRITING', label: 'Copywriting' },
-  { value: 'CONSULTING', label: 'Consulting' },
-  { value: 'OTHER', label: 'Other' },
+  { value: 'all' },
+  { value: 'DESIGN' },
+  { value: 'PHOTO_VIDEO' },
+  { value: 'IT' },
+  { value: 'COPYWRITING' },
+  { value: 'CONSULTING' },
+  { value: 'OTHER' },
 ];
 
 const sortOptions = [
-  { value: 'rating', label: 'By Rating' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'newest', label: 'Newest First' },
+  { value: 'rating' },
+  { value: 'price-asc' },
+  { value: 'price-desc' },
+  { value: 'newest' },
 ];
 
 export default function MarketplacePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [services, setServices] = useState([]);
@@ -69,7 +71,7 @@ export default function MarketplacePage() {
         console.error('[MarketplacePage] Failed to load services:', err);
         if (isCancelled) return;
 
-        setError(err.response?.data?.message || err.message || 'Failed to load services');
+        setError(err.response?.data?.message || err.message || t('services.errorLoading'));
       } finally {
         if (!isCancelled) {
           setLoading(false);
@@ -140,10 +142,10 @@ export default function MarketplacePage() {
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
-              Services <span className="text-[#d62e1f]">Marketplace</span>
+              {t('services.title').split(' ')[0]} <span className="text-[#d62e1f]">{t('services.title').split(' ')[1]}</span>
             </h1>
             <p className="text-gray-600 dark:text-[#a0a0a0] transition-colors duration-300">
-              Find professionals for your project
+              {t('services.subtitle')}
             </p>
           </div>
           <div className="flex gap-3">
@@ -152,7 +154,7 @@ export default function MarketplacePage() {
               className="rounded-xl bg-gradient-to-r from-[#d62e1f] to-[#b91c1c] hover:from-[#b91c1c] hover:to-[#991b1b] text-white shadow-md hover:shadow-lg transition-all"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Service
+              {t('services.createService')}
             </Button>
           </div>
         </div>
@@ -164,7 +166,7 @@ export default function MarketplacePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search services..."
+              placeholder={t('services.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="
@@ -197,7 +199,7 @@ export default function MarketplacePage() {
             >
               {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
-                  {cat.label}
+                  {cat.value === 'all' ? t('services.allCategories') : t(`enums.serviceCategory.${cat.value}`)}
                 </option>
               ))}
             </select>
@@ -218,7 +220,10 @@ export default function MarketplacePage() {
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
-                  {option.label}
+                  {option.value === 'rating' ? t('services.sortByRating') :
+                   option.value === 'price-asc' ? t('services.sortPriceLow') :
+                   option.value === 'price-desc' ? t('services.sortPriceHigh') :
+                   t('services.sortNewest')}
                 </option>
               ))}
             </select>
@@ -230,7 +235,7 @@ export default function MarketplacePage() {
               className="flex items-center gap-2 border-gray-300 dark:border-[#2a2a2a] text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
             >
               <SlidersHorizontal className="w-4 h-4" />
-              Filters
+              {t('services.filters')}
             </Button>
           </div>
 
@@ -238,19 +243,19 @@ export default function MarketplacePage() {
           {showFilters && (
             <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Additional Filters
+                {t('services.additionalFilters')}
               </h3>
 
               <div className="space-y-4">
                 {/* Price Range */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Price Range
+                    {t('services.priceRange')}
                   </label>
                   <div className="flex items-center gap-4">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder={t('services.minPrice')}
                       value={priceRange.min}
                       onChange={(e) =>
                         setPriceRange({ ...priceRange, min: parseInt(e.target.value) || 0 })
@@ -260,7 +265,7 @@ export default function MarketplacePage() {
                     <span className="text-gray-500">—</span>
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder={t('services.maxPrice')}
                       value={priceRange.max}
                       onChange={(e) =>
                         setPriceRange({ ...priceRange, max: parseInt(e.target.value) || 100000 })
@@ -278,7 +283,7 @@ export default function MarketplacePage() {
         {loading && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#d62e1f] mb-4"></div>
-            <p className="text-gray-600 dark:text-[#a0a0a0]">Loading services...</p>
+            <p className="text-gray-600 dark:text-[#a0a0a0]">{t('services.loadingServices')}</p>
           </div>
         )}
 
@@ -289,7 +294,7 @@ export default function MarketplacePage() {
               <i className="fa-solid fa-exclamation-circle text-4xl"></i>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Error Loading
+              {t('services.errorLoading')}
             </h3>
             <p className="text-gray-600 dark:text-[#a0a0a0]">{error}</p>
           </div>
@@ -298,7 +303,7 @@ export default function MarketplacePage() {
         {/* Results Count */}
         {!loading && !error && (
           <div className="mb-6 text-sm text-gray-600 dark:text-[#a0a0a0]">
-            Services found: {filteredServices.length}
+            {t('services.servicesFound', { count: filteredServices.length })}
           </div>
         )}
 
@@ -316,10 +321,10 @@ export default function MarketplacePage() {
           <div className="text-center py-12">
             <Filter className="w-16 h-16 mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              No Services Found
+              {t('services.noServicesFound')}
             </h3>
             <p className="text-gray-600 dark:text-[#a0a0a0]">
-              Try adjusting your filters
+              {t('services.tryAdjustingFilters')}
             </p>
           </div>
         )}
@@ -331,17 +336,17 @@ export default function MarketplacePage() {
               <i className="fa-solid fa-briefcase text-6xl"></i>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              No Services Yet
+              {t('services.noServicesYet')}
             </h3>
             <p className="text-gray-600 dark:text-[#a0a0a0] mb-4">
-              Be the first to post your service!
+              {t('services.beFirstToPost')}
             </p>
             <Button
               onClick={() => navigate('/services/create')}
               className="liquid-glass-red-button text-white rounded-xl px-6"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Service
+              {t('services.createService')}
             </Button>
           </div>
         )}

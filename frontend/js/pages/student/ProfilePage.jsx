@@ -240,9 +240,9 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center px-4 transition-colors duration-300">
         <div className="text-center">
-          <p className="text-[#d62e1f] mb-4">Failed to load profile</p>
+          <p className="text-[#d62e1f] mb-4">{t('profile.failedToLoadProfile')}</p>
           <Button onClick={loadUserData} className="liquid-glass-red-button text-white rounded-2xl">
-            Retry
+            {t('profile.retry')}
           </Button>
         </div>
       </div>
@@ -418,9 +418,9 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
-                          My Registrations
+                          {t('profile.myRegistrations')}
                         </h3>
-                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">View and manage your event registrations</p>
+                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.viewManageRegistrations')}</p>
                       </div>
                     </div>
                     <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
@@ -436,9 +436,9 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <h3 className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-[#d62e1f] transition-colors">
-                          CSI Statistics
+                          {t('profile.csiStatistics')}
                         </h3>
-                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">View your CSI activity progress and statistics</p>
+                        <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.viewCsiProgress')}</p>
                       </div>
                     </div>
                     <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
@@ -465,7 +465,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-                  Saved <span className="text-[#d62e1f]">Events</span>
+                  {t('profile.savedEvents').split(' ')[0]} <span className="text-[#d62e1f]">{t('profile.savedEvents').split(' ')[1]}</span>
                 </h2>
                 <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-200 dark:border-[#2a2a2a] shadow-lg">
                   <SavedEventsTab />
@@ -479,7 +479,7 @@ export default function ProfilePage() {
             <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-                  <span className="text-[#d62e1f]">Settings</span>
+                  <span className="text-[#d62e1f]">{t('profile.settings')}</span>
                 </h2>
 
                 <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] divide-y divide-gray-200 dark:divide-[#2a2a2a] shadow-lg">
@@ -503,8 +503,8 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <i className="fa-solid fa-bell text-[#d62e1f] text-xl" />
                         <div>
-                          <h3 className="text-gray-900 dark:text-white font-semibold">Notifications</h3>
-                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Manage notification preferences</p>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">{t('profile.notifications')}</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.manageNotifications')}</p>
                         </div>
                       </div>
                       <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
@@ -519,8 +519,8 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <i className="fa-solid fa-shield-halved text-[#d62e1f] text-xl" />
                         <div>
-                          <h3 className="text-gray-900 dark:text-white font-semibold">Privacy & Security</h3>
-                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Control your privacy settings</p>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">{t('profile.privacySecurity')}</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.controlPrivacy')}</p>
                         </div>
                       </div>
                       <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
@@ -535,8 +535,8 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <i className="fa-solid fa-circle-info text-[#d62e1f] text-xl" />
                         <div>
-                          <h3 className="text-gray-900 dark:text-white font-semibold">About & Help</h3>
-                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Get help and learn about the app</p>
+                          <h3 className="text-gray-900 dark:text-white font-semibold">{t('profile.aboutHelp')}</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.getHelp')}</p>
                         </div>
                       </div>
                       <button className="px-4 py-2 bg-gray-200 dark:bg-[#2a2a2a] hover:bg-gray-300 dark:hover:bg-[#3a3a3a] text-gray-900 dark:text-white rounded-lg transition-colors">
@@ -554,8 +554,8 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <i className="fa-solid fa-right-from-bracket text-[#d62e1f] text-xl" />
                         <div className="text-left">
-                          <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">Logout</h3>
-                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Sign out of your account</p>
+                          <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">{t('auth.logout')}</h3>
+                          <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.signOutAccount')}</p>
                         </div>
                       </div>
                       <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />
@@ -571,7 +571,7 @@ export default function ProfilePage() {
         <div className="py-8 px-4 bg-gray-50 dark:bg-[#0a0a0a] transition-colors duration-300">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">
-              <span className="text-[#d62e1f]">Settings</span>
+              <span className="text-[#d62e1f]">{t('profile.settings')}</span>
             </h2>
 
             <div className="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-[#2a2a2a] divide-y divide-gray-200 dark:divide-[#2a2a2a] shadow-lg">
@@ -598,8 +598,8 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-4">
                     <i className="fa-solid fa-right-from-bracket text-[#d62e1f] text-xl" />
                     <div className="text-left">
-                      <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">Logout</h3>
-                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">Sign out of your account</p>
+                      <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-[#d62e1f] transition-colors">{t('auth.logout')}</h3>
+                      <p className="text-gray-600 dark:text-[#a0a0a0] text-sm">{t('profile.signOutAccount')}</p>
                     </div>
                   </div>
                   <i className="fa-solid fa-chevron-right text-gray-600 dark:text-[#a0a0a0] group-hover:text-[#d62e1f] transition-colors" />

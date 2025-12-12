@@ -43,7 +43,8 @@ export default function ModerationQueuePage() {
             loadQueue(); // Reload list
         } catch (error) {
             console.error('Failed to approve item:', error);
-            alert('Failed to approve item');
+            // In a real app we'd use toast here
+            console.error(t('moderator.failedToApprove'));
         } finally {
             setProcessingId(null);
         }
@@ -66,15 +67,15 @@ export default function ModerationQueuePage() {
             loadQueue();
         } catch (error) {
             console.error('Failed to reject item:', error);
-            alert('Failed to reject item');
+            console.error(t('moderator.failedToReject'));
         } finally {
             setProcessingId(null);
         }
     };
 
     const getItemTitle = (item) => {
-        if (!item.details) return 'Content not found';
-        return item.details.title || item.details.name || 'Untitled';
+        if (!item.details) return t('moderator.contentNotFound');
+        return item.details.title || item.details.name || t('moderator.untitled');
     };
 
     const getItemDescription = (item) => {
@@ -145,7 +146,7 @@ export default function ModerationQueuePage() {
                                             {item.itemType}
                                         </span>
                                         <span className="text-sm text-gray-500 dark:text-[#666666]">
-                                            Submitted: {formatDate(item.createdAt)}
+                                            {t('moderator.submitted')}: {formatDate(item.createdAt)}
                                         </span>
                                         {item.status !== 'PENDING' && (
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${item.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -166,14 +167,14 @@ export default function ModerationQueuePage() {
                                     {item.details?.imageUrl && (
                                         <img
                                             src={item.details.imageUrl}
-                                            alt="Preview"
+                                            alt={t('moderator.preview')}
                                             className="w-32 h-32 object-cover rounded-lg mb-4"
                                         />
                                     )}
 
                                     {item.rejectionReason && (
                                         <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/30">
-                                            <p className="text-sm font-bold text-red-800 dark:text-red-400 mb-1">Rejection Reason:</p>
+                                            <p className="text-sm font-bold text-red-800 dark:text-red-400 mb-1">{t('moderator.rejectionReason')}:</p>
                                             <p className="text-sm text-red-700 dark:text-red-300">{item.rejectionReason}</p>
                                         </div>
                                     )}
@@ -186,7 +187,7 @@ export default function ModerationQueuePage() {
                                             disabled={processingId === item.id}
                                             className="bg-green-600 hover:bg-green-700 text-white w-full"
                                         >
-                                            {processingId === item.id ? 'Processing...' : 'Approve'}
+                                            {processingId === item.id ? t('moderator.processing') : t('moderator.approve')}
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -194,7 +195,7 @@ export default function ModerationQueuePage() {
                                             disabled={processingId === item.id}
                                             className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 w-full"
                                         >
-                                            Reject
+                                            {t('moderator.reject')}
                                         </Button>
                                     </div>
                                 )}
@@ -204,39 +205,37 @@ export default function ModerationQueuePage() {
                 </div>
             )}
 
-            {/* Reject Modal */}
-            {rejectModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 dark:border-[#2a2a2a]">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Reject Submission</h3>
-                        <p className="text-gray-600 dark:text-[#a0a0a0] mb-4 text-sm">
-                            Please provide a reason for rejecting this submission. This will be visible to the user.
-                        </p>
-                        <textarea
-                            value={rejectionReason}
-                            onChange={(e) => setRejectionReason(e.target.value)}
-                            className="w-full h-32 p-3 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-gray-50 dark:bg-[#111] text-gray-900 dark:text-white focus:ring-2 focus:ring-[#d62e1f] outline-none resize-none mb-6"
-                            placeholder="Enter rejection reason..."
-                        />
-                        <div className="flex gap-3 justify-end">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setRejectModalOpen(false)}
-                                className="text-gray-600 dark:text-[#a0a0a0]"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleReject}
-                                disabled={!rejectionReason.trim() || processingId === selectedItem?.id}
-                                className="bg-red-600 hover:bg-red-700 text-white"
-                            >
-                                {processingId === selectedItem?.id ? 'Rejecting...' : 'Confirm Rejection'}
-                            </Button>
-                        </div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 dark:border-[#2a2a2a]">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('moderator.rejectSubmission')}</h3>
+                    <p className="text-gray-600 dark:text-[#a0a0a0] mb-4 text-sm">
+                        {t('moderator.provideReason')}
+                    </p>
+                    <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        className="w-full h-32 p-3 rounded-lg border border-gray-300 dark:border-[#2a2a2a] bg-gray-50 dark:bg-[#111] text-gray-900 dark:text-white focus:ring-2 focus:ring-[#d62e1f] outline-none resize-none mb-6"
+                        placeholder={t('moderator.enterRejectionReason')}
+                    />
+                    <div className="flex gap-3 justify-end">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setRejectModalOpen(false)}
+                            className="text-gray-600 dark:text-[#a0a0a0]"
+                        >
+                            {t('moderator.cancel')}
+                        </Button>
+                        <Button
+                            onClick={handleReject}
+                            disabled={!rejectionReason.trim() || processingId === selectedItem?.id}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            {processingId === selectedItem?.id ? t('moderator.rejecting') : t('moderator.confirmRejection')}
+                        </Button>
                     </div>
                 </div>
-            )}
+            </div>
+            )
         </div>
     );
 }

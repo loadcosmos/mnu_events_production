@@ -32,11 +32,11 @@ import {
 } from 'lucide-react';
 
 const AD_POSITIONS = [
-    { value: 'TOP_BANNER', label: 'Top Banner', price: '10,000 ₸/week' },
-    { value: 'NATIVE_FEED', label: 'Native Feed', price: '8,000 ₸/week' },
-    { value: 'BOTTOM_BANNER', label: 'Bottom Banner', price: '5,000 ₸/week' },
-    { value: 'HERO_SLIDE', label: 'Hero Slide', price: '12,000 ₸/week' },
-    { value: 'SIDEBAR', label: 'Sidebar', price: '6,000 ₸/week' },
+    { value: 'TOP_BANNER', label: 'enums.adPosition.TOP_BANNER', price: '10,000 ₸/week' },
+    { value: 'NATIVE_FEED', label: 'enums.adPosition.NATIVE_FEED', price: '8,000 ₸/week' },
+    { value: 'BOTTOM_BANNER', label: 'enums.adPosition.BOTTOM_BANNER', price: '5,000 ₸/week' },
+    { value: 'HERO_SLIDE', label: 'enums.adPosition.HERO_SLIDE', price: '12,000 ₸/week' },
+    { value: 'SIDEBAR', label: 'enums.adPosition.SIDEBAR', price: '6,000 ₸/week' },
 ];
 
 export default function AdminAdvertisementsPage() {
@@ -66,7 +66,7 @@ export default function AdminAdvertisementsPage() {
         }
 
         if (user?.role !== 'ADMIN') {
-            toast.error('This page is only accessible to administrators');
+            toast.error(t('admin.adminOnlyAccess'));
             navigate('/');
             return;
         }
@@ -81,6 +81,7 @@ export default function AdminAdvertisementsPage() {
             setAds(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Failed to load advertisements:', err);
+            toast.error(t('admin.failedToLoadAds'));
             // If endpoint doesn't exist yet, show empty state
             setAds([]);
         } finally {
@@ -92,11 +93,11 @@ export default function AdminAdvertisementsPage() {
         e.preventDefault();
 
         if (!formData.title.trim()) {
-            toast.error('Title is required');
+            toast.error(t('admin.titleRequired'));
             return;
         }
         if (!formData.imageUrl.trim()) {
-            toast.error('Image URL is required');
+            toast.error(t('admin.imageUrlRequired'));
             return;
         }
 
@@ -106,7 +107,7 @@ export default function AdminAdvertisementsPage() {
                 ...formData,
                 duration: parseInt(formData.duration, 10),
             });
-            toast.success('Advertisement created successfully!');
+            toast.success(t('admin.adCreatedSuccess'));
             setShowCreateForm(false);
             setFormData({
                 title: '',
@@ -119,7 +120,7 @@ export default function AdminAdvertisementsPage() {
             await loadAds();
         } catch (err) {
             console.error('Failed to create ad:', err);
-            toast.error(err.response?.data?.message || 'Failed to create advertisement');
+            toast.error(err.response?.data?.message || t('admin.adCreateFailed'));
         } finally {
             setCreating(false);
         }
@@ -128,29 +129,29 @@ export default function AdminAdvertisementsPage() {
     const handleToggleActive = async (adId, currentStatus) => {
         try {
             await adsService.updatePaymentStatus(adId, currentStatus ? 'PENDING' : 'PAID');
-            toast.success(currentStatus ? 'Advertisement deactivated' : 'Advertisement activated');
+            toast.success(currentStatus ? t('admin.adDeactivated') : t('admin.adActivated'));
             await loadAds();
         } catch (err) {
-            toast.error('Failed to update advertisement status');
+            toast.error(t('admin.adStatusUpdateFailed'));
         }
     };
 
     const handleDelete = async (adId) => {
-        if (!window.confirm('Are you sure you want to delete this advertisement?')) {
+        if (!window.confirm(t('admin.confirmDeleteAd'))) {
             return;
         }
 
         try {
             await adsService.delete(adId);
-            toast.success('Advertisement deleted');
+            toast.success(t('admin.adDeleted'));
             await loadAds();
         } catch (err) {
-            toast.error('Failed to delete advertisement');
+            toast.error(t('admin.adDeleteFailed'));
         }
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return new Date(dateString).toLocaleDateString(t('language') === 'kz' ? 'kk-KZ' : t('language') === 'ru' ? 'ru-RU' : 'en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
@@ -158,7 +159,8 @@ export default function AdminAdvertisementsPage() {
     };
 
     const getPositionLabel = (position) => {
-        return AD_POSITIONS.find(p => p.value === position)?.label || position;
+        const pos = AD_POSITIONS.find(p => p.value === position);
+        return pos ? t(pos.label) : position;
     };
 
     if (loading) {
@@ -233,12 +235,12 @@ export default function AdminAdvertisementsPage() {
                                         onValueChange={(value) => setFormData({ ...formData, position: value })}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select position" />
+                                            <SelectValue placeholder={t('admin.selectPosition')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {AD_POSITIONS.map((pos) => (
                                                 <SelectItem key={pos.value} value={pos.value}>
-                                                    {pos.label} ({pos.price})
+                                                    {t(pos.label)} ({pos.price})
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -397,7 +399,7 @@ export default function AdminAdvertisementsPage() {
                                             </h3>
                                             {ad.companyName && (
                                                 <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                                    by {ad.companyName}
+                                                    {t('admin.byCompany', { companyName: ad.companyName })}
                                                 </span>
                                             )}
                                         </div>
@@ -442,7 +444,7 @@ export default function AdminAdvertisementsPage() {
                                                         rel="noopener noreferrer"
                                                         className="text-blue-500 hover:underline truncate"
                                                     >
-                                                        Link
+                                                        {t('admin.link')}
                                                     </a>
                                                 </div>
                                             )}
@@ -461,9 +463,9 @@ export default function AdminAdvertisementsPage() {
                                                 }`}
                                         >
                                             {ad.isActive && ad.paymentStatus === 'PAID' ? (
-                                                <><ToggleRight className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">Off</span></>
+                                                <><ToggleRight className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">{t('admin.turnOff')}</span></>
                                             ) : (
-                                                <><ToggleLeft className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">On</span></>
+                                                <><ToggleLeft className="w-4 h-4 sm:mr-1" /><span className="hidden sm:inline">{t('admin.turnOn')}</span></>
                                             )}
                                         </Button>
                                         <Button

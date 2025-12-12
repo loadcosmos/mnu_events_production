@@ -74,7 +74,7 @@ const PricingSettingsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="text-white text-xl">{t('common.loading')}</div>
       </div>
     );
   }
