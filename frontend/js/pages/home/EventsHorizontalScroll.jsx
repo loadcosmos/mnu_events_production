@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
  * Memoized for better INP performance
  */
 const EventCard = memo(function EventCard({ event, onClick }) {
+    const { t } = useTranslation();
     return (
         <div
             className="w-80 bg-white dark:bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-200 dark:border-[#2a2a2a] hover:border-[#d62e1f] transition-all cursor-pointer group shadow-lg hover:shadow-2xl"
