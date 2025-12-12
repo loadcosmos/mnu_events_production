@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Star, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const priceTypeLabels = {
   HOURLY: 'per hour',
@@ -21,6 +22,7 @@ const categoryColors = {
 };
 
 const ServiceCard = memo(function ServiceCard({ service }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -67,14 +69,14 @@ const ServiceCard = memo(function ServiceCard({ service }) {
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColor}`}>
-            {service.category}
+            {t(`enums.serviceCategory.${service.category}`)}
           </span>
         </div>
 
         {/* Type Badge */}
         <div className="absolute top-3 right-3">
           <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300">
-            {service.type === 'TUTORING' ? 'Tutoring' : 'Service'}
+            {t(`enums.serviceType.${service.type}`)}
           </span>
         </div>
       </div>
@@ -121,7 +123,7 @@ const ServiceCard = memo(function ServiceCard({ service }) {
                 </span>
               </>
             ) : (
-              <span className="text-xs text-gray-500 dark:text-gray-500">No reviews</span>
+              <span className="text-xs text-gray-500 dark:text-gray-500">{t('services.noReviews')}</span>
             )}
           </div>
 
@@ -131,7 +133,7 @@ const ServiceCard = memo(function ServiceCard({ service }) {
               {service.price.toLocaleString()} ₸
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-500">
-              {priceTypeLabels[service.priceType]}
+              {t(`enums.priceType.${service.priceType}`)}
             </span>
           </div>
         </div>
@@ -151,7 +153,7 @@ const ServiceCard = memo(function ServiceCard({ service }) {
             shadow-md hover:shadow-lg
           "
         >
-          Order
+          {t('services.order')}
         </button>
       </div>
     </div>

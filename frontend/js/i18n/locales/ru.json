@@ -493,5 +493,114 @@
         "cancel": "Отмена",
         "confirmRejection": "Подтвердить отклонение",
         "rejecting": "Отклонение..."
+    },
+    "tickets": {
+        "yourTicket": "Ваш Билет",
+        "download": "Скачать",
+        "share": "Поделиться",
+        "pricePaid": "Оплачено",
+        "paymentMethod": "Способ оплаты",
+        "ticketId": "ID билета",
+        "date": "Дата",
+        "time": "Время",
+        "location": "Место",
+        "presentAtEntrance": "Пожалуйста, предъявите этот билет на входе",
+        "usedMessage": "Этот билет был использован для входа",
+        "refundedMessage": "Средства за билет возвращены",
+        "showQr": "Покажите этот QR-код на входе",
+        "shareText": "У меня есть билет на {{event}}!",
+        "shareTitle": "Билет на {{event}}",
+        "canvasTitle": "MNU Events - Ваш Билет",
+        "linkCopied": "Ссылка скопирована",
+        "shareError": "Ошибка при попытке поделиться"
+    },
+    "services": {
+        "order": "Заказать",
+        "noReviews": "Нет отзывов"
+    },
+    "enums": {
+        "role": {
+            "STUDENT": "Студент",
+            "ORGANIZER": "Организатор",
+            "MODERATOR": "Модератор",
+            "ADMIN": "Администратор",
+            "EXTERNAL_PARTNER": "Внешний партнер",
+            "FACULTY": "Факультет"
+        },
+        "category": {
+            "ACADEMIC": "Академический",
+            "SPORTS": "Спорт",
+            "CULTURAL": "Культурный",
+            "TECH": "Технологии",
+            "SOCIAL": "Социальный",
+            "CAREER": "Карьера",
+            "OTHER": "Другое",
+            "ARTS": "Искусство"
+        },
+        "csiCategory": {
+            "CREATIVITY": "Творчество",
+            "SERVICE": "Служение",
+            "INTELLIGENCE": "Интеллект"
+        },
+        "eventStatus": {
+            "PENDING_MODERATION": "На модерации",
+            "UPCOMING": "Предстоящее",
+            "ONGOING": "Текущее",
+            "COMPLETED": "Завершено",
+            "CANCELLED": "Отменено"
+        },
+        "registrationStatus": {
+            "REGISTERED": "Зарегистрирован",
+            "WAITLIST": "Лист ожидания",
+            "CANCELLED": "Отменено"
+        },
+        "ticketStatus": {
+            "PENDING": "Ожидает",
+            "PAID": "Оплачено",
+            "REFUNDED": "Возвращено",
+            "USED": "Использован",
+            "EXPIRED": "Истек"
+        },
+        "serviceType": {
+            "GENERAL": "Общий",
+            "TUTORING": "Репетиторство"
+        },
+        "serviceCategory": {
+            "DESIGN": "Дизайн",
+            "PHOTO_VIDEO": "Фото/Видео",
+            "IT": "IT",
+            "COPYWRITING": "Копирайтинг",
+            "CONSULTING": "Консалтинг",
+            "OTHER": "Другое",
+            "MATH": "Математика",
+            "ENGLISH": "Английский",
+            "PROGRAMMING": "Программирование",
+            "PHYSICS": "Физика",
+            "CHEMISTRY": "Химия",
+            "BIOLOGY": "Биология",
+            "ECONOMICS": "Экономика",
+            "LAW": "Право"
+        },
+        "priceType": {
+            "HOURLY": "Почасовая",
+            "FIXED": "Фиксированная",
+            "PER_SESSION": "За занятие"
+        },
+        "paymentStatus": {
+            "PENDING": "Ожидает",
+            "PAID": "Оплачено",
+            "EXPIRED": "Истек"
+        },
+        "userLevel": {
+            "NEWCOMER": "Новичок",
+            "ACTIVE": "Активный",
+            "LEADER": "Лидер",
+            "LEGEND": "Легенда"
+        },
+        "postType": {
+            "ANNOUNCEMENT": "Объявление",
+            "FACULTY_POST": "Пост факультета",
+            "STUDENT_POST": "Студенческий пост"
+        }
     }
 }

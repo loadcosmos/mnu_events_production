@@ -489,5 +489,114 @@
         "cancel": "Болдырмау",
         "confirmRejection": "Қабылдамауды растау",
         "rejecting": "Қабылдамау..."
+    },
+    "tickets": {
+        "yourTicket": "Сіздің билетіңіз",
+        "download": "Жүктеп алу",
+        "share": "Бөлісу",
+        "pricePaid": "Төленген сома",
+        "paymentMethod": "Төлем әдісі",
+        "ticketId": "Билет ID",
+        "date": "Күні",
+        "time": "Уақыты",
+        "location": "Орын",
+        "presentAtEntrance": "Кіреберісте осы билетті көрсетіңіз",
+        "usedMessage": "Бұл билет кіру үшін қолданылды",
+        "refundedMessage": "Билет қайтарылды",
+        "showQr": "Кіреберісте осы QR-кодты көрсетіңіз",
+        "shareText": "Менде {{event}} билеті бар!",
+        "shareTitle": "{{event}} билеті",
+        "canvasTitle": "MNU Events - Сіздің билетіңіз",
+        "linkCopied": "Сілтеме көшірілді",
+        "shareError": "Бөлісу қатесі"
+    },
+    "services": {
+        "order": "Тапсырыс беру",
+        "noReviews": "Пікірлер жоқ"
+    },
+    "enums": {
+        "role": {
+            "STUDENT": "Студент",
+            "ORGANIZER": "Ұйымдастырушы",
+            "MODERATOR": "Модератор",
+            "ADMIN": "Әкімші",
+            "EXTERNAL_PARTNER": "Сыртқы серіктес",
+            "FACULTY": "Факультет"
+        },
+        "category": {
+            "ACADEMIC": "Академиялық",
+            "SPORTS": "Спорт",
+            "CULTURAL": "Мәдени",
+            "TECH": "Технология",
+            "SOCIAL": "Әлеуметтік",
+            "CAREER": "Мансап",
+            "OTHER": "Басқа",
+            "ARTS": "Өнер"
+        },
+        "csiCategory": {
+            "CREATIVITY": "Шығармашылық",
+            "SERVICE": "Қызмет",
+            "INTELLIGENCE": "Зияткерлік"
+        },
+        "eventStatus": {
+            "PENDING_MODERATION": "Модерацияда",
+            "UPCOMING": "Алдағы",
+            "ONGOING": "Ағымдағы",
+            "COMPLETED": "Аяқталды",
+            "CANCELLED": "Болдырылмады"
+        },
+        "registrationStatus": {
+            "REGISTERED": "Тіркелді",
+            "WAITLIST": "Күту тізімі",
+            "CANCELLED": "Болдырылмады"
+        },
+        "ticketStatus": {
+            "PENDING": "Күтілуде",
+            "PAID": "Төленді",
+            "REFUNDED": "Қайтарылды",
+            "USED": "Қолданылды",
+            "EXPIRED": "Мерзімі өтті"
+        },
+        "serviceType": {
+            "GENERAL": "Жалпы",
+            "TUTORING": "Репетиторлық"
+        },
+        "serviceCategory": {
+            "DESIGN": "Дизайн",
+            "PHOTO_VIDEO": "Фото/Видео",
+            "IT": "IT",
+            "COPYWRITING": "Копирайтинг",
+            "CONSULTING": "Кеңес беру",
+            "OTHER": "Басқа",
+            "MATH": "Математика",
+            "ENGLISH": "Ағылшын тілі",
+            "PROGRAMMING": "Бағдарламалау",
+            "PHYSICS": "Физика",
+            "CHEMISTRY": "Химия",
+            "BIOLOGY": "Биология",
+            "ECONOMICS": "Экономика",
+            "LAW": "Құқық"
+        },
+        "priceType": {
+            "HOURLY": "Сағаттық",
+            "FIXED": "Бекітілген",
+            "PER_SESSION": "Сабақ үшін"
+        },
+        "paymentStatus": {
+            "PENDING": "Күтілуде",
+            "PAID": "Төленді",
+            "EXPIRED": "Мерзімі өтті"
+        },
+        "userLevel": {
+            "NEWCOMER": "Жаңадан келген",
+            "ACTIVE": "Белсенді",
+            "LEADER": "Көшбасшы",
+            "LEGEND": "Аңыз"
+        },
+        "postType": {
+            "ANNOUNCEMENT": "Хабарландыру",
+            "FACULTY_POST": "Факультет жазбасы",
+            "STUDENT_POST": "Студенттік жазба"
+        }
     }
 }

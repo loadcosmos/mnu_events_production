@@ -490,5 +490,114 @@
         "cancel": "Cancel",
         "confirmRejection": "Confirm Rejection",
         "rejecting": "Rejecting..."
+    },
+    "tickets": {
+        "yourTicket": "Your Ticket",
+        "download": "Download",
+        "share": "Share",
+        "pricePaid": "Price Paid",
+        "paymentMethod": "Payment Method",
+        "ticketId": "Ticket ID",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "presentAtEntrance": "Please present this ticket at the entrance",
+        "usedMessage": "This ticket has been used for check-in",
+        "refundedMessage": "This ticket has been refunded",
+        "showQr": "Show this QR code at the entrance",
+        "shareText": "I have a ticket for {{event}}!",
+        "shareTitle": "Ticket for {{event}}",
+        "canvasTitle": "MNU Events - Your Ticket",
+        "linkCopied": "Link copied to clipboard",
+        "shareError": "Share cancelled or failed"
+    },
+    "services": {
+        "order": "Order",
+        "noReviews": "No reviews"
+    },
+    "enums": {
+        "role": {
+            "STUDENT": "Student",
+            "ORGANIZER": "Organizer",
+            "MODERATOR": "Moderator",
+            "ADMIN": "Admin",
+            "EXTERNAL_PARTNER": "External Partner",
+            "FACULTY": "Faculty"
+        },
+        "category": {
+            "ACADEMIC": "Academic",
+            "SPORTS": "Sports",
+            "CULTURAL": "Cultural",
+            "TECH": "Tech",
+            "SOCIAL": "Social",
+            "CAREER": "Career",
+            "OTHER": "Other",
+            "ARTS": "Arts"
+        },
+        "csiCategory": {
+            "CREATIVITY": "Creativity",
+            "SERVICE": "Service",
+            "INTELLIGENCE": "Intelligence"
+        },
+        "eventStatus": {
+            "PENDING_MODERATION": "Pending Moderation",
+            "UPCOMING": "Upcoming",
+            "ONGOING": "Ongoing",
+            "COMPLETED": "Completed",
+            "CANCELLED": "Cancelled"
+        },
+        "registrationStatus": {
+            "REGISTERED": "Registered",
+            "WAITLIST": "Waitlist",
+            "CANCELLED": "Cancelled"
+        },
+        "ticketStatus": {
+            "PENDING": "Pending",
+            "PAID": "Paid",
+            "REFUNDED": "Refunded",
+            "USED": "Used",
+            "EXPIRED": "Expired"
+        },
+        "serviceType": {
+            "GENERAL": "General",
+            "TUTORING": "Tutoring"
+        },
+        "serviceCategory": {
+            "DESIGN": "Design",
+            "PHOTO_VIDEO": "Photo/Video",
+            "IT": "IT",
+            "COPYWRITING": "Copywriting",
+            "CONSULTING": "Consulting",
+            "OTHER": "Other",
+            "MATH": "Math",
+            "ENGLISH": "English",
+            "PROGRAMMING": "Programming",
+            "PHYSICS": "Physics",
+            "CHEMISTRY": "Chemistry",
+            "BIOLOGY": "Biology",
+            "ECONOMICS": "Economics",
+            "LAW": "Law"
+        },
+        "priceType": {
+            "HOURLY": "Hourly",
+            "FIXED": "Fixed",
+            "PER_SESSION": "Per Session"
+        },
+        "paymentStatus": {
+            "PENDING": "Pending",
+            "PAID": "Paid",
+            "EXPIRED": "Expired"
+        },
+        "userLevel": {
+            "NEWCOMER": "Newcomer",
+            "ACTIVE": "Active",
+            "LEADER": "Leader",
+            "LEGEND": "Legend"
+        },
+        "postType": {
+            "ANNOUNCEMENT": "Announcement",
+            "FACULTY_POST": "Faculty Post",
+            "STUDENT_POST": "Student Post"
+        }
     }
 }

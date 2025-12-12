@@ -4,11 +4,13 @@
  */
 
 import React, { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatDate } from '../utils/dateFormatters';
 import { getCsiIcon, getCsiColors } from '../utils/categoryMappers';
 import { sanitizeText } from '../utils/sanitize';
 
 const EventCard = memo(function EventCard({ event, onClick, isSaved, onToggleSave }) {
+    const { t } = useTranslation();
     const imageUrl = event.imageUrl || '/images/backg.jpg';
 
     const handleClick = useCallback(() => {
@@ -58,7 +60,7 @@ const EventCard = memo(function EventCard({ event, onClick, isSaved, onToggleSav
                 {/* Category Badge and CSI Tags */}
                 <div className="flex-shrink-0 flex items-center gap-2 flex-wrap">
                     <span className="inline-block bg-[#d62e1f] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide">
-                        {event.category}
+                        {t(`enums.category.${event.category}`)}
                     </span>
                     {/* CSI Tags - limited to 3 for performance */}
                     {event.csiTags?.slice(0, 3).map((csiTag) => {

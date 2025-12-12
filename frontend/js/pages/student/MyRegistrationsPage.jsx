@@ -438,12 +438,12 @@ export default function MyRegistrationsPage() {
 
                         {/* Category Badge */}
                         <div className="absolute top-3 right-3 px-3 py-1.5 bg-[#d62e1f] text-white rounded text-xs font-bold uppercase shadow-lg">
-                          {event.category}
+                          {t(`enums.category.${event.category}`)}
                         </div>
 
                         {/* Status Badge */}
                         <div className={`absolute top-3 left-3 px-3 py-1.5 ${getStatusBadgeColor(registration.status)} text-white rounded text-xs font-bold uppercase shadow-lg`}>
-                          {registration.status}
+                          {t(`enums.registrationStatus.${registration.status}`)}
                         </div>
 
                         {/* Checked In Indicator */}

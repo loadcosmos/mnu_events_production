@@ -39,9 +39,18 @@
 
 **Root Cause:** Each layout had a fake language selector that didn't connect to react-i18next.
 
-**Solution Applied:**
-- Replaced fake language selectors with `LanguageSelector` component in all layouts
-- Added `useTranslation` hook for i18n support
+- [x] **Profile Page (`ProfilePage.jsx`)**
+  - [x] Fix `selectedLanguage` bug (non-student settings) - **FIXED** (Replaced with `LanguageSelector`)
+  - [x] Replace hardcoded strings with `t()` - **COMPLETED**
+  - [x] Add missing translation keys to `en.json`, `ru.json`, `kz.json` - **COMPLETED**
+- [x] **My Registrations Page (`MyRegistrationsPage.jsx`)**
+  - [x] Replace hardcoded strings with `t()` - **COMPLETED**
+  - [x] Fix syntax error in `useEffect` - **FIXED**
+- [x] **Admin Advertisements Page (`AdminAdvertisementsPage.jsx`)**
+  - [x] Fix missing function declaration - **FIXED**
+- [x] **Deployment**
+  - [x] Verify Vercel Build - **PASSED** (Deployment: READY)
+  - [ ] Browser Verification - **PENDING** (Blocked by subagent error) support
 - Added `dashboard` translation key to all 3 locale files
 
 **Files Modified:**

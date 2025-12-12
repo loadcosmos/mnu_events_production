@@ -241,7 +241,7 @@ const EventModal = memo(function EventModal({ eventId, isOpen, onClose }) {
                 {/* Category Badge - Top Left */}
                 <div className="absolute top-4 left-4">
                   <span className="inline-block bg-[#d62e1f] text-white px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide shadow-lg">
-                    {event.category}
+                    {t(`enums.category.${event.category}`)}
                   </span>
                 </div>
 
